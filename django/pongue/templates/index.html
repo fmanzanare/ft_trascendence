@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<p>Logged in as {{user.get_username}}, <a href="{% url 'logout' %}">logout</a></p>
+<h1>Welcome to my Django App!</h1>
+<p>This is a sample index.html template.</p>
+{% for message in messages %}
+	<p>{{message}}</p>
+{% endfor %}
+{% endblock %}
