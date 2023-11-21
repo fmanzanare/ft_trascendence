@@ -14,6 +14,7 @@ class PongueUser(AbstractUser):
 	games_won = models.IntegerField(default=0)
 	games_lost = models.IntegerField(default=0)
 	games_played = models.IntegerField(default=0)
+	has_2fa = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.username
