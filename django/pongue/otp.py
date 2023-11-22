@@ -1,9 +1,9 @@
 import hmac, base64, struct, hashlib, time, array
 
-def Truncate(hmac_sha1):
+def truncate(hmac_sha1):
     """
-    Truncate represents the function that converts an HMAC-SHA-1
-    value into an HOTP value as defined in Section 5.3.
+    truncate represents the function that converts an HMAc-SHA-1
+    value into an hotp value as defined in Section 5.3.
 
     http://tools.ietf.org/html/rfc4226#section-5.3
 
@@ -17,30 +17,30 @@ def _long_to_byte_array(long_num):
     helper function to convert a long number into a byte array
     """
     byte_array = array.array('B')
-    for i in reversed(range(0, 8)):
+    for _ in reversed(range(0, 8)):
         byte_array.insert(0, long_num & 0xff)
         long_num >>= 8
     return byte_array
 
-def HOTP(K, C, digits=6):
+def hotp(k, c, digits=6):
     """
-    HOTP accepts key K and counter C
+    hotp accepts key k and counter c
     optional digits parameter can control the response length
 
     returns the OATH integer code with {digits} length
     """
-    c_bytes = _long_to_byte_array(C)
-    hmac_sha1 = hmac.new(key=K, msg=c_bytes, digestmod=hashlib.sha1).hexdigest()
-    return Truncate(hmac_sha1)[-digits:]
+    c_bytes = _long_to_byte_array(c)
+    hmac_sha1 = hmac.new(key=k, msg=c_bytes, digestmod=hashlib.sha1).hexdigest()
+    return truncate(hmac_sha1)[-digits:]
 
-def TOTP(K, digits=6, window=30):
+def totp(k, digits=6, window=30):
     """
-    TOTP is a time-based variant of HOTP.
-    It accepts only key K, since the counter is derived from the current time
+    totp is a time-based variant of hotp.
+    It accepts only key k, since the counter is derived from the current time
     optional digits parameter can control the response length
     optional window parameter controls the time window in seconds
 
     returns the OATH integer code with {digits} length
     """
-    C = int(time.time() / window)
-    return HOTP(base64.b32decode(K), C, digits=digits)
+    c = int(time.time() / window)
+    return hotp(base64.b32decode(k), c, digits=digits)
