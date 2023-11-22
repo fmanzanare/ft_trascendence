@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Two-Factor Authentication</h1>
+<p>Please enter the verification code sent to your device:</p>
+<form action="/submit2fa/" method="POST">
+	{% csrf_token %}
+	<input type="hidden" name="user" value="{{user}}">
+	<input type="text" name="code" placeholder="Verification Code" required>
+	<br>
+	<input type="submit" value="Verify">
+</form>
+<p>Configuration key: {{key}}</p>
+{% for message in messages %}
+	<p>{{message}}</p>
+{% endfor %}
+{% endblock %}
