@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 <p>Logged in as {{user.get_username}}, <a href="{% url 'logout' %}">logout</a></p>
-<h1>Welcome to my Django App!</h1>
+<h1>Welcome to Pongue!</h1>
 <p>This is a sample index.html template.</p>
+{% if user.has_2fa %}
+	<a href="{% url 'disable2fa' %}">Disable 2FA</a>
+	<p>Configuration key: {{key}}</p>
+{% else %}
+	<a href="{% url 'enable2fa' %}">Enable 2FA</a>
+{% endif %}
 {% for message in messages %}
 	<p>{{message}}</p>
 {% endfor %}

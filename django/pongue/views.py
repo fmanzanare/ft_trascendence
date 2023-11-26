@@ -12,7 +12,9 @@ import base64, hashlib
 
 @login_required(login_url="login")
 def index(request):
-	return render(request, "index.html")
+	hashed_secret = hashlib.sha512((request.user.username + os.environ.get("OTP_SECRET")).encode("utf-8")).digest()
+	encoded_secret = base64.b32encode(hashed_secret).decode("utf-8")
+	return render(request, "index.html", {"key": encoded_secret})
 
 def register(request):
 	if request.user.is_authenticated:
@@ -67,6 +69,20 @@ def submit2fa(request):
 	else:
 		messages.info(request, "Invalid method")
 		return redirect("login")
+
+@login_required(login_url="login")
+def disable2fa(request):
+	user = PongueUser.objects.get(username=request.user)
+	user.has_2fa = False
+	user.save()
+	return redirect("index")
+
+@login_required(login_url="login")
+def enable2fa(request):
+	user = PongueUser.objects.get(username=request.user)
+	user.has_2fa = True
+	user.save()
+	return redirect("index")
 
 @login_required(login_url="login")
 def logout(request):
