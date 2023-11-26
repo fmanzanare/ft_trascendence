@@ -26,6 +26,7 @@ class Migration(migrations.Migration):
                 ('games_won', models.IntegerField(default=0)),
                 ('games_lost', models.IntegerField(default=0)),
                 ('games_played', models.IntegerField(default=0)),
+                ('has_2fa', models.BooleanField(default=False)),
             ],
         ),
     ]
