@@ -26,7 +26,7 @@ class Conf {
 	lightColor = 0xFFFFFF;
 	lightZPos = 100;
 	lightYPos = this.planeYPos;
-	lightAngle = 0.8;
+	lightAngle = 0.9;
 	lightPenumbra = 0.4;
 	lightIntensity = 30000;
 
