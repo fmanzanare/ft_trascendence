@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;">
+	<div style="width: 600px; height: 600px; background-color: aqua;">
+		<form method="POST" action="" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+			{% csrf_token %}
+			<label for="">Username</label>
+			<input type="text" placeholder="Username" name="username" required>
+			<label for="">Room name</label>
+			<input type="text" placeholder="Room name" name="room" required>
+			<button type="submit">Submit</button>
+		</form>
+	</div>
+</div>
+
+{% endblock %}
