@@ -228,7 +228,7 @@ def enable2fa(request):
 	})
 
 # /logout
-# GET: Logs out the user
+# GET: Logs out the logged-in user
 @login_required(login_url="login")
 def logout(request):
 	auth_logout(request)
