@@ -11,7 +11,7 @@ from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
 
-# /index
+# /
 # For the moment, only returns the 2FA key mientras no encontramos un mejor lugar para ponerlo
 @login_required(login_url="login")
 def index(request):
@@ -32,6 +32,8 @@ def index(request):
 # /register
 # GET: Returns the register form HTML
 # POST: Creates a new user if the form is valid, otherwise returns the errors
+# Parameters: "display_name", "username", "password1", "password2"
+# Format: application/x-www-form-urlencoded
 def register(request):
 	if request.user.is_authenticated:
 		# WAS: return redirect("index")
