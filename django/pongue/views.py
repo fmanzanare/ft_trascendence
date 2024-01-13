@@ -100,7 +100,7 @@ def auth(request):
 				"client_id": os.environ.get("FT_CLIENT_ID"),
 				"client_secret": os.environ.get("FT_CLIENT_SECRET"),
 				"code": code,
-				"redirect_uri": "http://127.0.0.1:8000/auth",
+				"redirect_uri": "https://127.0.0.1:8000/auth",
 			}
 			auth_response = requests.post("https://api.intra.42.fr/oauth/token", data=data)
 			access_token = auth_response.json()["access_token"]
