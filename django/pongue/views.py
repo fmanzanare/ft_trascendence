@@ -110,7 +110,11 @@ def auth(request):
 
 			try:
 				user = PongueUser.objects.get(username=username)
-				return pass2fa(request, user)
+				if (user.from_42):
+					return pass2fa(request, user)
+				else:
+					messages.info(request, "User already exists")
+					return redirect("login")
 			except PongueUser.DoesNotExist:
 				user = PongueUser.objects.create_user(username=username, display_name=display_name)
 				auth_login(request, user)
