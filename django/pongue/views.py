@@ -10,6 +10,8 @@ from .models import PongueUser, Room, Message
 from .otp import totp
 import base64, hashlib
 from django.views.decorators.csrf import csrf_protect
+from django.http import JsonResponse
+from drf_yasg.utils import swagger_auto_schema
 
 @login_required(login_url="login")
 def index(request):
@@ -32,6 +34,7 @@ def register(request):
 	context = {"form": form}
 	return render(request, "register.html", context)
 
+@swagger_auto_schema(methods=['get'])
 def login(request):
 	if request.user.is_authenticated:
 		return redirect("index")
@@ -151,3 +154,7 @@ def messagesView(request, room_name, username):
 		"user": username
 	}
 	return render(request, "message.html", context)
+
+def test(request):
+	print(request)
+	return render(request, "test.html")

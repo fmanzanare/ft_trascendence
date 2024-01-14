@@ -35,6 +35,8 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 INSTALLED_APPS = [
 	'pongue',
+	'remote',
+	'drf_yasg',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -72,6 +74,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "ft_backend.wsgi.application"
+ASGI_APPLICATION = "ft_backend.asgi.application"
 
 
 # Database
@@ -126,12 +129,28 @@ USE_TZ = True
 
 ### FMANZANA MODIFICATIONS ###
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
 	os.path.join(BASE_DIR, 'static'),
 ]
+
+### FMANZANA MODIFICATIONS ###
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic'
+        }
+    },
+	'DEFAULT_INFO': 'Hola',
+}

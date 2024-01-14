@@ -10,7 +10,8 @@ urlpatterns = [
 	path("submit2fa/", views.submit2fa, name="submit2fa"),
 	path("enable2fa/", views.enable2fa, name="enable2fa"),
 	path("disable2fa/", views.disable2fa, name="disable2fa"),
-	#### TESTING URL ###
+	#### TESTING URLS ###
 	path("chat/", views.chat, name="chat"),
 	path("<str:room_name>/<str:username>", views.messagesView, name="room"),
+	path("test/", views.test, name="test"),
 ]
