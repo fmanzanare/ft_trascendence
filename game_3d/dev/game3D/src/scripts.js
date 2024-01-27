@@ -7,9 +7,10 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 const CONF = new Conf();
 
 // ---------- RENDERER AND CAMERA ----------
-const renderer = new THREE.WebGL1Renderer();
+const renderer = new THREE.WebGLRenderer( {canvas: document.getElementById('myCanas')} ); // NOT WORKING!!!!
 renderer.shadowMap.enabled = true;
 renderer.setSize(CONF.renderWidth, CONF.renderHeight);
+
 
 document.body.appendChild(renderer.domElement);
 
@@ -119,7 +120,7 @@ function buildText() {
 	let p2PointsGeometry;
 
 	const loader = new FontLoader();
-	loader.load('../fonts/helvetiker_regular.typeface.json', (font) => {
+	loader.load('./dev/game3D/fonts/helvetiker_regular.typeface.json', (font) => {
 		let textConfig = {
 			font: font,
 			size: 9,

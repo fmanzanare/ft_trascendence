@@ -8,11 +8,11 @@
 
 FROM node:21-alpine3.17
 
-WORKDIR /usr/src/app/
+WORKDIR /usr/src/game_3d/
 
-COPY . /usr/src/app/
+COPY . /usr/src/game_3d/
 RUN npm install
 
-EXPOSE 5173
+EXPOSE 8080
 
-CMD ["npx", "vite", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["npx", "vite", "--host", "0.0.0.0", "--port", "8080"]
