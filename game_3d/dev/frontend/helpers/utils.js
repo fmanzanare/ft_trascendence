@@ -1,3 +1,5 @@
+import { runGame } from "../../game3D/src/scripts";
+
 export function loginPushButton()
 {
 	const $name = document.getElementById("UserName");
@@ -82,4 +84,9 @@ export function playOnline()
 	}
 	const $loading = document.getElementById("loading");
 	$loading.classList.remove('d-none');
+}
+
+export function playLocal()
+{
+	runGame()
 }

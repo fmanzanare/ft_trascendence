@@ -1,5 +1,6 @@
 import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
+import { runGame } from "../game3D/src/scripts.js";
 
 window.addEventListener("popstate", navigateTo("/home"));
 

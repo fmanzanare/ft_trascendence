@@ -4,7 +4,7 @@ import Ranking from "../views/Ranking.js";
 import Login from "../views/LogIn.js";
 import Signup from "../views/SignUp.js";
 import Profile from "../views/Profile.js";
-import { loginPushButton, logOut, displayChat, playOnline } from "./utils.js";
+import { loginPushButton, logOut, displayChat, playOnline, playLocal } from "./utils.js";
 
 function pathToRegex(path) {
 	return new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -58,4 +58,6 @@ export async function router() {
 		document.getElementById("hideChat").addEventListener('click', displayChat);
 	if (document.getElementById("playOnline"))
 		document.getElementById("playOnline").addEventListener('click', playOnline);
+	if (document.getElementById("playLocal"))
+		document.getElementById("playLocal").addEventListener('click', playLocal);
 }

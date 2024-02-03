@@ -16,7 +16,6 @@ export default class extends AbstractView {
                 </div>
                 <div class="row d-flex justify-content-center align-items-center h-100">
                     <div id="blackDiv">
-						<div id="myCanvas"></div>
                         <div class="d-flex justify-content-around align-items-center" id="selectMode" style="height:100%">
                             <div class="fs-3 p-2 h-50 bd-highlight" id="playOnline" role="button" style="width:25%;">
                                 <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
@@ -30,7 +29,7 @@ export default class extends AbstractView {
                                     <p>Play a game  against the AI</p>
                                 </div>
                             </div>
-                            <div class="fs-3 p-2 h-50 bd-highlight" role="button" style="width:25%;">
+                            <div class="fs-3 p-2 h-50 bd-highlight" role="button" style="width:25%;" id="playLocal">
                                 <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                     <h1>Local</h1>
                                     <p>Play a one vs one game on the same pc</p>
@@ -53,7 +52,7 @@ export default class extends AbstractView {
                     </div>
                 </div>
             </div>
-			<div id="myCanvas"></div>
+
         `;
 		return page;
     }
