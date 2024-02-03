@@ -1,0 +1,15 @@
+log -> api/login -> si -> token -> entra donde me diga
+				 -> no -> fuera
+				 	   -> 2f input
+	-> token -> api/token -> si -> lo que sea
+						  -> no -> login
+
+registre -> api/rigister -> usuario nombre pass1 pass2
+
+tournament -> api/tournament/create-room -> ...
+
+ranking -> api/ranking -> obtienes los 10 primeros con sus datos
+
+perfil	-> historial -> api/historial
+		-> clave 2f
+		-> foto perfil -> ...
