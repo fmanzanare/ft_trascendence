@@ -7,12 +7,13 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 const CONF = new Conf();
 
 // ---------- RENDERER AND CAMERA ----------
-const renderer = new THREE.WebGLRenderer( {canvas: document.getElementById('myCanas')} ); // NOT WORKING!!!!
+const renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.setSize(CONF.renderWidth, CONF.renderHeight);
 
-
-document.body.appendChild(renderer.domElement);
+document.body.appendChild(renderer.domElement)
+// let container = document.getElementById('myCanvas')
+// container.appendChild(renderer.domElement);
 
 
 const scene = new THREE.Scene();

@@ -16,7 +16,7 @@ export default class extends AbstractView {
                 </div>
                 <div class="row d-flex justify-content-center align-items-center h-100">
                     <div id="blackDiv">
-						<canvas id="myCanvas"></canvas>
+						<div id="myCanvas"></div>
                         <div class="d-flex justify-content-around align-items-center" id="selectMode" style="height:100%">
                             <div class="fs-3 p-2 h-50 bd-highlight" id="playOnline" role="button" style="width:25%;">
                                 <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
@@ -53,7 +53,7 @@ export default class extends AbstractView {
                     </div>
                 </div>
             </div>
-			<script type="module" src="/dev/game3D/src/scripts.js"></script>
+			<div id="myCanvas"></div>
         `;
 		return page;
     }

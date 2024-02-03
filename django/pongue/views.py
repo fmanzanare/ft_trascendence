@@ -13,24 +13,21 @@ from django.http import JsonResponse
 
 # /
 # For the moment, only returns the 2FA key mientras no encontramos un mejor lugar para ponerlo
+@login_required(login_url="login")
 def index(request):
-	return render(request, "index.html")
-
-# @login_required(login_url="login")
-# def index(request):
-# 	hashed_secret = hashlib.sha512((request.user.username + os.environ.get("OTP_SECRET")).encode("utf-8")).digest()
-# 	encoded_secret = base64.b32encode(hashed_secret).decode("utf-8")
-# 	# WAS: return render(request, "index.html", {"key": encoded_secret})
-# 	return JsonResponse({
-# 		"success": True,
-# 		"message": "",
-# 		"redirect": False,
-# 		"redirect_url": "",
-# 		"context": {
-# 			"key": encoded_secret
-# 		},
-# 		"logged_in": request.user.is_authenticated,
-# 	})
+	hashed_secret = hashlib.sha512((request.user.username + os.environ.get("OTP_SECRET")).encode("utf-8")).digest()
+	encoded_secret = base64.b32encode(hashed_secret).decode("utf-8")
+	# WAS: return render(request, "index.html", {"key": encoded_secret})
+	return JsonResponse({
+		"success": True,
+		"message": "",
+		"redirect": False,
+		"redirect_url": "",
+		"context": {
+			"key": encoded_secret
+		},
+		"logged_in": request.user.is_authenticated,
+	})
 
 # /register
 # GET: Returns the register form HTML
