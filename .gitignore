@@ -59,4 +59,3 @@ __pycache__
 ### FMANZANA CHANGES ###
 django/pongue/migrations/*
 !./django/pongue/migrations/__init__.py
-
