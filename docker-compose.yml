@@ -1,6 +1,15 @@
+# docker-compose build
+# docker-compose up
+
 version: '3'
 
 services:
+  frontend:
+    build: ./game_3d
+    volumes:
+      - game_3d:/usr/src/game_3d/dev/
+    ports:
+      - 8080:8080
   backend:
     build: ./django
     command: python manage.py runserver 0.0.0.0:8000
@@ -27,5 +36,10 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '${PWD}/django/'
+  game_3d:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${PWD}/game_3d/dev/'
   db_data:
-
