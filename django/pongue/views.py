@@ -145,7 +145,7 @@ def pass2fa(request, user_obj):
 			"success": True,
 			"message": "",
 			"redirect": True,
-			"redirect_url": "index",
+			"redirect_url": "home",
 			"context": {},
 			"logged_in": request.user.is_authenticated,
 		})

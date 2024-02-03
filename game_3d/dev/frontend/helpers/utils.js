@@ -3,7 +3,7 @@ export function loginPushButton()
 	const $name = document.getElementById("UserName");
 	const $pass = document.getElementById("PassWord");
 	const $fakeClickElement = document.querySelector("[data-link][href='/home']");
-	/*const $loginUrl = 'https://localhost:8000/login/';
+	const $loginUrl = 'http://localhost:8000/api/login/';
 	const $loginData = new URLSearchParams();
 	$loginData.append('username', $name.value);
 	$loginData.append('password', $pass.value);
@@ -18,23 +18,29 @@ export function loginPushButton()
 		if (!response.ok) {
 			throw new Error(`Error en la solicitud: ${response.status}`);
 		}
-		return response.json();
+		return response.json()
 	})
 	.then(data => {
-		console.log('Inicio de sesión exitoso:', data);
-		if ($fakeClickElement) {
+		console.log(data)
+		console.log('Inicio de sesión exitoso:', data.success);
+		if (data.logged_in) {
 			sessionStorage.setItem('miToken', 'hola');
 			$fakeClickElement.click();
 		}
+
+		// if ($fakeClickElement) {
+		// 	sessionStorage.setItem('miToken', 'hola');
+		// 	$fakeClickElement.click();
+		// }
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
-	});*/
-	if ($fakeClickElement) {
-		sessionStorage.setItem('miToken', 'hola');
-		$fakeClickElement.click();
-	}
-	
+	});
+	// if ($fakeClickElement) {
+	// 	sessionStorage.setItem('miToken', 'hola');
+	// 	$fakeClickElement.click();
+	// }
+
 }
 
 export function logOut()
