@@ -1,6 +1,7 @@
 import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
-import { runGame } from "../game3D/src/scripts.js";
+
+window.apiUrl = 'http://localhost:8000/api/';
 
 window.addEventListener("popstate", navigateTo("/home"));
 

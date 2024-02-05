@@ -4,7 +4,7 @@ import Ranking from "../views/Ranking.js";
 import Login from "../views/LogIn.js";
 import Signup from "../views/SignUp.js";
 import Profile from "../views/Profile.js";
-import { loginPushButton, logOut, displayChat, playOnline, playLocal } from "./utils.js";
+import {routerFunctions} from "./routerClick.js";
 
 function pathToRegex(path) {
 	return new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -48,16 +48,6 @@ export async function router() {
 	const $view = new match.route.view(getParams(match));
 
 	document.querySelector("#app").innerHTML = await $view.getHtml();
-	if (document.getElementById("loginButton"))
-		document.getElementById("loginButton").addEventListener('click', loginPushButton);
-	if (document.getElementById("logOut"))
-		document.getElementById("logOut").addEventListener('click', logOut);
-	if (document.getElementById("displayChat"))
-		document.getElementById("displayChat").addEventListener('click', displayChat);
-	if (document.getElementById("hideChat"))
-		document.getElementById("hideChat").addEventListener('click', displayChat);
-	if (document.getElementById("playOnline"))
-		document.getElementById("playOnline").addEventListener('click', playOnline);
-	if (document.getElementById("playLocal"))
-		document.getElementById("playLocal").addEventListener('click', playLocal);
+
+	routerFunctions();
 }

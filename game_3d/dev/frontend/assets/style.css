@@ -46,5 +46,5 @@ body
 {
 	width: 60%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: contain;
 }
