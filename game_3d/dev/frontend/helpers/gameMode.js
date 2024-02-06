@@ -18,5 +18,5 @@ export function playOnline()
 
 export function playLocal()
 {
-	runGame()
+	runGame();
 }

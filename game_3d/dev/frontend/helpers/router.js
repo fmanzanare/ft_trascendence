@@ -4,7 +4,7 @@ import Ranking from "../views/Ranking.js";
 import Login from "../views/LogIn.js";
 import Signup from "../views/SignUp.js";
 import Profile from "../views/Profile.js";
-import {routerFunctions} from "./routerClick.js";
+import { routerFunctions } from "./routerFunctions.js";
 
 function pathToRegex(path) {
 	return new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -48,6 +48,6 @@ export async function router() {
 	const $view = new match.route.view(getParams(match));
 
 	document.querySelector("#app").innerHTML = await $view.getHtml();
-
+	
 	routerFunctions();
 }
