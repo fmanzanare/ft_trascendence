@@ -140,6 +140,8 @@ def pass2fa(request, user_obj):
 		})
 	else:
 		auth_login(request, user_obj)
+		user_obj.status = "online"
+		user_obj.save()
 		# WAS: return redirect("index")
 		return JsonResponse({
 			"success": True,
@@ -161,6 +163,8 @@ def submit2fa(request):
 		encoded_secret = base64.b32encode(hashed_secret)
 		if totp(encoded_secret) == request.POST.get("code"):
 			auth_login(request, user)
+			user.status = "online"
+			user.save()
 			# WAS: return redirect("index")
 			return JsonResponse({
 				"success": True,
@@ -232,6 +236,8 @@ def enable2fa(request):
 @login_required(login_url="login")
 def logout(request):
 	auth_logout(request)
+	request.user.status = "offline"
+	request.user.save()
 	# WAS: return redirect("login")
 	return JsonResponse({
 		"success": True,
@@ -289,6 +295,8 @@ def auth(request):
 			except PongueUser.DoesNotExist:
 				user = PongueUser.objects.create_user(username=username, display_name=display_name, from_42=True)
 				auth_login(request, user)
+				user.status = "online"
+				user.save()
 				# WAS: return redirect("index")
 				return JsonResponse({
 					"success": True,
