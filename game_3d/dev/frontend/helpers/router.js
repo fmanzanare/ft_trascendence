@@ -4,6 +4,7 @@ import Ranking from "../views/Ranking.js";
 import Login from "../views/LogIn.js";
 import Signup from "../views/SignUp.js";
 import Profile from "../views/Profile.js";
+import TwoFactor from "../views/TwoFactor.js";
 import { routerFunctions } from "./routerFunctions.js";
 
 function pathToRegex(path) {
@@ -23,6 +24,7 @@ export async function router() {
 	const $routes = [
 		{ path: "/home", view: Home },
 		{ path: "/login", view: Login },
+		{ path: "/twofactor", view: TwoFactor },
 		{ path: "/signup", view: Signup },
 		{ path: "/tournaments", view: Tournaments },
 		{ path: "/ranking", view: Ranking },

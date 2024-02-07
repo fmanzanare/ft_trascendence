@@ -1,22 +1,24 @@
 import { router } from "./router.js";
 
 export function navigateTo(url) {
-	const $token = sessionStorage.getItem('miToken');
+	const $token = sessionStorage.getItem('pongToken');
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
 	const $appElement = document.getElementById("app");
-	if (!$token && url.substring(url.lastIndexOf("/")) != "/signup")
+	if (!$token)
 	{
+		//comprobar token
 		if (!$navElement.classList.contains('d-none'))
 		{
 			$navElement.classList.add('d-none');
 			$chatButton.classList.add('d-none');
 		}
-		history.pushState(null, null, "/login");
-	}
-	else if (!$token && url.substring(url.lastIndexOf("/")) == "/signup")
-	{
-		history.pushState(null, null, url);
+		if (url.substring(url.lastIndexOf("/")) != "/signup" && url.substring(url.lastIndexOf("/")) != "/twofactor")
+			history.pushState(null, null, "/login");
+		else if (url.substring(url.lastIndexOf("/")) == "/signup")
+			history.pushState(null, null, url);
+		else
+			history.pushState(null, null, url);
 	}
 	else
 	{

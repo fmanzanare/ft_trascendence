@@ -1,10 +1,11 @@
 import { displayChat } from "./utils.js";
 import { playLocal, playOnline } from "./gameMode.js";
-import { loginPushButton, logOut } from "./register.js";
+import { loginPushButton, twoFactorPushButton, logOut } from "./register.js";
 
 export async function routerFunctions(){
 	const buttons = [
 		{ id: "loginButton", event: 'click', handler: loginPushButton },
+		{ id: "twoFactorButton", event: 'click', handler: twoFactorPushButton },
 		{ id: "logOut", event: 'click', handler: logOut },
 		{ id: "displayChat", event: 'click', handler: displayChat },
 		{ id: "playOnline", event: 'click', handler: playOnline },
