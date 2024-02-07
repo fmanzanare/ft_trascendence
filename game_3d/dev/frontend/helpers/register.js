@@ -64,14 +64,13 @@ export function twoFactorPushButton()
 		console.log('Inicio de sesión exitoso:', data.success);
 		if (data.logged_in) {
 			sessionStorage.setItem('pongToken', 'hola');
-			$fakeClickElement.click();
 		}
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});*/
 	sessionStorage.setItem('pongToken', 'hola');
-	$fakeClickElement.click();
+	navigateTo("/home");
 }
 
 export function logOut()

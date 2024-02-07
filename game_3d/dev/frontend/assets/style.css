@@ -16,14 +16,17 @@ body
 	overflow: hidden;
 }
 
-#blackDiv
+#gameDiv
 {
-	background-color: black;
 	position: absolute;
 	top: 25%;
 	left: 25%;
-	width: 50%;
-	height: 50%
+	width: auto;
+}
+
+#blackDiv
+{
+	background-color: #1e1e1e;
 }
 
 #instructions
@@ -32,6 +35,15 @@ body
 	top: 78%;
 	left: 40%;
 	width: 20%;
+	height: 20%
+}
+
+#instructionsTwoPlayer
+{
+	position: absolute;
+	top: 78%;
+	left: 25%;
+	width: 50%;
 	height: 20%
 }
 

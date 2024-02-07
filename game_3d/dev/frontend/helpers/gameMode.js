@@ -18,5 +18,12 @@ export function playOnline()
 
 export function playLocal()
 {
+	const $divSelect = document.getElementById("blackDiv");
+	$divSelect.classList.add('d-none');
+	const $instructionsOne = document.getElementById("instructions");
+	$instructionsOne.classList.add('d-none');
+	const $instructionsTwo = document.getElementById("instructionsTwoPlayer");
+	$instructionsTwo.classList.remove('d-none');
+
 	runGame();
 }

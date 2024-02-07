@@ -14,7 +14,7 @@ export function runGame() {
 	renderer.setSize(CONF.renderWidth, CONF.renderHeight);
 
 	// document.body.appendChild(renderer.domElement)
-	let container = document.getElementById('blackDiv')
+	let container = document.getElementById('gameDiv')
 	container.parentElement.appendChild(renderer.domElement);
 
 
