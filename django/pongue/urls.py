@@ -10,4 +10,5 @@ urlpatterns = [
 	path("api/submit2fa/", views.submit2fa, name="submit2fa"),
 	path("api/enable2fa/", views.enable2fa, name="enable2fa"),
 	path("api/disable2fa/", views.disable2fa, name="disable2fa"),
+	path("api/friends/", views.friends, name="friends"),
 ]

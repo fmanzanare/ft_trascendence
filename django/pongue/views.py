@@ -328,3 +328,46 @@ def auth(request):
 			"redirect_url": "login",
 			"context": {}
 		})
+
+# /friends
+# GET: Returns the friends list of the logged-in user
+# POST: Adds or removes a friend from the logged-in user
+# Parameters: "username", "action"
+def friends(request):
+	if request.method == "POST":
+		username = request.POST.get("username")
+		action = request.POST.get("action")
+		user = PongueUser.objects.get(username=request.user)
+		if action == "add":
+			user.friends += username + ","
+		elif action == "remove":
+			user.friends = user.friends.replace(username + ",", "")
+		user.save()
+		return JsonResponse({
+			"success": True,
+			"message": "",
+			"redirect": True,
+			"redirect_url": "index",
+			"context": {},
+			"logged_in": request.user.is_authenticated,
+		})
+	elif request.method == "GET":
+		user = PongueUser.objects.get(username=request.user)
+		friends = user.friends.split(",")
+		friends.pop()
+		return JsonResponse({
+			"success": True,
+			"message": "",
+			"redirect": False,
+			"redirect_url": "",
+			"context": {"friends": friends},
+			"logged_in": request.user.is_authenticated,
+		})
+	else:
+		return JsonResponse({
+			"success": False,
+			"message": "Invalid method",
+			"redirect": True,
+			"redirect_url": "login",
+			"context": {}
+		})
