@@ -23,3 +23,15 @@ class PongueUser(AbstractUser):
 
 	REQUIRED_FIELDS = ["display_name"]
 
+class GameResults(models.Model):
+	id = models.AutoField(primary_key=True)
+	player_1 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="player_1")
+	player_2 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="player_2")
+	player_1_score = models.IntegerField()
+	player_2_score = models.IntegerField()
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return f"{self.player_1} vs {self.player_2} - {self.player_1_score} - {self.player_2_score}"
+

@@ -3,7 +3,7 @@
 import django.contrib.auth.models
 from django.db import migrations, models
 import django.utils.timezone
-
+from django.conf import settings
 
 class Migration(migrations.Migration):
 
@@ -50,6 +50,18 @@ class Migration(migrations.Migration):
             },
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
+            ],
+        ),
+        migrations.CreateModel(
+            name='GameResults',
+            fields=[
+                ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('player_1_score', models.IntegerField()),
+                ('player_2_score', models.IntegerField()),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('player_1', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='player_1', to=settings.AUTH_USER_MODEL)),
+                ('player_2', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='player_2', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
