@@ -24,10 +24,13 @@ export default class extends AbstractView {
 											<input type="text" id="UserName" placeholder="Username" class="form-control form-control-lg"/>
 										</div>
 										<div class="form-outline form-white mb-4">
-											<input type="password" id="PassWord" placeholder="Password" class="form-control form-control-lg password" />
+											<input type="password" id="PassWord" placeholder="Password" class="form-control form-control-lg password"/>
 										</div>
 										<div class="form-outline form-white mb-4">
-											<input type="password" id="PassWordRep" placeholder="Repeat password" class="form-control form-control-lg password" />
+											<input type="password" id="PassWordRep" placeholder="Repeat password" class="form-control form-control-lg password"/>
+										</div>
+										<div id="errorDiv">
+											<p class="text-danger" id="errorMessage"></p>
 										</div>
 										<div class="d-grid gap-2">
 											<button class="btn btn-primary btn-dark" id="singUpButton" type="submit">Sing up</button>
