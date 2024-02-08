@@ -10,7 +10,11 @@ up:
 down:
 	$(DOCKER_COMPOSE) down
 
-.PHONE: re
+.PHONY: clean
+clean:
+	$(DOCKER_COMPOSE) down -v --remove-orphans
+
+.PHONY: re
 re: down up
 
 .PHONY: restart
