@@ -46,7 +46,6 @@ export function singPushButton()
 	const $username = document.getElementById("UserName");
 	const $pass = document.getElementById("PassWord");
 	const $passTwo = document.getElementById("PassWordRep");
-	const $errorDiv = document.getElementById("errorDiv");
 	const $errorMessage = document.getElementById("errorMessage");
 	const $var = [$name, $username, $pass, $passTwo];
 
@@ -81,7 +80,7 @@ export function singPushButton()
 	})
 	.then(data => {
 		console.log(data)
-		console.log('Inicio de sesión exitoso:', data.success);
+		console.log('Registro exitoso:', data.success);
 		if (data.success)
 			navigateTo("/home");
 		else
@@ -149,9 +148,25 @@ export function twoFactorPushButton()
 
 export function logOut()
 {
-	const $fakeClickElement = document.querySelector("[data-link][href='/home']");
 	sessionStorage.removeItem('pongToken');
-	if ($fakeClickElement) {
-        $fakeClickElement.click();
-    }
+	const $logoutUrl = apiUrl + 'logout/';
+	fetch($logoutUrl, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`Error en la solicitud: ${response.status}`);
+		}
+		return response.json()
+	})
+	.then(data => {
+		console.log(data);
+	})
+	.catch(error => {
+		console.error('Error en la solicitud:', error);
+	});
+	navigateTo("/home");
 }

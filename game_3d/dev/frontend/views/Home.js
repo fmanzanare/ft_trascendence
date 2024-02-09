@@ -8,7 +8,6 @@ export default class extends AbstractView {
     async getHtml() {
         const $width = window.innerWidth / 2;
         const $Height = window.innerHeight / 2;
-        console.log($width, $Height);
         let page =
             `
                 <div class="container-fluid py-10 h-100">

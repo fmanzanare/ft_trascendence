@@ -8,7 +8,7 @@ export default class extends AbstractView {
     async getHtml() {
 		let page =
 			`
-				<div class="container py-5 h-80">
+				<div id="twoFactorDiv" class="container py-5 h-80">
 					<div class="row d-flex justify-content-center align-items-center h-100">
 						<h1 class="display-1 fw-bold mb-3 text-uppercase text-center" style="color:#80dbef;">Pong</h1>
 						<div class="col-12 mt-5 col-md-8 col-lg-6 col-xl-5">
