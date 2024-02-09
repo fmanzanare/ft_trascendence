@@ -12,4 +12,6 @@ urlpatterns = [
 	path("api/disable2fa/", views.disable2fa, name="disable2fa"),
 	path("api/friends/", views.friends, name="friends"),
 	path("api/add_game_result/", views.add_game_result, name="add_game_result"),
+	path("api/check_jwt/", views.check_jwt, name="check_jwt"),
+	path("api/profile/", views.profile, name="profile"),
 ]
