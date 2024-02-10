@@ -212,7 +212,7 @@ def check_jwt(request):
 		payload = decode_jwt(jwt)
 		if payload.user_id:
 			user = PongueUser.objects.get(id=payload.user_id)
-			if payload.exp > datetime.utcnow():
+			if payload.exp > datetime.timestamp(datetime.utcnow()):
 				return JsonResponse({
 					"success": True,
 					"message": "JWT OK",

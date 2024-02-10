@@ -8,7 +8,7 @@ import os
 def generate_jwt(user_id):
     payload = {
         'user_id': user_id,
-        'exp': datetime.utcnow() + timedelta(days=1),
+        'exp': datetime.timestamp(datetime.utcnow() + timedelta(days=1)),
     }
 
     encoded_payload = base64.urlsafe_b64encode(json.dumps(payload).encode('utf-8'))
