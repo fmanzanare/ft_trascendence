@@ -4,8 +4,11 @@ export function loginPushButton()
 {
 	const $name = document.getElementById("UserName");
 	const $pass = document.getElementById("PassWord");
+	const $errorMessage = document.getElementById("errorMessage");
 	const $loginUrl = apiUrl + 'login/';
 	const $loginData = new URLSearchParams();
+	const $elements = [$name, $pass];
+
 	$loginData.append('username', $name.value);
 	$loginData.append('password', $pass.value);
 	fetch($loginUrl, {
@@ -25,14 +28,20 @@ export function loginPushButton()
 		console.log(data)
 		console.log('Inicio de sesión exitoso:', data.success);
 		if (data.logged_in) {
-			sessionStorage.setItem('pongToken', 'hola');
+			sessionStorage.setItem('pongToken', data.context.jwt);
 			navigateTo("/home");
 		}
 		else
 		{
-			//si doblefact es on
-			navigateTo("/twofactor");
-			//else(mostrar el error)
+			if (data.message == "Username or password is incorrect")
+			{
+				$elements.forEach(element => {
+					element.classList.add("border-danger");
+					$errorMessage.textContent = "Username or password is incorrect";
+				});
+			}
+			else
+				navigateTo("/twofactor");
 		}
 	})
 	.catch(error => {
@@ -47,9 +56,9 @@ export function singPushButton()
 	const $pass = document.getElementById("PassWord");
 	const $passTwo = document.getElementById("PassWordRep");
 	const $errorMessage = document.getElementById("errorMessage");
-	const $var = [$name, $username, $pass, $passTwo];
+	const $elements = [$name, $username, $pass, $passTwo];
 
-	$var.forEach(element => {
+	$elements.forEach(element => {
 		if (element.value == "")
 		{
 			element.classList.add("border-danger");
