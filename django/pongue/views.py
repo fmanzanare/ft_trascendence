@@ -12,6 +12,8 @@ import base64, hashlib
 from django.http import JsonResponse
 from .jwt import generate_jwt, decode_jwt
 from datetime import datetime
+from django.core import serializers
+import json
 
 # /
 # For the moment, only returns the 2FA key mientras no encontramos un mejor lugar para ponerlo
@@ -454,13 +456,14 @@ def add_game_result(request):
 @login_required(login_url="login")
 def profile(request):
 	if request.method == "GET":
+		jsonUser = serializers.serialize("json", [PongueUser.objects.get(username=request.user)])
 		return JsonResponse({
 			"success": True,
 			"message": "",
 			"redirect": False,
 			"redirect_url": "",
 			"context": {
-				"user": request.user
+				"user": json.loads(jsonUser)[0]["fields"],
 			},
 			"logged_in": request.user.is_authenticated,
 		})
