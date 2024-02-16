@@ -1,3 +1,4 @@
+from functools import wraps
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CreateUserForm
@@ -14,6 +15,42 @@ from .jwt import generate_jwt, decode_jwt
 from datetime import datetime
 from django.core import serializers
 import json
+
+def get_user_from_jwt(request):
+	jwt = request.headers.get("Authorization")
+	if jwt:
+		payload = decode_jwt(jwt)
+		user = json.loads(payload['user'])[0]['fields']
+		if user and payload['exp'] > datetime.timestamp(datetime.utcnow()):
+			user_django = PongueUser.objects.get(username=user['username'])
+			print(user_django.__dict__)
+			if user_django:
+				response = user_django
+			else:
+				response = None
+			return response
+
+		else:
+			return None
+	else:
+		return None
+
+def jwt_required(function):
+	@wraps(function)
+	def wrap(request, *args, **kwargs):
+		user = get_user_from_jwt(request)
+		if user:
+			return function(request, *args, **kwargs)
+		else:
+			return JsonResponse({
+				"success": False,
+				"message": "Invalid JWT",
+				"redirect": True,
+				"redirect_url": "login",
+				"context": {},
+				"logged_in": request.user.is_authenticated,
+			})
+	return wrap
 
 # /
 # For the moment, only returns the 2FA key mientras no encontramos un mejor lugar para ponerlo
@@ -92,7 +129,7 @@ def register(request):
 # Parameters: "username", "password"
 # Format: application/x-www-form-urlencoded
 def login(request):
-	message = ""
+	message = "User not logged in"
 	if request.user.is_authenticated:
 		# WAS: return redirect("index")
 		return JsonResponse({
@@ -153,7 +190,7 @@ def pass2fa(request, user_obj):
 			"redirect": True,
 			"redirect_url": "home",
 			"context": {
-				"jwt": generate_jwt(user_obj.id)
+				"jwt": generate_jwt(user_obj)
 			},
 			"logged_in": request.user.is_authenticated,
 		})
@@ -178,7 +215,7 @@ def submit2fa(request):
 				"redirect": True,
 				"redirect_url": "index",
 				"context": {
-					"jwt": generate_jwt(user.id)
+					"jwt": generate_jwt(user)
 				},
 				"logged_in": request.user.is_authenticated,
 			})
@@ -211,29 +248,27 @@ def submit2fa(request):
 def check_jwt(request):
 	jwt = request.headers.get("Authorization")
 	if jwt:
-		payload = decode_jwt(jwt)
-		if payload.user_id:
-			user = PongueUser.objects.get(id=payload.user_id)
-			if payload.exp > datetime.timestamp(datetime.utcnow()):
-				return JsonResponse({
-					"success": True,
-					"message": "JWT OK",
-					"redirect": False,
-					"redirect_url": "",
-					"context": {
-						"user": user.username
-					},
-					"logged_in": request.user.is_authenticated,
-				})
-			else:
-				return JsonResponse({
-					"success": False,
-					"message": "JWT expired",
-					"redirect": True,
-					"redirect_url": "login",
-					"context": {},
-					"logged_in": request.user.is_authenticated,
-				})
+		user = get_user_from_jwt(request)
+		if user:
+			return JsonResponse({
+				"success": True,
+				"message": "JWT OK",
+				"redirect": False,
+				"redirect_url": "",
+				"context": {
+					"user": json.loads(serializers.serialize("json", [user]))[0]["fields"],
+				},
+				"logged_in": request.user.is_authenticated,
+			})
+		else:
+			return JsonResponse({
+				"success": False,
+				"message": "JWT Invalid",
+				"redirect": True,
+				"redirect_url": "login",
+				"context": {},
+				"logged_in": request.user.is_authenticated,
+			})
 
 # /disable2fa
 # GET: Disables 2FA for the logged-in user
@@ -469,8 +504,10 @@ def profile(request):
 		})
 	elif request.method == "POST":
 		user = PongueUser.objects.get(username=request.user)
-		user.display_name = request.POST.get("display_name")
-		user.avatar_base64 = request.POST.get("avatar_base64")
+		if (request.POST.get("display_name") != ""):
+			user.display_name = request.POST.get("display_name")
+		if (request.POST.get("avatar_base64") != ""):
+			user.avatar_base64 = request.POST.get("avatar_base64")
 		user.save()
 		return JsonResponse({
 			"success": True,

@@ -4,10 +4,11 @@ import hashlib
 import hmac
 from datetime import datetime, timedelta
 import os
+from django.core import serializers
 
-def generate_jwt(user_id):
+def generate_jwt(user_obj):
     payload = {
-        'user_id': user_id,
+        'user': serializers.serialize("json", [user_obj]),
         'exp': datetime.timestamp(datetime.utcnow() + timedelta(days=1)),
     }
 
@@ -29,7 +30,9 @@ def decode_jwt(jwt_token):
     secret_key = os.environ.get("JWT_SECRET")
     expected_signature = base64.urlsafe_b64encode(hmac.new(secret_key.encode('utf-8'), encoded_payload.encode('utf-8'), hashlib.sha256).digest())
 
-    if encoded_signature == expected_signature:
+    if encoded_signature == expected_signature.decode('utf-8'):
         return payload
     else:
-        raise ValueError('Invalid signature')
+        return {
+            'error': 'Invalid token signature'
+        }
