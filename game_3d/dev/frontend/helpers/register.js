@@ -1,4 +1,5 @@
 import { navigateTo } from "./navigateto";
+import { changeUserName } from "./utils";
 
 export function loginPushButton()
 {
@@ -25,10 +26,9 @@ export function loginPushButton()
 		return response.json()
 	})
 	.then(data => {
-		console.log(data)
-		console.log('Inicio de sesión exitoso:', data.success);
-		if (data.logged_in) {
+		if (data.success) {
 			sessionStorage.setItem('pongToken', data.context.jwt);
+			changeUserName();
 			navigateTo("/home");
 		}
 		else
@@ -157,13 +157,13 @@ export function twoFactorPushButton()
 
 export function logOut()
 {
-	sessionStorage.removeItem('pongToken');
+	const $token = sessionStorage.getItem('pongToken');
 	const $logoutUrl = apiUrl + 'logout/';
 	fetch($logoutUrl, {
-		method: 'POST',
+		method: 'GET',
 		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
+			"Authorization": $token
+		}
 	})
 	.then(response => {
 		if (!response.ok) {
@@ -173,9 +173,10 @@ export function logOut()
 	})
 	.then(data => {
 		console.log(data);
+		sessionStorage.removeItem('pongToken');
+		navigateTo("/home");
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});
-	navigateTo("/home");
 }

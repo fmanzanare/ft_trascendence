@@ -1,3 +1,4 @@
+import { RED_RGTC1_Format } from "three";
 import { loginPushButton, singPushButton, twoFactorPushButton } from "./register.js";
 
 export function displayChat()
@@ -53,4 +54,53 @@ export function addKeyPressListener() {
 	{
 		document.getElementById("twoFactorDiv").addEventListener("keypress", twoFactorEnterKeyPress);
 	}
+}
+
+export function changeUserName()
+{
+	const $token = sessionStorage.getItem('pongToken');
+	const $userName = document.getElementById("userNameNavBar");
+	const $profileUrl = apiUrl + 'profile/';
+	return fetch($profileUrl, {
+		method: "GET",
+		headers: {
+			"Authorization": $token
+		}
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Hubo un problema al realizar la solicitud.');
+		}
+		return response.json();
+	})
+	.then(data => {
+		$userName.textContent = data.context.user.display_name;
+	})
+	.catch(error => {
+		console.error('Error:', error);
+	});
+}
+
+export function checkJwt()
+{
+	const $token = sessionStorage.getItem('pongToken');
+	const $jwtUrl = apiUrl + 'check_jwt/';
+	return fetch($jwtUrl, {
+		method: "GET",
+		headers: {
+			"Authorization": $token
+		}
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Hubo un problema al realizar la solicitud.');
+		}
+		return response.json();
+	})
+	.then(data => {
+		return (data.success);
+	})
+	.catch(error => {
+		return (false);
+	});
 }
