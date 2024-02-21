@@ -1,11 +1,15 @@
 import { navigateTo } from "./navigateto";
+import { changeUserName } from "./utils";
 
 export function loginPushButton()
 {
 	const $name = document.getElementById("UserName");
 	const $pass = document.getElementById("PassWord");
+	const $errorMessage = document.getElementById("errorMessage");
 	const $loginUrl = apiUrl + 'login/';
 	const $loginData = new URLSearchParams();
+	const $elements = [$name, $pass];
+
 	$loginData.append('username', $name.value);
 	$loginData.append('password', $pass.value);
 	fetch($loginUrl, {
@@ -22,17 +26,22 @@ export function loginPushButton()
 		return response.json()
 	})
 	.then(data => {
-		console.log(data)
-		console.log('Inicio de sesión exitoso:', data.success);
-		if (data.logged_in) {
-			sessionStorage.setItem('pongToken', 'hola');
+		if (data.success) {
+			sessionStorage.setItem('pongToken', data.context.jwt);
+			changeUserName();
 			navigateTo("/home");
 		}
 		else
 		{
-			//si doblefact es on
-			navigateTo("/twofactor");
-			//else(mostrar el error)
+			if (data.message == "Username or password is incorrect")
+			{
+				$elements.forEach(element => {
+					element.classList.add("border-danger");
+					$errorMessage.textContent = "Username or password is incorrect";
+				});
+			}
+			else
+				navigateTo("/twofactor");
 		}
 	})
 	.catch(error => {
@@ -47,9 +56,9 @@ export function singPushButton()
 	const $pass = document.getElementById("PassWord");
 	const $passTwo = document.getElementById("PassWordRep");
 	const $errorMessage = document.getElementById("errorMessage");
-	const $var = [$name, $username, $pass, $passTwo];
+	const $elements = [$name, $username, $pass, $passTwo];
 
-	$var.forEach(element => {
+	$elements.forEach(element => {
 		if (element.value == "")
 		{
 			element.classList.add("border-danger");
@@ -148,13 +157,13 @@ export function twoFactorPushButton()
 
 export function logOut()
 {
-	sessionStorage.removeItem('pongToken');
+	const $token = sessionStorage.getItem('pongToken');
 	const $logoutUrl = apiUrl + 'logout/';
 	fetch($logoutUrl, {
-		method: 'POST',
+		method: 'GET',
 		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
+			"Authorization": $token
+		}
 	})
 	.then(response => {
 		if (!response.ok) {
@@ -164,9 +173,10 @@ export function logOut()
 	})
 	.then(data => {
 		console.log(data);
+		sessionStorage.removeItem('pongToken');
+		navigateTo("/home");
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});
-	navigateTo("/home");
 }

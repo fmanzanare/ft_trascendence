@@ -23,6 +23,9 @@ export default class extends AbstractView {
 										<div class="form-outline form-white mb-4">
 											<input type="password" id="PassWord" placeholder="Password" class="inputLogIn form-control form-control-lg password" />
 										</div>
+										<div id="errorDiv">
+											<p class="text-danger" id="errorMessage"></p>
+										</div>
 										<div class="d-grid gap-2">
 											<button id="loginButton" class="btn btn-primary btn-dark" type="submit">Login</button>
 										</div>

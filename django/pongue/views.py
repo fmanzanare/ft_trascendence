@@ -1,3 +1,4 @@
+from functools import wraps
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CreateUserForm
@@ -13,12 +14,48 @@ from django.http import JsonResponse
 from http import HTTPStatus
 from .jwt import generate_jwt, decode_jwt
 from datetime import datetime
+from django.core import serializers
+import json
+
+def get_user_from_jwt(request):
+	jwt = request.headers.get("Authorization")
+	if jwt:
+		payload = decode_jwt(jwt)
+		user = json.loads(payload['user'])[0]['fields']
+		if user and payload['exp'] > datetime.timestamp(datetime.utcnow()):
+			user_django = PongueUser.objects.get(username=user['username'])
+			if user_django:
+				response = user_django
+			else:
+				response = None
+			return response
+
+		else:
+			return None
+	else:
+		return None
+
+def jwt_required(function):
+	@wraps(function)
+	def wrap(request, *args, **kwargs):
+		user = get_user_from_jwt(request)
+		if user:
+			return function(request, *args, **kwargs)
+		else:
+			return JsonResponse({
+				"success": False,
+				"message": "Invalid JWT",
+				"redirect": True,
+				"redirect_url": "login",
+				"context": {},
+				})
+	return wrap
 
 # /
 # For the moment, only returns the 2FA key mientras no encontramos un mejor lugar para ponerlo
-@login_required(login_url="login")
+@jwt_required
 def index(request):
-	hashed_secret = hashlib.sha512((request.user.username + os.environ.get("OTP_SECRET")).encode("utf-8")).digest()
+	hashed_secret = hashlib.sha512((get_user_from_jwt(request).username + os.environ.get("OTP_SECRET")).encode("utf-8")).digest()
 	encoded_secret = base64.b32encode(hashed_secret).decode("utf-8")
 	# WAS: return render(request, "index.html", {"key": encoded_secret})
 	return JsonResponse({
@@ -38,7 +75,7 @@ def index(request):
 # Parameters: "display_name", "username", "password1", "password2"
 # Format: application/x-www-form-urlencoded
 def register(request):
-	if request.user.is_authenticated:
+	if get_user_from_jwt(request):
 		# WAS: return redirect("index")
 		return JsonResponse({
 			"success": True,
@@ -46,7 +83,6 @@ def register(request):
 			"redirect": True,
 			"redirect_url": "index",
 			"context": {},
-			"logged_in": request.user.is_authenticated,
 		})
 	form = CreateUserForm()
 
@@ -62,8 +98,7 @@ def register(request):
 				"redirect": True,
 				"redirect_url": "login",
 				"context": {},
-				"logged_in": request.user.is_authenticated,
-			})
+				})
 		else:
 			return JsonResponse({
 				"success": False,
@@ -71,8 +106,7 @@ def register(request):
 				"redirect": True,
 				"redirect_url": "register",
 				"context": {"errors": form.errors.as_json()},
-				"logged_in": request.user.is_authenticated,
-			})
+				})
 
 	context = {"form": form}
 	# WAS: return render(request, "register.html", context)
@@ -91,8 +125,8 @@ def register(request):
 # Parameters: "username", "password"
 # Format: application/x-www-form-urlencoded
 def login(request):
-	message = ""
-	if request.user.is_authenticated:
+	message = "User not logged in"
+	if get_user_from_jwt(request):
 		# WAS: return redirect("index")
 		return JsonResponse({
 			"success": True,
@@ -100,7 +134,6 @@ def login(request):
 			"redirect": True,
 			"redirect_url": "index",
 			"context": {},
-			"logged_in": request.user.is_authenticated,
 		})
 	if request.method == "POST":
 		username = request.POST.get("username")
@@ -146,10 +179,9 @@ def pass2fa(request, user_obj):
 				"user": user_obj.username,
 				# "key": encoded_secret.decode("utf-8")
 			},
-			"logged_in": request.user.is_authenticated,
 		})
 	else:
-		auth_login(request, user_obj)
+		# auth_login(request, user_obj)
 		user_obj.status = PongueUser.Status.ONLINE
 		# user_obj.status = "online"
 		user_obj.save()
@@ -160,9 +192,8 @@ def pass2fa(request, user_obj):
 			"redirect": True,
 			"redirect_url": "home",
 			"context": {
-				"jwt": generate_jwt(user_obj.id)
+				"jwt": generate_jwt(user_obj)
 			},
-			"logged_in": request.user.is_authenticated,
 		})
 
 # /submit2fa
@@ -175,7 +206,7 @@ def submit2fa(request):
 		hashed_secret = hashlib.sha512((user.username + os.environ.get("OTP_SECRET")).encode("utf-8")).digest()
 		encoded_secret = base64.b32encode(hashed_secret)
 		if totp(encoded_secret) == request.POST.get("code"):
-			auth_login(request, user)
+			# auth_login(request, user)
 			user.status = PongueUser.Status.ONLINE
 			# user.status = "online"
 			user.save()
@@ -186,10 +217,9 @@ def submit2fa(request):
 				"redirect": True,
 				"redirect_url": "index",
 				"context": {
-					"jwt": generate_jwt(user.id)
+					"jwt": generate_jwt(user)
 				},
-				"logged_in": request.user.is_authenticated,
-			})
+				})
 		else:
 			# WAS:
 			# messages.info(request, "Invalid OTP")
@@ -219,35 +249,39 @@ def submit2fa(request):
 def check_jwt(request):
 	jwt = request.headers.get("Authorization")
 	if jwt:
-		payload = decode_jwt(jwt)
-		if payload.user_id:
-			user = PongueUser.objects.get(id=payload.user_id)
-			if payload.exp > datetime.timestamp(datetime.utcnow()):
-				return JsonResponse({
-					"success": True,
-					"message": "JWT OK",
-					"redirect": False,
-					"redirect_url": "",
-					"context": {
-						"user": user.username
-					},
-					"logged_in": request.user.is_authenticated,
+		user = get_user_from_jwt(request)
+		if user:
+			return JsonResponse({
+				"success": True,
+				"message": "JWT OK",
+				"redirect": False,
+				"redirect_url": "",
+				"context": {
+					"user": json.loads(serializers.serialize("json", [user]))[0]["fields"],
+				},
 				})
-			else:
-				return JsonResponse({
-					"success": False,
-					"message": "JWT expired",
-					"redirect": True,
-					"redirect_url": "login",
-					"context": {},
-					"logged_in": request.user.is_authenticated,
+		else:
+			return JsonResponse({
+				"success": False,
+				"message": "JWT Invalid",
+				"redirect": True,
+				"redirect_url": "login",
+				"context": {},
 				})
+	else:
+		return JsonResponse({
+			"success": False,
+			"message": "JWT not found",
+			"redirect": True,
+			"redirect_url": "login",
+			"context": {},
+		})
 
 # /disable2fa
 # GET: Disables 2FA for the logged-in user
-@login_required(login_url="login")
+@jwt_required
 def disable2fa(request):
-	user = PongueUser.objects.get(username=request.user)
+	user = PongueUser.objects.get(username=get_user_from_jwt(request))
 	user.has_2fa = False
 	user.save()
 	# WAS: return redirect("index")
@@ -262,9 +296,9 @@ def disable2fa(request):
 
 # /enable2fa
 # GET: Enables 2FA for the logged-in user
-@login_required(login_url="login")
+@jwt_required
 def enable2fa(request):
-	user = PongueUser.objects.get(username=request.user)
+	user = PongueUser.objects.get(username=get_user_from_jwt(request))
 	user.has_2fa = True
 	user.save()
 	# WAS: return redirect("index")
@@ -279,16 +313,17 @@ def enable2fa(request):
 
 # /logout
 # GET: Logs out the logged-in user
-@login_required(login_url="login")
+@jwt_required
 def logout(request):
 	username = request.POST.get("username")
 	user = PongueUser.objects.get(username=username)
 	user.status = PongueUser.Status.OFFLINE
 	user.save()
-	auth_logout(request)
+	# auth_logout(request)
 
-	# request.user.status = "offline"
-	# request.user.save()
+	# user = PongueUser.objects.get(username=get_user_from_jwt(request))
+	# user.status = "offline"
+	# user.save()
 	# WAS: return redirect("login")
 	return JsonResponse({
 		"success": True,
@@ -302,7 +337,7 @@ def logout(request):
 # /auth
 # GET: Logs in the user using the 42 API
 def auth(request):
-	if request.user.is_authenticated:
+	if get_user_from_jwt(request):
 		# WAS: return redirect("index")
 		return JsonResponse({
 			"success": True,
@@ -310,7 +345,6 @@ def auth(request):
 			"redirect": True,
 			"redirect_url": "index",
 			"context": {},
-			"logged_in": request.user.is_authenticated,
 		})
 	if request.method == "GET":
 		code = request.GET.get("code")
@@ -345,7 +379,7 @@ def auth(request):
 					})
 			except PongueUser.DoesNotExist:
 				user = PongueUser.objects.create_user(username=username, display_name=display_name, from_42=True)
-				auth_login(request, user)
+				# auth_login(request, user)
 				user.status = "online"
 				user.save()
 				# WAS: return redirect("index")
@@ -354,9 +388,10 @@ def auth(request):
 					"message": "Login completed",
 					"redirect": True,
 					"redirect_url": "index",
-					"context": {},
-					"logged_in": request.user.is_authenticated,
-				})
+					"context": {
+						"jwt": generate_jwt(user)
+					},
+						})
 		else:
 			# WAS:
 			# messages.info(request, "Invalid authorization code")
@@ -385,11 +420,12 @@ def auth(request):
 # POST: Adds or removes a friend from the logged-in user
 # Parameters: "username", "action"
 # Format: application/x-www-form-urlencoded
+@jwt_required
 def friends(request):
 	if request.method == "POST":
 		username = request.POST.get("username")
 		action = request.POST.get("action")
-		user = PongueUser.objects.get(username=request.user)
+		user = PongueUser.objects.get(username=get_user_from_jwt(request))
 		if action == "add":
 			user.friends += username + ","
 		elif action == "remove":
@@ -401,10 +437,9 @@ def friends(request):
 			"redirect": True,
 			"redirect_url": "index",
 			"context": {},
-			"logged_in": request.user.is_authenticated,
 		})
 	elif request.method == "GET":
-		user = PongueUser.objects.get(username=request.user)
+		user = PongueUser.objects.get(username=get_user_from_jwt(request))
 		friends = user.friends.split(",")
 		friends.pop()
 		return JsonResponse({
@@ -413,7 +448,6 @@ def friends(request):
 			"redirect": False,
 			"redirect_url": "",
 			"context": {"friends": friends},
-			"logged_in": request.user.is_authenticated,
 		})
 	else:
 		return JsonResponse({
@@ -452,7 +486,6 @@ def add_game_result(request):
 			"redirect": True,
 			"redirect_url": "index",
 			"context": {},
-			"logged_in": request.user.is_authenticated,
 		})
 	else:
 		return JsonResponse({
@@ -466,23 +499,25 @@ def add_game_result(request):
 # /profile
 # GET: Returns the profile object
 # POST: Updates the profile object
-@login_required(login_url="login")
+@jwt_required
 def profile(request):
 	if request.method == "GET":
+		jsonUser = serializers.serialize("json", [PongueUser.objects.get(username=get_user_from_jwt(request))])
 		return JsonResponse({
 			"success": True,
 			"message": "",
 			"redirect": False,
 			"redirect_url": "",
 			"context": {
-				"user": request.user
+				"user": json.loads(jsonUser)[0]["fields"],
 			},
-			"logged_in": request.user.is_authenticated,
 		})
 	elif request.method == "POST":
-		user = PongueUser.objects.get(username=request.user)
-		user.display_name = request.POST.get("display_name")
-		user.avatar_base64 = request.POST.get("avatar_base64")
+		user = PongueUser.objects.get(username=get_user_from_jwt(request))
+		if (request.POST.get("display_name") != ""):
+			user.display_name = request.POST.get("display_name")
+		if (request.POST.get("avatar_base64") != ""):
+			user.avatar_base64 = request.POST.get("avatar_base64")
 		user.save()
 		return JsonResponse({
 			"success": True,
@@ -490,5 +525,4 @@ def profile(request):
 			"redirect": False,
 			"redirect_url": "",
 			"context": {},
-			"logged_in": request.user.is_authenticated,
 		})
