@@ -10,6 +10,7 @@ from .models import GameResults, PongueUser
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
+from http import HTTPStatus
 from .jwt import generate_jwt, decode_jwt
 from datetime import datetime
 
@@ -103,17 +104,24 @@ def login(request):
 		})
 	if request.method == "POST":
 		username = request.POST.get("username")
+		print('-----')
+		for user in PongueUser.objects.all():
+			print(user.username + " " + user.status)
 		password = request.POST.get("password")
 		user = authenticate(request, username=username, password=password)
 
 		if user is not None:
+			obj = PongueUser.objects.get(username=username)
+			obj.status = PongueUser.Status.ONLINE
+			obj.save()
 			return pass2fa(request, user)
 		else:
 			# WAS: messages.info(request, "Username or password is incorrect")
 			message = "Username or password is incorrect"
-
+	username = request.POST.get("username")
+	print(username)
 	# WAS: return render(request, "login.html")
-	return JsonResponse({
+	return JsonResponse(status=HTTPStatus.BAD_REQUEST, data={
 		"success": False,
 		"message": message,
 		"redirect": False,
@@ -142,7 +150,8 @@ def pass2fa(request, user_obj):
 		})
 	else:
 		auth_login(request, user_obj)
-		user_obj.status = "online"
+		user_obj.status = PongueUser.Status.ONLINE
+		# user_obj.status = "online"
 		user_obj.save()
 		# WAS: return redirect("index")
 		return JsonResponse({
@@ -167,7 +176,8 @@ def submit2fa(request):
 		encoded_secret = base64.b32encode(hashed_secret)
 		if totp(encoded_secret) == request.POST.get("code"):
 			auth_login(request, user)
-			user.status = "online"
+			user.status = PongueUser.Status.ONLINE
+			# user.status = "online"
 			user.save()
 			# WAS: return redirect("index")
 			return JsonResponse({
@@ -271,9 +281,14 @@ def enable2fa(request):
 # GET: Logs out the logged-in user
 @login_required(login_url="login")
 def logout(request):
+	username = request.POST.get("username")
+	user = PongueUser.objects.get(username=username)
+	user.status = PongueUser.Status.OFFLINE
+	user.save()
 	auth_logout(request)
-	request.user.status = "offline"
-	request.user.save()
+
+	# request.user.status = "offline"
+	# request.user.save()
 	# WAS: return redirect("login")
 	return JsonResponse({
 		"success": True,
