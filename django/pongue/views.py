@@ -137,22 +137,14 @@ def login(request):
 		})
 	if request.method == "POST":
 		username = request.POST.get("username")
-		print('-----')
-		for user in PongueUser.objects.all():
-			print(user.username + " " + user.status)
 		password = request.POST.get("password")
 		user = authenticate(request, username=username, password=password)
 
 		if user is not None:
-			obj = PongueUser.objects.get(username=username)
-			obj.status = PongueUser.Status.ONLINE
-			obj.save()
 			return pass2fa(request, user)
 		else:
 			# WAS: messages.info(request, "Username or password is incorrect")
 			message = "Username or password is incorrect"
-	username = request.POST.get("username")
-	print(username)
 	# WAS: return render(request, "login.html")
 	return JsonResponse(status=HTTPStatus.BAD_REQUEST, data={
 		"success": False,
@@ -315,10 +307,10 @@ def enable2fa(request):
 # GET: Logs out the logged-in user
 @jwt_required
 def logout(request):
-	username = request.POST.get("username")
-	user = PongueUser.objects.get(username=username)
-	user.status = PongueUser.Status.OFFLINE
-	user.save()
+	# username = request.POST.get("username")
+	# user = PongueUser.objects.get(username=username)
+	# user.status = PongueUser.Status.OFFLINE
+	# user.save()
 	# auth_logout(request)
 
 	# user = PongueUser.objects.get(username=get_user_from_jwt(request))
