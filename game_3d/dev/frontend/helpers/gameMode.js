@@ -1,19 +1,38 @@
 import { runGame } from "../../game3D/src/scripts";
+import { openNewSocket } from "./socketsMng";
 
 export function playOnline()
 {
 	if (document.getElementById("selectMode"))
 	{
+		// Se ejecuta si se clicka el botón de buscar partida online
 		const $selectMode = document.getElementById("selectMode");
 		$selectMode.classList.add('d-none');
 	}
 	else
 	{
+		// Se ejecuta si se clicka el botón de buscar torneo
 		const $joinTournament = document.getElementById("joinTournament");
 		$joinTournament.classList.add('d-none');
 	}
-	const $loading = document.getElementById("loading");
-	$loading.classList.remove('d-none');
+	const $token = sessionStorage.getItem('pongToken');
+	fetch("http://localhost:8000/api/remote/find-game", {
+		method: "GET",
+		headers: {
+			"Authorization": $token
+		}
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Hubo un problema al realizar la solicitud.');
+		}
+		return response.json();
+	})
+	.then(data => {
+		openNewSocket(data)
+	})
+	// const $loading = document.getElementById("loading");
+	// $loading.classList.remove('d-none');
 }
 
 export function playLocal()

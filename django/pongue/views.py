@@ -307,19 +307,13 @@ def enable2fa(request):
 # GET: Logs out the logged-in user
 @jwt_required
 def logout(request):
-	# username = request.POST.get("username")
-	# user = PongueUser.objects.get(username=username)
-	# user.status = PongueUser.Status.OFFLINE
-	# user.save()
-	# auth_logout(request)
-
 	# user = PongueUser.objects.get(username=get_user_from_jwt(request))
 	# user.status = "offline"
 	# user.save()
 	# WAS: return redirect("login")
 	user = PongueUser.objects.get(username=get_user_from_jwt(request))
 	user.status = PongueUser.Status.OFFLINE
-	print(user.status)
+	user.save()
 	return JsonResponse({
 		"success": True,
 		"message": "Logged out successfully",

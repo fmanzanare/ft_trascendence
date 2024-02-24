@@ -29,7 +29,11 @@ async def look_for_another_player(user):
 def check_opened_game_room(user):
 	users = PongueUser.objects.all()
 	for u in users:
-		if u.status == PongueUser.Status.LGAME and u != user:
+		if u.status == PongueUser.Status.LGAME and u.id != user.id:
+			u.status = PongueUser.Status.INGAME
+			u.save()
+			user.status = PongueUser.Status.INGAME
+			user.save()
 			return u.id
 	return -1
 
@@ -38,11 +42,19 @@ def check_opened_game_room(user):
 def find_game(request):
 	user = get_user_from_jwt(request)
 	user.status = PongueUser.Status.LGAME
-	if check_opened_game_room(user) != -1:
+	user.save()
+	playerId = check_opened_game_room(user)
+	if playerId != -1:
+		print(user.status)
 		return JsonResponse(status=HTTPStatus.OK, data={
-			"debug": "player with ws already opened"
+			"debug": "player with ws already opened",
+			"userId": playerId,
+			"fullGame": True
 		})
 	else:
+		print(user.status)
 		return JsonResponse(status=HTTPStatus.OK, data={
-			"debug": "Needs to open new game_room"
+			"debug": "Needs to open new game_room",
+			"userId": user.id,
+			"fullGame": False
 		})
