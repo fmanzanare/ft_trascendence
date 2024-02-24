@@ -26,11 +26,23 @@ async def look_for_another_player(user):
 				break
 	return ret
 
+async def check_opened_game_room(user):
+	users = PongueUser.objects.all()
+	for u in users:
+		if u.status == PongueUser.Status.LGAME and u != user:
+			return u.id
+	return -1
+
 
 @jwt_required
 def find_game(request):
 	user = get_user_from_jwt(request)
 	user.status = PongueUser.Status.LGAME
-	return JsonResponse(status=HTTPStatus.OK, data={
-		"debug": "hello world!"
-	})
+	if check_opened_game_room(user) != -1:
+		return JsonResponse(status=HTTPStatus.OK, data={
+			"debug": "player with ws already opened"
+		})
+	else:
+		return JsonResponse(status=HTTPStatus.OK, data={
+			"debug": "Needs to open new game_room"
+		})
