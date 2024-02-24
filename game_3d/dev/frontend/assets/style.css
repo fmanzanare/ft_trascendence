@@ -60,3 +60,10 @@ body
 	height: 100%;
 	object-fit: contain;
 }
+
+#profileImg
+{
+	width: 200px; 
+	height: 200px;
+	object-fit: cover;
+}

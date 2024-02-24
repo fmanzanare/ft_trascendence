@@ -1,5 +1,5 @@
 import { router } from "./router.js";
-import { checkJwt } from "./utils.js";
+import { checkJwt, changeUserName } from "./utils.js";
 
 function tokenTrue(url)
 {
@@ -13,6 +13,7 @@ function tokenTrue(url)
 	}
 	history.pushState(null, null, url);
 	$appElement.innerHTML = "";
+	changeUserName();
 	router();
 }
 
