@@ -4,29 +4,18 @@ from http import HTTPStatus
 from pongue.views import jwt_required, get_user_from_jwt
 from pongue.models import PongueUser
 
-# Create your views here.
-
-async def look_for_another_player(user):
+def check_opened_game_room(user):
 	"""
-		Async function that looks for another user in DataBase with
+		Function that looks for another user in DataBase with
 		Status attribute in LGAME (looking for game).
 
 		Parameters:
 		user (PongeUser): User that is looking for a remote game.
 
 		Returns:
-		PongeUser: Another user that is looking for a remote game as well.
+		PongeUser: Another user's id that is looking for a remote game as well
+		or -1 if none is found.
 	"""
-	users = PongueUser.objects.all()
-	ret = None
-	while (ret == None):
-		for u in users:
-			if u.status == PongueUser.Status.LGAME and u != user:
-				ret = u
-				break
-	return ret
-
-def check_opened_game_room(user):
 	users = PongueUser.objects.all()
 	for u in users:
 		if u.status == PongueUser.Status.LGAME and u.id != user.id:
@@ -54,7 +43,16 @@ def find_game(request):
 	else:
 		print(user.status)
 		return JsonResponse(status=HTTPStatus.OK, data={
-			"debug": "Needs to open new game_room",
+			"debug": "needs to open new game_room",
 			"userId": user.id,
 			"fullGame": False
 		})
+
+@jwt_required
+def cancel_find_game(request):
+	user = get_user_from_jwt(request)
+	user.status = PongueUser.Status.ONLINE
+	user.save()
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"debug": "game cancelled successfully"
+	})
