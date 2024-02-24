@@ -317,6 +317,9 @@ def logout(request):
 	# user.status = "offline"
 	# user.save()
 	# WAS: return redirect("login")
+	user = PongueUser.objects.get(username=get_user_from_jwt(request))
+	user.status = PongueUser.Status.OFFLINE
+	print(user.status)
 	return JsonResponse({
 		"success": True,
 		"message": "Logged out successfully",

@@ -26,7 +26,7 @@ async def look_for_another_player(user):
 				break
 	return ret
 
-async def check_opened_game_room(user):
+def check_opened_game_room(user):
 	users = PongueUser.objects.all()
 	for u in users:
 		if u.status == PongueUser.Status.LGAME and u != user:
