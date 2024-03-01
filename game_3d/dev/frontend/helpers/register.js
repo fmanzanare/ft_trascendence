@@ -155,6 +155,41 @@ export function twoFactorPushButton()
 	navigateTo("/home");
 }
 
+export function changeDataUser()
+{
+	const $picture = document.getElementById("profilePictureChange");
+	const $username = document.getElementById("UserNameChange");
+	const $token = sessionStorage.getItem('pongToken');
+	console.log($picture.value, $username.value);
+	const $profileUrl = apiUrl + 'profile/';
+	const $profileData = new URLSearchParams();
+	$profileData.append('avatar_base64', $picture.value);
+	$profileData.append('display_name', $username.value);
+	fetch($profileUrl, {
+		method: 'POST',
+		headers: {
+			"Authorization": $token
+		},
+		body: $profileData
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`Error en la solicitud: ${response.status}`);
+		}
+		return response.json()
+	})
+	.then(data => {
+		console.log(data);
+		if (data.success) {
+			changeUserName();
+			navigateTo("/profile");
+		}
+	})
+	.catch(error => {
+		console.error('Error en la solicitud:', error);
+	});
+}
+
 export function logOut()
 {
 	const $token = sessionStorage.getItem('pongToken');

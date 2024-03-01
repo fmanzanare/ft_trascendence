@@ -29,39 +29,72 @@ export default class extends AbstractView {
 					<div class="row d-flex justify-content-center align-items-center" style="height:20vh">
 						<h1 class="display-1 fw-bold mb-3 text-uppercase text-center" style="color:#80dbef;">Profile</h1>	
 					</div>
-					<div class="container h-100">
-					<div class="row d-flex justify-content-around">
-						<div class="col">
-							<div class="container fs-3 mx-auto" style="margin-top: 4rem;">
-								<div class="row justify-content-center">
-									<div class="col-8">
-										<div class="card shadow-sm" style="width: 18rem; margin-top: 4rem">
-											<img src="./dev/frontend/assets/ws.webp" class="card-img-top" id="profileImg" alt="Profile image">
-											<div class="card-body" style="background-color: #8da3d9">
-												<h5 class="card-title">${data.context.user.display_name}</h5>
-												<p class="card-text">points</p>
-												<a id="dataUserButton" class="btn btn-primary">Change data user</a>
+					<div class="tab-content" id="myTabContent">
+						<div class="container mt-3">
+							<ul class="nav nav-tabs" id="myTab" role="tablist">
+								<li class="nav-item">
+									<a class="nav-link active" id="infoTab" data-toggle="tab" role="button" aria-controls="info" aria-selected="true">Info</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="historyTab" data-toggle="tab" role="button" aria-controls="history" aria-selected="false">History</a>
+								</li>
+							</ul>
+							<div class="tab-content" id="myTabContent">
+								<div class="tab-pane fade show active" id="infoProfile" role="tabpanel" aria-labelledby="infoTab">
+									<div class="container mt-4">
+										<div class="row">
+											<div class="col-md-6">
+											`
+											if (data.context.user.avatar_base64 == "")
+												page += ` <img src="./dev/frontend/assets/homerSimpson.webp" class="max-width-75" alt="profile picture">`
+											else
+												page += ` <img src="${data.context.user.avatar_base64}" class="max-width-75" alt="profile picture">`
+											page +=
+											`
 											</div>
+										<div class="col-md-6" id="dataUserShow">
+											<h2>${data.context.user.display_name}</h2>
+											<p>puntos</p>
+											<div class="form-check form-switch">
+			`
+			if (data.context.user.has_2fa)
+				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked disabled >`
+			else
+				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" disabled >`
+			page +=
+			`
+												<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
+											</div>
+											<button class="btn btn-primary" id="changeDataView">Change data</button>
 										</div>
-										<div class="d-none card shadow-sm" style="width: 18rem; margin-top: 4rem">
-											<div class="card-body" style="background-color: #8da3d9">
-												<div class="form-outline form-white mb-4">
-													<input type="text" id="Name" placeholder="Display name" class="inputSingUp form-control form-control-lg"/>
-												</div>
-												<div class="form-outline form-white mb-4">
-													<input type="file" id="UserImage name="UserImage" accept="image/*" class="form-control form-control-lg"/>
-												</div>
-												<a id="saveDataUserButton" class="btn btn-primary">Save</a>
+										<div class="d-none col-md-6" id="dataUserChange">
+											<div class="form-outline form-white mb-4">
+												<input type="text" id="UserNameChange" placeholder="Username" class="inputSingUp form-control form-control-lg"/>
 											</div>
+											<div class="form-outline form-white mb-4">
+												<label for="imagen">New profile picture:</label>
+												<input type="file" class="form-control-file" id="profilePictureChange" name="profilePicture">
+											</div>
+											<div class="form-check form-switch">
+			`
+			if (data.context.user.has_2fa)
+				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>`
+			else
+				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">`
+			page +=
+			`
+												<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
+											</div>
+											<button class="btn btn-primary" id="changeDataUser">Save</button>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-						<div class="col">
+						<div class="d-none tab-pane fade" id="historyProfile" role="tabpanel" aria-labelledby="history-tab">
 							<div class="container fs-3 mx-auto" style="margin-top: 4rem;">
 								<div class="row justify-content-center">
-        							<div class="col-12">
+									<div class="col-12">
 										<ol class="list-group">
 											<li class="list-group-item d-flex justify-content-around" style="background-color: #5272c1;">
 												<div class="p-2">Name</div>
@@ -98,7 +131,7 @@ export default class extends AbstractView {
 								</div>
 							</div>
 						</div>
-					</div
+    				</div>
 				</div>
 			`;
 			return page;
