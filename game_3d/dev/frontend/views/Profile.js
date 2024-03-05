@@ -72,18 +72,23 @@ export default class extends AbstractView {
 												<input type="text" id="UserNameChange" placeholder="Username" class="inputSingUp form-control form-control-lg"/>
 											</div>
 											<div class="form-outline form-white mb-4">
-												<label for="imagen">New profile picture:</label>
+												<label for="profilePictureChange">New profile picture:</label>
 												<input type="file" class="form-control-file" id="profilePictureChange" name="profilePicture">
 											</div>
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
-				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>`
+			{
+				page += `	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+							<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>`
+			}
 			else
-				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">`
+			{
+				page += `	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckUnchecked">
+							<label class="form-check-label" for="flexSwitchCheckUnchecked">two-factor authentication</label>`
+			}
 			page +=
 			`
-												<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
 											</div>
 											<button class="btn btn-primary" id="changeDataUser">Save</button>
 										</div>

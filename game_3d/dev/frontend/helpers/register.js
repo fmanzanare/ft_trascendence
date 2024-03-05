@@ -155,15 +155,24 @@ export function twoFactorPushButton()
 	navigateTo("/home");
 }
 
-export function changeDataUser()
+function getBase64Image(img)
 {
-	const $picture = document.getElementById("profilePictureChange");
+	var canvas = document.createElement("canvas");
+	canvas.width = img.width;
+	canvas.height = img.height;
+	var ctx = canvas.getContext("2d");
+	ctx.drawImage(img, 0, 0);
+	var dataURL = canvas.toDataURL();
+	return dataURL;
+}
+
+function conectServerChange(img)
+{
 	const $username = document.getElementById("UserNameChange");
 	const $token = sessionStorage.getItem('pongToken');
-	console.log($picture.value, $username.value);
 	const $profileUrl = apiUrl + 'profile/';
 	const $profileData = new URLSearchParams();
-	$profileData.append('avatar_base64', $picture.value);
+	$profileData.append('avatar_base64', img);
 	$profileData.append('display_name', $username.value);
 	fetch($profileUrl, {
 		method: 'POST',
@@ -179,7 +188,6 @@ export function changeDataUser()
 		return response.json()
 	})
 	.then(data => {
-		console.log(data);
 		if (data.success) {
 			changeUserName();
 			navigateTo("/profile");
@@ -188,6 +196,25 @@ export function changeDataUser()
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});
+}
+
+export function changeDataUser()
+{
+	const $picture = document.getElementById("profilePictureChange").files[0];
+	let base64;
+	if ($picture !== undefined) {
+		const $img = new Image();
+		$img.onload = function() {
+			base64 = getBase64Image($img);
+			conectServerChange(base64);
+		};
+		$img.src = URL.createObjectURL($picture);
+	}
+	else
+	{
+		base64 = "";
+		conectServerChange(base64);
+	}
 }
 
 export function logOut()
