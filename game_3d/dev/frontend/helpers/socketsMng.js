@@ -1,4 +1,4 @@
-import { runGame } from "../../game3D/src/scripts"
+import { removeGame, runGame } from "../../game3D/src/scripts"
 
 export function openNewSocket(data) {
 	const id = data.userId
