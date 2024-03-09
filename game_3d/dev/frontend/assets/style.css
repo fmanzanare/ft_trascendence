@@ -67,3 +67,8 @@ body
 	height: 200px;
 	object-fit: cover;
 }
+
+.max-width-75
+{
+	max-width: 75%;
+}
