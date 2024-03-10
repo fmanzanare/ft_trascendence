@@ -1,5 +1,5 @@
-import { runGame } from "../../game3D/src/scripts";
-import { Game } from "../../game3D/src/Game";
+import { runGame } from "../../game3D/src/old_version/scripts";
+import { Game } from "../../game3D/src/class/Game";
 import { openNewSocket } from "./socketsMng";
 
 export function playOnline()

@@ -19,7 +19,7 @@ export class Player {
 	leftPlayer = false;
 
 	constructor(left, scene) {
-		this.leftColor = left;
+		this.leftPlayer = left;
 		this.scene = scene;
 		const geometry = new THREE.CapsuleGeometry(
 			this.radius,

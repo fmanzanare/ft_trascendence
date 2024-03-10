@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import { AnimationLoop } from "./class/Animation";
-import { Table } from './class/Table';
-import { Ball } from "./class/Ball";
-import { Player } from "./class/Player";
-import { Renderer } from "./class/Renderer";
-import { Score } from "./class/Score";
-import { Spotlight } from "./class/Spotlight"
-import { Camera } from './class/Camera';
+import { AnimationLoop } from "./Animation";
+import { Table } from './Table';
+import { Ball } from "./Ball";
+import { Player } from "./Player";
+import { Renderer } from "./Renderer";
+import { Score } from "./Score";
+import { Spotlight } from "./Spotlight"
+import { Camera } from './Camera';
 
 export class Game {
 
@@ -47,25 +47,18 @@ export class Game {
 	}
 
 	keyDownMovements(event) {
+		// if (e.repeat) { return };
 		if (event.key == "W" || event.key == "w") {
-			if ((this.playerOne.getPlayer().position.y + 3 + this.playerOne.length / 2) < this.table.height) {
-				this.animation.pOneMovement.up = true
-			}
+			this.animation.pOneMovement.up = true
 		}
 		if (event.key == "S" || event.key == "s") {
-			if ((this.playerOne.getPlayer().position.y - 3 - this.playerOne.length / 2) > 0) {
-				this.animation.pOneMovement.down = true
-			}
+			this.animation.pOneMovement.down = true
 		}
 		if (event.key == "ArrowUp") {
-			if ((this.playerTwo.getPlayer().position.y + 3 + this.playerTwo.length / 2) < this.table.height) {
-				this.animation.pTwoMovement.up = true
-			}
+			this.animation.pTwoMovement.up = true
 		}
 		if (event.key == "ArrowDown") {
-			if ((this.playerTwo.getPlayer().position.y - 3 - this.playerTwo.length / 2) > 0) {
-				this.animation.pTwoMovement.down = true
-			}
+			this.animation.pTwoMovement.down = true
 		}
 	}
 

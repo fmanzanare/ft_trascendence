@@ -48,8 +48,8 @@ export class AnimationLoop {
 		this.scene = scene;
 		this.camera = camera;
 
-		this.limits.x = this.table.height - this.ball.totalRadius;
-		this.limits.y = this.table.width / 2 + this.ball.totalRadius;
+		this.limits.x = this.table.width / 2 + this.ball.totalRadius;
+		this.limits.y = this.table.height - this.ball.totalRadius;
 	}
 
 	getInitialDir() {
@@ -75,7 +75,7 @@ export class AnimationLoop {
 	restartPositions() {
 		this.started = false;
 		this.ball.getBall().position.x = 0;
-		this.ball.getBall().position.y = 0;
+		this.ball.getBall().position.y = this.ball.yPos;
 		this.pOne.getPlayer().position.y = this.pOne.yPos;
 		this.pTwo.getPlayer().position.y = this.pTwo.yPos;
 		this.ballSpeed = 1.2;
@@ -107,8 +107,8 @@ export class AnimationLoop {
 		let ballRightEdge = this.ball.getBall().position.x + this.ball.totalRadius
 		let ballYPos = this.ball.getBall().position.y;
 
-		let playerLeftEdge = player.getPlayer().position.x + player.radius;
-		let playerRightEdge = player.getPlayer().position.x - player.radius;
+		let playerLeftEdge = player.getPlayer().position.x - player.radius;
+		let playerRightEdge = player.getPlayer().position.x + player.radius;
 		let playerTopEdge = player.getPlayer().position.y + (player.length / 2) + 1;
 		let playerBottomEdge = player.getPlayer().position.y - (player.length / 2) - 1;
 		let playerYPos = player.getPlayer().position.y
@@ -116,9 +116,10 @@ export class AnimationLoop {
 		if (ballYPos <= playerTopEdge && ballYPos >= playerBottomEdge) {
 			if (player.leftPlayer) {
 				if (ballLeftEdge <= playerRightEdge &&
-					ballRightEdge >= playerLeftEdge &&
+					ballLeftEdge >= playerLeftEdge &&
 					!this.pOne.impact
 				) {
+					console.log("goes in!")
 					this.calculateNewBallDir(ballYPos, playerYPos, this.pOne.length);
 					this.pOne.impact = true;
 					this.pTwo.impact = false;
@@ -153,16 +154,21 @@ export class AnimationLoop {
 	}
 
 	playersMovements() {
-		if (this.pOneMovement.up) {
+		let pOneTopLimit = (this.pOne.getPlayer().position.y + 1 + this.pOne.length / 2) < this.table.height;
+		let pOneBottomLimit = (this.pOne.getPlayer().position.y - 1 - this.pOne.length / 2) > 0;
+		let pTwoTopLimit = (this.pTwo.getPlayer().position.y + 1 + this.pTwo.length / 2) < this.table.height;
+		let pTwoBottomLimit = (this.pTwo.getPlayer().position.y - 1 - this.pTwo.length / 2) > 0;
+
+		if (this.pOneMovement.up && pOneTopLimit) {
 			this.pOne.getPlayer().position.y += this.playersSpeed;
 		}
-		if (this.pOneMovement.down) {
+		if (this.pOneMovement.down && pOneBottomLimit) {
 			this.pOne.getPlayer().position.y -= this.playersSpeed;
 		}
-		if (this.pTwoMovement.up) {
+		if (this.pTwoMovement.up && pTwoTopLimit) {
 			this.pTwo.getPlayer().position.y += this.playersSpeed;
 		}
-		if (this.pTwoMovement.down) {
+		if (this.pTwoMovement.down && pTwoBottomLimit) {
 			this.pTwo.getPlayer().position.y -= this.playersSpeed;
 		}
 	}

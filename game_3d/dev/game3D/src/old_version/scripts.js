@@ -2,13 +2,13 @@ import * as THREE from 'three';
 import Conf from "./constans.js";
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { Table } from './class/Table.js';
-import { Spotlight } from './class/Spotlight.js';
-import { Camera } from './class/Camera.js';
-import { Renderer } from './class/Renderer.js';
-import { Player } from './class/Player.js';
-import { Ball } from './class/Ball.js';
-import { Score } from './class/Score.js';
+import { Table } from '../class/Table.js';
+import { Spotlight } from '../class/Spotlight.js';
+import { Camera } from '../class/Camera.js';
+import { Renderer } from '../class/Renderer.js';
+import { Player } from '../class/Player.js';
+import { Ball } from '../class/Ball.js';
+import { Score } from '../class/Score.js';
 
 export function runGame() {
 
