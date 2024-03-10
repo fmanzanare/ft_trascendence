@@ -1,6 +1,7 @@
 import * as THREE from 'three'
+import { Table } from './Table'
 
-export class Animation {
+export class AnimationLoop {
 
 	ballSpeed = 1.2
 	started = false
@@ -17,18 +18,35 @@ export class Animation {
 		y: 0
 	}
 
+	pOneMovement = {
+		up: false,
+		down: false
+	};
+	pTwoMovement = {
+		up: false,
+		down: false
+	};
+	playersSpeed = 1;
+
 	table = null
 	ball = null
 	pOne = null
 	pTwo = null
 	score = null
 
-	constructor(table, ball, pOne, pTwo, score) {
+	renderer = null
+	scene = null
+	camera = null
+
+	constructor(table, ball, pOne, pTwo, score, renderer, scene, camera) {
 		this.table = table;
 		this.ball = ball;
 		this.pOne = pOne;
 		this.pTwo = pTwo;
 		this.score = score;
+		this.renderer = renderer;
+		this.scene = scene;
+		this.camera = camera;
 
 		this.limits.x = this.table.height - this.ball.totalRadius;
 		this.limits.y = this.table.width / 2 + this.ball.totalRadius;
@@ -45,7 +63,7 @@ export class Animation {
 		this.ballDir.y = (rand > 0.6 ? 0.6 : rand) * this.initialDir.y;
 	}
 
-	// ANIMATED GAME FUNCTIONS!!
+	// ANIMATED GAME FUNCTIONS
 	initGame() {
 		if (!this.started) {
 			this.getInitialDir();
@@ -58,12 +76,12 @@ export class Animation {
 		this.started = false;
 		this.ball.getBall().position.x = 0;
 		this.ball.getBall().position.y = 0;
-		pOne.getPlayer().position.y = this.player.yPos;
-		pTwo.getPlayer().position.y = this.player.yPos;
-		ballSpeed = 1.2;
+		this.pOne.getPlayer().position.y = this.pOne.yPos;
+		this.pTwo.getPlayer().position.y = this.pTwo.yPos;
+		this.ballSpeed = 1.2;
 		this.pOne.impact = false;
 		this.pTwo.impact = false;
-		score.redrawScore();
+		this.score.redrawScore();
 	}
 
 	checkPoint() {
@@ -76,10 +94,10 @@ export class Animation {
 		}
 	}
 
-	calculateNewBallDir(ballYPos, playerYPos) {
+	calculateNewBallDir(ballYPos, playerYPos, playerLength) {
 		this.ballDir.x *= -1;
 		let ballToPlayerDist = ballYPos - playerYPos;
-		let normalizedDist = ballToPlayerDist / player.length;
+		let normalizedDist = ballToPlayerDist / playerLength;
 		this.ballDir.y = normalizedDist * 0.6;
 		this.ballSpeed = (this.ballSpeed < 4) ? this.ballSpeed + 0.1 : 4;
 	}
@@ -101,7 +119,7 @@ export class Animation {
 					ballRightEdge >= playerLeftEdge &&
 					!this.pOne.impact
 				) {
-					this.calculateNewBallDir(ballYPos, playerYPos);
+					this.calculateNewBallDir(ballYPos, playerYPos, this.pOne.length);
 					this.pOne.impact = true;
 					this.pTwo.impact = false;
 				}
@@ -110,7 +128,7 @@ export class Animation {
 					ballRightEdge <= playerRightEdge &&
 					!this.pTwo.impact
 				) {
-					this.calculateNewBallDir(ballYPos, playerYPos);
+					this.calculateNewBallDir(ballYPos, playerYPos, this.pTwo.length);
 					this.pOne.impact = false;
 					this.pTwo.impact = true;
 				}
@@ -119,20 +137,48 @@ export class Animation {
 	}
 
 	checkGameLimitsCollision() {
-		// # TODO!
+		let topCollision = this.ball.getBall().position.y >= this.limits.y;
+		let bottomCollision = this.ball.getBall().position.y <= 0;
+
+		if (topCollision || bottomCollision) {
+			this.ballDir.y *= -1;
+		}
 	}
 
 	checkCollisions() {
 		this.checkBallAndPlayerCollision(this.pOne);
 		this.checkBallAndPlayerCollision(this.pTwo);
 
-		// # TODO!
+		this.checkGameLimitsCollision();
+	}
+
+	playersMovements() {
+		if (this.pOneMovement.up) {
+			this.pOne.getPlayer().position.y += this.playersSpeed;
+		}
+		if (this.pOneMovement.down) {
+			this.pOne.getPlayer().position.y -= this.playersSpeed;
+		}
+		if (this.pTwoMovement.up) {
+			this.pTwo.getPlayer().position.y += this.playersSpeed;
+		}
+		if (this.pTwoMovement.down) {
+			this.pTwo.getPlayer().position.y -= this.playersSpeed;
+		}
 	}
 
 	animate() {
 		this.initGame();
 		this.checkPoint();
+		this.checkCollisions();
 
+		this.ball.getBall().position.x += this.ballDir.x * this.ballSpeed;
+		this.ball.getBall().position.y += this.ballDir.y * this.ballSpeed;
+
+		this.playersMovements();
+
+		this.renderer.getRenderer().render(this.scene, this.camera.getCamera());
 	}
+
 
 }

@@ -1,4 +1,5 @@
 import { runGame } from "../../game3D/src/scripts";
+import { Game } from "../../game3D/src/Game";
 import { openNewSocket } from "./socketsMng";
 
 export function playOnline()
@@ -44,5 +45,6 @@ export function playLocal()
 	const $instructionsTwo = document.getElementById("instructionsTwoPlayer");
 	$instructionsTwo.classList.remove('d-none');
 
-	runGame();
+	let game = new Game()
+	game.startGame()
 }
