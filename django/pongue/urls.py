@@ -14,4 +14,5 @@ urlpatterns = [
 	path("api/add_game_result/", views.add_game_result, name="add_game_result"),
 	path("api/check_jwt/", views.check_jwt, name="check_jwt"),
 	path("api/profile/", views.profile, name="profile"),
+	path("api/get2fa/", views.get2fa, name="get2fa"),
 ]
