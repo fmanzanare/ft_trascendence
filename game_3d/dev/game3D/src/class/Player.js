@@ -11,10 +11,15 @@ export class Player {
 	yPos = ((window.innerHeight / 2) * 0.12) / 2;
 	xPos = (((window.innerWidth / 2) * 0.11) / 2) - 5;
 	zPos = 3;
-	player = null
-	scene = null
+
+	player = null;
+	scene = null;
+
+	impact = false;
+	leftPlayer = false;
 
 	constructor(left, scene) {
+		this.leftColor = left;
 		this.scene = scene;
 		const geometry = new THREE.CapsuleGeometry(
 			this.radius,
