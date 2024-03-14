@@ -76,15 +76,9 @@ export function checkJwt()
 		}
 	})
 	.then(response => {
-		if (!response.ok) {
-			throw new Error('Hubo un problema al realizar la solicitud.');
-		}
-		return response.json();
+		if (!response.ok)
+			return (false);
+		else
+			return (true);
 	})
-	.then(data => {
-		return (data.success);
-	})
-	.catch(error => {
-		return (false);
-	});
 }
