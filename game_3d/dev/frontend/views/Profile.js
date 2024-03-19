@@ -90,7 +90,7 @@ export default class extends AbstractView {
 											`
 			if (data.context.user.has_2fa)
 			{
-				page += `<p>${twoFactor}</p>`
+				page += `<p class="text-divided fs-3">${twoFactor}</p>`
 			}
 			page +=
 			`

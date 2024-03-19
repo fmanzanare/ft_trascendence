@@ -136,6 +136,7 @@ export function twoFactorPushButton()
 	const $doubleFactorData = new URLSearchParams();
 	$doubleFactorData.append('code', $key.value);
 	$doubleFactorData.append('user', $userName);
+	console.log($userName, $key.value);
 	fetch($doubleFactorUrl, {
 		method: 'POST',
 		headers: {
@@ -150,13 +151,11 @@ export function twoFactorPushButton()
 		return response.json()
 	})
 	.then(data => {
-		console.log(data)
-		console.log('Inicio de sesión exitoso:', data.success);
-		sessionStorage.setItem('pongToken', data.context.jwt);
-		changeUserName();
-		navigateTo("/home");
-		if (data.logged_in) {
-			sessionStorage.setItem('pongToken', 'hola');
+		if (data.success) {
+			sessionStorage.setItem('pongToken', data.context.jwt);
+			sessionStorage.removeItem('user');
+			changeUserName();
+			navigateTo("/home");
 		}
 	})
 	.catch(error => {
