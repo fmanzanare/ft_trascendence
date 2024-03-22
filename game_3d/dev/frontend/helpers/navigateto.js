@@ -29,8 +29,6 @@ function  tokenFalse(url)
 	}
 	if (url.substring(url.lastIndexOf("/")) != "/signup" && url.substring(url.lastIndexOf("/")) != "/twofactor")
 		history.pushState(null, null, "/login");
-	else if (url.substring(url.lastIndexOf("/")) == "/signup")
-		history.pushState(null, null, url);
 	else
 		history.pushState(null, null, url);
 	$appElement.innerHTML = "";

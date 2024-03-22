@@ -8,6 +8,26 @@ export default class extends AbstractView {
 
     async getHtml() {
 		const $token = sessionStorage.getItem('pongToken');
+		const $twoFactorUrl = apiUrl + 'get2fa/';
+		let twoFactor;
+		fetch($twoFactorUrl, {
+			method: "GET",
+			headers: {
+				"Authorization": $token
+			}
+		})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Hubo un problema al realizar la solicitud.');
+			}
+			return response.json();
+		})
+		.then(data => {
+			twoFactor = data.context.key;
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
 		const $profileUrl = apiUrl + 'profile/';
 		return fetch($profileUrl, {
 			method: "GET",
@@ -58,13 +78,22 @@ export default class extends AbstractView {
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
+			{
 				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked disabled >`
+			}
 			else
 				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" disabled >`
 			page +=
 			`
 												<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
 											</div>
+											`
+			if (data.context.user.has_2fa)
+			{
+				page += `<p class="text-divided fs-3">${twoFactor}</p>`
+			}
+			page +=
+			`
 											<button class="btn btn-primary" id="changeDataView">Change data</button>
 										</div>
 										<div class="d-none col-md-6" id="dataUserChange">
@@ -79,13 +108,13 @@ export default class extends AbstractView {
 			`
 			if (data.context.user.has_2fa)
 			{
-				page += `	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
-							<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>`
+				page += `	<input class="form-check-input" type="checkbox" role="switch" id="checkChecked" checked>
+							<label class="form-check-label" for="checkChecked">two-factor authentication</label>`
 			}
 			else
 			{
-				page += `	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckUnchecked">
-							<label class="form-check-label" for="flexSwitchCheckUnchecked">two-factor authentication</label>`
+				page += `	<input class="form-check-input" type="checkbox" role="switch" id="checkUnchecked">
+							<label class="form-check-label" for="checkUnchecked">two-factor authentication</label>`
 			}
 			page +=
 			`

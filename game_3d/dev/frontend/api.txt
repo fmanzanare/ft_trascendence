@@ -13,3 +13,5 @@ ranking -> api/ranking -> obtienes los 10 primeros con sus datos
 perfil	-> historial -> api/historial
 		-> clave 2f
 		-> foto perfil -> ...
+
+X4ZQE5QXD3IFFHQQZSF67AWF6Z5FG4CIDM5YIGMFNKJUN4LMPYMG66E6DHZXO6XYJ6DWG4P3HDRXL4O4FA4UPNC3JVKKPND4NQ7LODI=

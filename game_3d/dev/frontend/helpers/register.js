@@ -27,9 +27,17 @@ export function loginPushButton()
 	})
 	.then(data => {
 		if (data.success) {
-			sessionStorage.setItem('pongToken', data.context.jwt);
-			changeUserName();
-			navigateTo("/home");
+			if (data.redirect_url == "pass2fa")
+			{
+				sessionStorage.setItem('user', $name.value);
+				navigateTo("/twofactor");
+			}
+			else
+			{
+				sessionStorage.setItem('pongToken', data.context.jwt);
+				changeUserName();
+				navigateTo("/home");
+			}
 		}
 		else
 		{
@@ -40,8 +48,6 @@ export function loginPushButton()
 					$errorMessage.textContent = "Username or password is incorrect";
 				});
 			}
-			else
-				navigateTo("/twofactor");
 		}
 	})
 	.catch(error => {
@@ -125,9 +131,12 @@ export function singPushButton()
 export function twoFactorPushButton()
 {
 	const $key = document.getElementById("doubleFK");
-	/*const $doubleFactorUrl = apiUrl + 'doublefactor/';
+	const $userName = sessionStorage.getItem("user");
+	const $doubleFactorUrl = apiUrl + 'submit2fa/';
 	const $doubleFactorData = new URLSearchParams();
-	$doubleFactorData.append('doubleFK', $key.value);
+	$doubleFactorData.append('code', $key.value);
+	$doubleFactorData.append('user', $userName);
+	console.log($userName, $key.value);
 	fetch($doubleFactorUrl, {
 		method: 'POST',
 		headers: {
@@ -142,79 +151,16 @@ export function twoFactorPushButton()
 		return response.json()
 	})
 	.then(data => {
-		console.log(data)
-		console.log('Inicio de sesión exitoso:', data.success);
-		if (data.logged_in) {
-			sessionStorage.setItem('pongToken', 'hola');
-		}
-	})
-	.catch(error => {
-		console.error('Error en la solicitud:', error);
-	});*/
-	sessionStorage.setItem('pongToken', 'hola');
-	navigateTo("/home");
-}
-
-function getBase64Image(img)
-{
-	var canvas = document.createElement("canvas");
-	canvas.width = img.width;
-	canvas.height = img.height;
-	var ctx = canvas.getContext("2d");
-	ctx.drawImage(img, 0, 0);
-	var dataURL = canvas.toDataURL();
-	return dataURL;
-}
-
-function conectServerChange(img)
-{
-	const $username = document.getElementById("UserNameChange");
-	const $token = sessionStorage.getItem('pongToken');
-	const $profileUrl = apiUrl + 'profile/';
-	const $profileData = new URLSearchParams();
-	$profileData.append('avatar_base64', img);
-	$profileData.append('display_name', $username.value);
-	fetch($profileUrl, {
-		method: 'POST',
-		headers: {
-			"Authorization": $token
-		},
-		body: $profileData
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
-	.then(data => {
 		if (data.success) {
+			sessionStorage.setItem('pongToken', data.context.jwt);
+			sessionStorage.removeItem('user');
 			changeUserName();
-			navigateTo("/profile");
+			navigateTo("/home");
 		}
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});
-}
-
-export function changeDataUser()
-{
-	const $picture = document.getElementById("profilePictureChange").files[0];
-	let base64;
-	if ($picture !== undefined) {
-		const $img = new Image();
-		$img.onload = function() {
-			base64 = getBase64Image($img);
-			conectServerChange(base64);
-		};
-		$img.src = URL.createObjectURL($picture);
-	}
-	else
-	{
-		base64 = "";
-		conectServerChange(base64);
-	}
 }
 
 export function logOut()
