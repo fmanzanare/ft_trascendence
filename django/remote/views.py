@@ -37,13 +37,15 @@ def find_game(request):
 		print(user.status)
 		return JsonResponse(status=HTTPStatus.OK, data={
 			"debug": "player with ws already opened",
-			"userId": playerId,
+			"roomId": playerId,
+			"userId": user.id,
 			"fullGame": True
 		})
 	else:
 		print(user.status)
 		return JsonResponse(status=HTTPStatus.OK, data={
 			"debug": "needs to open new game_room",
+			"roomId": user.id,
 			"userId": user.id,
 			"fullGame": False
 		})

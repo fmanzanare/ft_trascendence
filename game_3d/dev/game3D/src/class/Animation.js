@@ -38,7 +38,9 @@ export class AnimationLoop {
 	scene = null
 	camera = null
 
-	constructor(table, ball, pOne, pTwo, score, renderer, scene, camera) {
+	remote = false
+
+	constructor(table, ball, pOne, pTwo, score, renderer, scene, camera, remote, socket) {
 		this.table = table;
 		this.ball = ball;
 		this.pOne = pOne;
@@ -47,6 +49,7 @@ export class AnimationLoop {
 		this.renderer = renderer;
 		this.scene = scene;
 		this.camera = camera;
+		this.remote = remote;
 
 		this.limits.x = this.table.width / 2 + this.ball.totalRadius;
 		this.limits.y = this.table.height - this.ball.totalRadius;
@@ -57,17 +60,22 @@ export class AnimationLoop {
 		this.initialDir.y = Math.random() < 0.5 ? -1 : 1;
 	}
 
-	getBallDir() {
-		this.ballDir.x = 0.5 * this.initialDir.x;
-		let rand = Math.random();
-		this.ballDir.y = (rand > 0.6 ? 0.6 : rand) * this.initialDir.y;
+	getBallDir(ballDir) {
+		if (ballDir == null) {
+			this.getInitialDir();
+			this.ballDir.x = 0.5 * this.initialDir.x;
+			let rand = Math.random();
+			this.ballDir.y = (rand > 0.6 ? 0.6 : rand) * this.initialDir.y;
+		} else {
+			this.ballDir.x = ballDir.ballDirX;
+			this.ballDir.y = ballDir.ballDirY;
+		}
 	}
 
 	// ANIMATED GAME FUNCTIONS
-	initGame() {
+	initGame(ballDir) {
 		if (!this.started) {
-			this.getInitialDir();
-			this.getBallDir();
+			this.getBallDir(ballDir);
 			this.started = true;
 		}
 	}
@@ -84,13 +92,27 @@ export class AnimationLoop {
 		this.score.redrawScore();
 	}
 
-	checkPoint() {
+	checkPoint(socket) {
 		if (this.ball.getBall().position.x >= this.limits.x) {
 			this.score.addPOnePoint();
 			this.restartPositions();
+			if (this.remote) {
+				// Needs to be fixed, sending user Id
+				console.log("pointPOne")
+				socket.send(JSON.stringify({
+					"point": "pOnePoint"
+				}))
+			}
 		} else if (this.ball.getBall().position.x <= -this.limits.x) {
 			this.score.addPTwoPoint();
 			this.restartPositions();
+			if (this.remote) {
+				console.log("pointPTwo")
+				// Needs to be fixed, sending "something"
+				socket.send(JSON.stringify({
+					"point": "pTwoPoint"
+				}))
+			}
 		}
 	}
 
@@ -173,9 +195,9 @@ export class AnimationLoop {
 		}
 	}
 
-	animate() {
-		this.initGame();
-		this.checkPoint();
+	animate(ballDir, socket) {
+		this.initGame(ballDir)
+		this.checkPoint(socket);
 		this.checkCollisions();
 
 		this.ball.getBall().position.x += this.ballDir.x * this.ballSpeed;

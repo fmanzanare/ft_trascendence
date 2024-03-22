@@ -1,8 +1,10 @@
+import { Game } from "../../game3D/src/class/Game";
 import { runGame } from "../../game3D/src/old_version/scripts";
 
 export function openNewSocket(data) {
-	const id = data.userId
-	console.log(id)
+	const game = new Game(true)
+	const id = data.roomId
+	const userId = data.userId
 
 	const $loading = document.getElementById("loading");
 	const $divSelect = document.getElementById("blackDiv");
@@ -10,7 +12,7 @@ export function openNewSocket(data) {
 
 	const remoteSocket = new WebSocket(
 		'ws://'
-		+ 'localhost:8000'
+		+ '10.13.5.6:8000'
 		+ '/ws/remote/'
 		+ id
 		+ '/'
@@ -34,7 +36,8 @@ export function openNewSocket(data) {
 			$loading.classList.add('d-none');
 			$divSelect.classList.add('d-none');
 			$instructionsOne.classList.add('d-none');
-			runGame()
+			// runGame() // Replace this function by the Game class using the startRemoteGame(params) method
+			game.startRemoteGame(data.ballDir, remoteSocket)
 		}
 		console.log(data)
 	}
@@ -42,4 +45,5 @@ export function openNewSocket(data) {
 	remoteSocket.onclose = function (e) {
 		console.log("Connection closed unexpectedly")
 	}
+
 }

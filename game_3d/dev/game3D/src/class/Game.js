@@ -24,7 +24,10 @@ export class Game {
 
 	speed = 4;
 
-	constructor() {
+	remote = false
+
+	constructor(remote) {
+		this.remote = remote;
 		this.scene.background = new THREE.Color(0x1e1e1e);
 		this.spotLight.addTargetToSpotLight(this.table.getTable());
 
@@ -36,10 +39,9 @@ export class Game {
 			this.score,
 			this.renderer,
 			this.scene,
-			this.camera
+			this.camera,
+			remote
 		);
-
-		this.startGame();
 	}
 
 	addGameToDOM() {
@@ -47,18 +49,19 @@ export class Game {
 	}
 
 	keyDownMovements(event) {
-		// if (e.repeat) { return };
 		if (event.key == "W" || event.key == "w") {
 			this.animation.pOneMovement.up = true
 		}
 		if (event.key == "S" || event.key == "s") {
 			this.animation.pOneMovement.down = true
 		}
-		if (event.key == "ArrowUp") {
-			this.animation.pTwoMovement.up = true
-		}
-		if (event.key == "ArrowDown") {
-			this.animation.pTwoMovement.down = true
+		if (!this.remote) {
+			if (event.key == "ArrowUp") {
+				this.animation.pTwoMovement.up = true
+			}
+			if (event.key == "ArrowDown") {
+				this.animation.pTwoMovement.down = true
+			}
 		}
 	}
 
@@ -69,24 +72,37 @@ export class Game {
 		if (event.key == "S" || event.key == "s") {
 			this.animation.pOneMovement.down = false;
 		}
-		if (event.key == "ArrowUp") {
-			this.animation.pTwoMovement.up = false;
-		}
-		if (event.key == "ArrowDown") {
-			this.animation.pTwoMovement.down = false;
+		if (!this.remote) {
+			if (event.key == "ArrowUp") {
+				this.animation.pTwoMovement.up = false;
+			}
+			if (event.key == "ArrowDown") {
+				this.animation.pTwoMovement.down = false;
+			}
 		}
 	}
 
 	startGame() {
 		this.addGameToDOM();
 		this.renderer.getRenderer().setAnimationLoop( () => {
-			this.animation.animate()
+			this.animation.animate(null, null)
 		});
 		window.addEventListener('keydown', (e) => {
-			this.keyDownMovements(e);
+			if (!this.remote) {
+				this.keyDownMovements(e);
+			}
 		});
 		window.addEventListener('keyup', (e) => {
-			this.keyReleaseMovements(e);
+			if (!this.remote) {
+				this.keyReleaseMovements(e);
+			}
+		});
+	}
+
+	startRemoteGame(ballDir, socket) {
+		this.addGameToDOM();
+		this.renderer.getRenderer().setAnimationLoop( () => {
+			this.animation.animate(ballDir, socket)
 		});
 	}
 
