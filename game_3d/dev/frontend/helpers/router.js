@@ -42,7 +42,7 @@ export async function router() {
 
 	if (!match) {
 		match = {
-			route: routes[0],
+			route: $routes[0],
 			result: [location.pathname]
 		};
 	}

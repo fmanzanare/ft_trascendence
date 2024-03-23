@@ -6,6 +6,14 @@ export function displayChat()
 	{
 		$chatButton.classList.add('d-none');
 		$chat.classList.remove('d-none');
+		console.log("Abre chat")
+		const $chatInput = document.querySelector("#chatInput");
+        $chatInput.focus();
+        $chatInput.onkeyup = function(e) {
+            if (e.key === 'Enter') {
+				console.log($chatInput.value)
+            }
+        };
 	}
 	else
 	{
