@@ -12,7 +12,7 @@ export function openNewSocket(data) {
 
 	const remoteSocket = new WebSocket(
 		'ws://'
-		+ '10.13.5.6:8000'
+		+ 'localhost:8000'
 		+ '/ws/remote/'
 		+ id
 		+ '/'

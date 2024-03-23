@@ -17,7 +17,7 @@ export function playOnline()
 		$joinTournament.classList.add('d-none');
 	}
 	const $token = sessionStorage.getItem('pongToken');
-	fetch("http://10.13.5.6:8000/api/remote/find-game", {
+	fetch("http://localhost:8000/api/remote/find-game", {
 		method: "GET",
 		headers: {
 			"Authorization": $token

@@ -100,6 +100,7 @@ export class AnimationLoop {
 				// Needs to be fixed, sending user Id
 				console.log("pointPOne")
 				socket.send(JSON.stringify({
+					"gameReady": true,
 					"point": "pOnePoint"
 				}))
 			}
@@ -110,6 +111,7 @@ export class AnimationLoop {
 				console.log("pointPTwo")
 				// Needs to be fixed, sending "something"
 				socket.send(JSON.stringify({
+					"gameReady": true,
 					"point": "pTwoPoint"
 				}))
 			}
