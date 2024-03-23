@@ -24,10 +24,7 @@ export class Game {
 
 	speed = 4;
 
-	remote = false
-
-	constructor(remote) {
-		this.remote = remote;
+	constructor() {
 		this.scene.background = new THREE.Color(0x1e1e1e);
 		this.spotLight.addTargetToSpotLight(this.table.getTable());
 
@@ -40,7 +37,6 @@ export class Game {
 			this.renderer,
 			this.scene,
 			this.camera,
-			remote
 		);
 	}
 
@@ -55,13 +51,11 @@ export class Game {
 		if (event.key == "S" || event.key == "s") {
 			this.animation.pOneMovement.down = true
 		}
-		if (!this.remote) {
-			if (event.key == "ArrowUp") {
-				this.animation.pTwoMovement.up = true
-			}
-			if (event.key == "ArrowDown") {
-				this.animation.pTwoMovement.down = true
-			}
+		if (event.key == "ArrowUp") {
+			this.animation.pTwoMovement.up = true
+		}
+		if (event.key == "ArrowDown") {
+			this.animation.pTwoMovement.down = true
 		}
 	}
 
@@ -72,37 +66,24 @@ export class Game {
 		if (event.key == "S" || event.key == "s") {
 			this.animation.pOneMovement.down = false;
 		}
-		if (!this.remote) {
-			if (event.key == "ArrowUp") {
-				this.animation.pTwoMovement.up = false;
-			}
-			if (event.key == "ArrowDown") {
-				this.animation.pTwoMovement.down = false;
-			}
+		if (event.key == "ArrowUp") {
+			this.animation.pTwoMovement.up = false;
+		}
+		if (event.key == "ArrowDown") {
+			this.animation.pTwoMovement.down = false;
 		}
 	}
 
 	startGame() {
 		this.addGameToDOM();
 		this.renderer.getRenderer().setAnimationLoop( () => {
-			this.animation.animate(null, null)
+			this.animation.animate()
 		});
 		window.addEventListener('keydown', (e) => {
-			if (!this.remote) {
-				this.keyDownMovements(e);
-			}
+			this.keyDownMovements(e);
 		});
 		window.addEventListener('keyup', (e) => {
-			if (!this.remote) {
-				this.keyReleaseMovements(e);
-			}
-		});
-	}
-
-	startRemoteGame(ballDir, socket) {
-		this.addGameToDOM();
-		this.renderer.getRenderer().setAnimationLoop( () => {
-			this.animation.animate(ballDir, socket)
+			this.keyReleaseMovements(e);
 		});
 	}
 
