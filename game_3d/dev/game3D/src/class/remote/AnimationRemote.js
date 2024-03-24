@@ -1,4 +1,3 @@
-import * as THREE from 'three'
 
 export class AnimationLoopRemote {
 
@@ -146,7 +145,6 @@ export class AnimationLoopRemote {
 					ballLeftEdge >= playerLeftEdge &&
 					!this.pOne.impact
 				) {
-					console.log("goes in!")
 					this.calculateNewBallDir(ballYPos, playerYPos, this.pOne.length);
 					this.pOne.impact = true;
 					this.pTwo.impact = false;

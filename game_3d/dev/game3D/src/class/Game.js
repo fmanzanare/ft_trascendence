@@ -79,7 +79,14 @@ export class Game {
 	startGame() {
 		this.addGameToDOM();
 		this.renderer.getRenderer().setAnimationLoop( () => {
-			this.animation.animate()
+			let winner = this.animation.animate();
+			if (winner == 1) {
+				// TODO -> Add proper div, styles, etc. and two buttons (play again, go back to gameMode)
+				this.container.parentElement.innerHTML = '<p>Player 1 wins</p>';
+			} else if (winner == 2) {
+				// TODO -> Add proper div, styles, etc. and two buttons (play again, go back to gameMode)
+				this.container.parentElement.innerHTML = '<p>Player 2 wins</p>';
+			}
 		});
 		window.addEventListener('keydown', (e) => {
 			this.keyDownMovements(e);

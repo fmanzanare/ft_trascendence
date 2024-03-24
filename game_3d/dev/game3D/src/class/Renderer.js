@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { GameSizes } from './Sizes';
 
 export class Renderer {
 

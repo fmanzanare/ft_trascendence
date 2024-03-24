@@ -1,5 +1,3 @@
-import * as THREE from 'three'
-import { Table } from './Table'
 
 export class AnimationLoop {
 
@@ -182,6 +180,14 @@ export class AnimationLoop {
 		this.ball.getBall().position.y += this.ballDir.y * this.ballSpeed;
 
 		this.playersMovements();
+
+		if (this.score.pOneScore == 11 || this.score.pTwoScore == 11) {
+			this.renderer.getRenderer().setAnimationLoop(null);
+			if (this.score.pOneScore == 11) {
+				return 1;
+			}
+			return 2;
+		}
 
 		this.renderer.getRenderer().render(this.scene, this.camera.getCamera());
 	}
