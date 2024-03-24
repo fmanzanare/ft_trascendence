@@ -3,13 +3,13 @@ import * as THREE from 'three'
 export class Player {
 
 	radius = 1.2;
-	length = ((window.innerHeight / 2) * 0.12) * 0.2;
+	length = 0;
 	capSegments = 30;
 	radialSegments = 30;
 	leftColor = 0x1E1E1E;
 	rightColor = 0xFF0000;
-	yPos = ((window.innerHeight / 2) * 0.12) / 2;
-	xPos = (((window.innerWidth / 2) * 0.11) / 2) - 5;
+	yPos = 0;
+	xPos = 0;
 	zPos = 3;
 
 	player = null;
@@ -18,7 +18,10 @@ export class Player {
 	impact = false;
 	leftPlayer = false;
 
-	constructor(left, scene) {
+	constructor(left, scene, sizes) {
+		this.length = ((sizes.height / 2) * 0.12) * 0.2;
+		this.yPos = ((sizes.height / 2) * 0.12) / 2;
+		this.xPos = (((sizes.width / 2) * 0.11) / 2) - 5;
 		this.leftPlayer = left;
 		this.scene = scene;
 		const geometry = new THREE.CapsuleGeometry(

@@ -3,7 +3,7 @@ import * as THREE from 'three'
 export class Spotlight {
 	color = 0xFFFFFF;
 	zPos = 100;
-	yPos = ((window.innerHeight / 2) * 0.12) / 2;
+	yPos = 0;
 	angle = 0.9;
 	penumbra = 0.4;
 	intensity = 30000;
@@ -11,8 +11,9 @@ export class Spotlight {
 	target = null
 	scene = null
 
-	constructor(scene) {
+	constructor(scene, sizes) {
 		this.scene = scene;
+		this.yPos = ((sizes.height / 2) * 0.12) / 2;
 		this.spotLigth.position.set(0, this.yPos, this.zPos);
 		this.spotLigth.castShadow = true
 		this.spotLigth.angle = this.angle;

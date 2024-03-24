@@ -1,8 +1,9 @@
 import { GameRemote } from "../../game3D/src/class/remote/GameRemote";
 
 export function openNewSocket(data) {
-	const id = data.roomId
-	const userId = data.userId
+	const id = data.roomId;
+	const userId = data.userId;
+	const host = id == userId;
 
 	const $loading = document.getElementById("loading");
 	const $divSelect = document.getElementById("blackDiv");
@@ -15,7 +16,7 @@ export function openNewSocket(data) {
 		+ id
 		+ '/'
 	)
-	const game = new GameRemote(remoteSocket, userId, false)
+	const game = new GameRemote(remoteSocket, userId, host)
 
 	remoteSocket.onopen = function(e) {
 		console.log("connection stablished")
@@ -35,7 +36,11 @@ export function openNewSocket(data) {
 			$loading.classList.add('d-none');
 			$divSelect.classList.add('d-none');
 			$instructionsOne.classList.add('d-none');
-			game.startRemoteGame() // Replace this function by the Game class using the startRemoteGame(params) method
+			game.startRemoteGame()
+			game.getReceivedDataFromWS(data);
+		}
+		if (data.gameData) {
+			game.getReceivedDataFromWS(data);
 		}
 	}
 

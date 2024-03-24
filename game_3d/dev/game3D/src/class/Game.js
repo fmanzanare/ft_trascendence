@@ -7,18 +7,20 @@ import { Renderer } from "./Renderer";
 import { Score } from "./Score";
 import { Spotlight } from "./Spotlight"
 import { Camera } from './Camera';
+import { GameSizes } from './Sizes';
 
 export class Game {
 
+	sizes = new GameSizes(false);
 	container = document.getElementById('gameDiv');
 	scene = new THREE.Scene();
-	renderer = new Renderer();
-	camera = new Camera();
-	spotLight = new Spotlight(this.scene);
-	table = new Table(this.scene);
-	playerOne = new Player(true, this.scene);
-	playerTwo = new Player(false, this.scene);
-	ball = new Ball(this.scene);
+	renderer = new Renderer(this.sizes);
+	camera = new Camera(this.sizes);
+	spotLight = new Spotlight(this.scene, this.sizes);
+	table = new Table(this.scene, this.sizes);
+	playerOne = new Player(true, this.scene, this.sizes);
+	playerTwo = new Player(false, this.scene, this.sizes);
+	ball = new Ball(this.scene, this.sizes);
 	score = new Score(this.scene);
 	animation = null;
 

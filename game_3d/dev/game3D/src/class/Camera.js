@@ -10,10 +10,10 @@ export class Camera {
 	xRot = 0.5;
 	camera = null
 
-	constructor() {
+	constructor(sizes) {
 		this.camera = new THREE.PerspectiveCamera(
 			this.fov,
-			window.innerWidth / window.innerHeight,
+			sizes.width / sizes.height,
 			this.nearClipping,
 			this.farClipping
 		);

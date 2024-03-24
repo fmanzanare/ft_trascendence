@@ -1,12 +1,15 @@
 import * as THREE from 'three'
+import { GameSizes } from './Sizes';
 
 export class Renderer {
 
-	width = window.innerWidth / 2;
-	height = window.innerHeight / 2;
+	width = 0;
+	height = 0;
 	renderer = null;
 
-	constructor() {
+	constructor(sizes) {
+		this.width = sizes.width / 2;
+		this.height = sizes.height / 2;
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.setSize(this.width, this.height);

@@ -1,15 +1,19 @@
 import * as THREE from 'three'
+import { GameSizes } from './Sizes';
 
 export class Table {
 
-	width = (window.innerWidth / 2) * 0.11;
-	height = (window.innerHeight / 2) * 0.12;
-	yPos = this.height / 2;
+	width = 0;
+	height = 0;
+	yPos = 0;
 	color = 0x1b59f5;
 	table = null
 	scene = null
 
-	constructor(scene) {
+	constructor(scene, sizes) {
+		this.width = (sizes.width / 2) * 0.11;
+		this.height = (sizes.height / 2) * 0.12;
+		this.yPos = this.height / 2;
 		this.scene = scene;
 		const tableGeometry = new THREE.PlaneGeometry(this.width, this.height);
 		const tableMaterial = new THREE.MeshStandardMaterial({color: 0x1b59f5});

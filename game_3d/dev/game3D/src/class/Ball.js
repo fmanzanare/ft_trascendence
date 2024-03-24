@@ -8,14 +8,17 @@ export class Ball {
 	radialSegments = 15;
 	arc = 40;
 	color = 0xFFA200;
-	yPos = ((window.innerHeight / 2) * 0.12 / 2);
+	yPos = 0;
 	zPos = 3;
-	gameLimitY = ((window.innerHeight / 2) * 0.12) - this.totalRadius;
-	gameLimitX = ((window.innerWidth / 2) * 0.11) + this.totalRadius;
+	gameLimitY = 0;
+	gameLimitX = 0;
 	ball = null
 	scene = null
 
-	constructor(scene) {
+	constructor(scene, sizes) {
+		this.yPos = ((sizes.height / 2) * 0.12 / 2);
+		this.gameLimitY = ((sizes.height / 2) * 0.12) - this.totalRadius;
+		this.gameLimitX = ((sizes.width / 2) * 0.11) + this.totalRadius;
 		this.scene = scene;
 		const geometry = new THREE.TorusGeometry(
 			this.radius,

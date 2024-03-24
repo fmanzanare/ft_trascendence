@@ -7,6 +7,8 @@ from .game import Game
 
 
 class RemoteConsumer(AsyncWebsocketConsumer):
+	game = Game()
+
 	async def connect(self):
 		self.room_name = self.scope["url_route"]["kwargs"]["player_id"]
 		self.room_group_name = f"game_{self.room_name}"
@@ -27,21 +29,20 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		if ("gameReady" in game_info_json.keys()):
 			ready = game_info_json["gameReady"]
 			# Send message to Room group
-			if ready != None:
-				# Add function to calculate initial positions and ball direction.
-				# Send info to consumer to instantiate the Game.
-				game = Game()
-				game.calculateRandomBallDir()
+			# Add function to calculate initial positions and ball direction.
+			# Send info to consumer to instantiate the Game.
+			self.game.calculateRandomBallDir()
 
-				await self.channel_layer.group_send(
-					self.room_group_name, {
-						"type": "game.info",
-						"data": ready,
-						"ballDirX": game.ballDir["x"], 
-						"ballDirY": game.ballDir["y"] 
-					}
-				)
-				return
+			await self.channel_layer.group_send(
+				self.room_group_name, {
+					"type": "game.info",
+					"data": ready,
+					"ballDir": True,
+					"ballDirX": self.game.ballDir["x"], 
+					"ballDirY": self.game.ballDir["y"] 
+				}
+			)
+			return
 
 		# Takes place when the game starts (it shares the players position and scores).
 		if ("gameData" in game_info_json.keys()):
@@ -51,6 +52,7 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 				self.room_group_name, {
 					"type": "game.info",
 					"gameData": True,
+					"playerPos": True,
 					"userId": user_id,
 					"posY": player_pos_y
 				}
@@ -65,11 +67,18 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 			# Send message to WebSocket
 			await self.send(text_data=json.dumps({
 				"gameData": True,
+				"playerPos": True,
 				"userId": user_id,
 				"posY": player_pos_y
 			}))
-		elif ("data" in event.keys()):
+		elif ("ballDir" in event.keys()):
+			ball_dir_x = event["ballDirX"]
+			ball_dir_y = event["ballDirY"]
 			ready = event["data"]
 			await self.send(text_data=json.dumps({
-				"gameReady": ready
+				"gameReady": ready,
+				"gameData": True,
+				"ballDir": True,
+				"ballDirX": ball_dir_x,
+				"ballDirY": ball_dir_y
 			}))

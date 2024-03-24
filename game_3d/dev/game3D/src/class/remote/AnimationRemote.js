@@ -57,19 +57,22 @@ export class AnimationLoopRemote {
         this.socket = socket;
         this.host = host;
         this.userId = userId;
-        this.socket.onmessage = null;
-        this.socket.onmessage = this.receiveDataFromWSocket
     }
 
-    // NOT WORKING AT ALL!!!!!!!!!
-    receiveDataFromWSocket(e) {
-        console.log("Hola")
-        const data = JSON.parse(e.data)
+    getBallDirFromReceivedData(data) {
+        if (data.ballDir) {
+            this.ballDir.x = data.ballDirX;
+            if (!this.host) {
+                this.ballDir.x *= -1;
+            }
+            this.ballDir.y = data.ballDirY;
+        }
+    }
 
+    updatePlayerPosWithReceivedData(data) {
         if (data.userId != null && data.userId != this.userId) {
             this.pTwo.getPlayer().position.y = data.posY
         }
-        console.log(data)
     }
 
     playersMovement() {
@@ -80,6 +83,7 @@ export class AnimationLoopRemote {
 			this.pOne.getPlayer().position.y += this.playersSpeed;
             this.socket.send(JSON.stringify({
                 'gameData': true,
+                'playerPos': true,
                 'userId': this.userId,
                 'posY': this.pOne.getPlayer().position.y
             }))
@@ -88,15 +92,102 @@ export class AnimationLoopRemote {
 			this.pOne.getPlayer().position.y -= this.playersSpeed;
             this.socket.send(JSON.stringify({
                 'gameData': true,
+                'playerPos': true,
                 'userId': this.userId,
                 'posY': this.pOne.getPlayer().position.y
             }))
 		}
     }
 
+    restartPositions() {
+        // DEBUG SOLUTION!!
+        this.ball.getBall().position.x = 0;
+        this.ball.getBall().position.y = this.ball.yPos;
+        this.pOne.getPlayer().position.y = this.pOne.yPos;
+        this.pTwo.getPlayer().position.y = this.pTwo.yPos;
+		this.ballSpeed = 1.2;
+		this.pOne.impact = false;
+		this.pTwo.impact = false;
+		this.score.redrawScore();
+    }
+
+	checkPoint() {
+		if (this.ball.getBall().position.x >= this.limits.x) {
+			this.score.addPOnePoint();
+			this.restartPositions();
+		} else if (this.ball.getBall().position.x <= -this.limits.x) {
+			this.score.addPTwoPoint();
+			this.restartPositions();
+		}
+	}
+
+	calculateNewBallDir(ballYPos, playerYPos, playerLength) {
+		this.ballDir.x *= -1;
+		let ballToPlayerDist = ballYPos - playerYPos;
+		let normalizedDist = ballToPlayerDist / playerLength;
+		this.ballDir.y = normalizedDist * 0.6;
+		this.ballSpeed = (this.ballSpeed < 4) ? this.ballSpeed + 0.1 : 4;
+	}
+
+	checkBallAndPlayerCollision(player) {
+		let ballLeftEdge = this.ball.getBall().position.x - this.ball.totalRadius
+		let ballRightEdge = this.ball.getBall().position.x + this.ball.totalRadius
+		let ballYPos = this.ball.getBall().position.y;
+
+		let playerLeftEdge = player.getPlayer().position.x - player.radius;
+		let playerRightEdge = player.getPlayer().position.x + player.radius;
+		let playerTopEdge = player.getPlayer().position.y + (player.length / 2) + 1;
+		let playerBottomEdge = player.getPlayer().position.y - (player.length / 2) - 1;
+		let playerYPos = player.getPlayer().position.y
+
+		if (ballYPos <= playerTopEdge && ballYPos >= playerBottomEdge) {
+			if (player.leftPlayer) {
+				if (ballLeftEdge <= playerRightEdge &&
+					ballLeftEdge >= playerLeftEdge &&
+					!this.pOne.impact
+				) {
+					console.log("goes in!")
+					this.calculateNewBallDir(ballYPos, playerYPos, this.pOne.length);
+					this.pOne.impact = true;
+					this.pTwo.impact = false;
+				}
+			} else {
+				if (ballRightEdge >= playerLeftEdge &&
+					ballRightEdge <= playerRightEdge &&
+					!this.pTwo.impact
+				) {
+					this.calculateNewBallDir(ballYPos, playerYPos, this.pTwo.length);
+					this.pOne.impact = false;
+					this.pTwo.impact = true;
+				}
+			}
+		}
+	}
+
+	checkGameLimitsCollision() {
+		let topCollision = this.ball.getBall().position.y >= this.limits.y;
+		let bottomCollision = this.ball.getBall().position.y <= 0;
+
+		if (topCollision || bottomCollision) {
+			this.ballDir.y *= -1;
+		}
+	}
+
+	checkCollisions() {
+		this.checkBallAndPlayerCollision(this.pOne);
+		this.checkBallAndPlayerCollision(this.pTwo);
+
+		this.checkGameLimitsCollision();
+	}
+
     animate() {
-        // TODO
+        this.checkPoint();
+        this.checkCollisions();
         this.playersMovement();
+
+        this.ball.getBall().position.x += this.ballDir.x * this.ballSpeed;
+        this.ball.getBall().position.y += this.ballDir.y * this.ballSpeed;
+
         this.renderer.getRenderer().render(this.scene, this.camera.getCamera());
     }
 
