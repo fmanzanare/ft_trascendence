@@ -93,10 +93,12 @@ export class GameRemote {
             "pOnePosX": this.playerOne.getPlayer().position.x,
             "pOnePosY": this.playerOne.getPlayer().position.y,
             "pOneRightEdge": this.playerOne.getPlayer().position.x + this.playerOne.radius,
+            "pOneLeftEdge": this.playerOne.getPlayer().position.x - this.playerOne.radius,
             "pOneTopEdge": this.playerOne.getPlayer().position.y + (this.playerOne.length / 2) + 1,
             "pOneBottomEdge": this.playerOne.getPlayer().position.y - (this.playerOne.length / 2) - 1,
             "pTwoPosX": this.playerTwo.getPlayer().position.x,
             "pTwoPosY": this.playerTwo.getPlayer().position.y,
+            "pTwoRightEdge": this.playerTwo.getPlayer().position.x + this.playerTwo.radius,
             "pTwoLeftEdge": this.playerTwo.getPlayer().position.x - this.playerTwo.radius,
             "pTwoTopEdge": this.playerTwo.getPlayer().position.y + (this.playerTwo.length / 2) + 1,
             "pTwoBottomEdge": this.playerTwo.getPlayer().position.y - (this.playerTwo.length / 2) - 1,
@@ -124,7 +126,11 @@ export class GameRemote {
             this.playerTwo.getPlayer().position.x = data.pTwoPosX;
             this.playerTwo.getPlayer().position.y = data.pTwoPosY;
         }
-        console.log(data)
+        if (data.scoreData) {
+            this.score.pOneScore = data.pOneScore
+            this.score.pTwoScore = data.pTwoScore
+            this.score.redrawScore()
+        }
     }
 
 }

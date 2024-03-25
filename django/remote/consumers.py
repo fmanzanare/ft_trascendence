@@ -9,6 +9,7 @@ from .game import Game
 
 class RemoteConsumer(AsyncWebsocketConsumer):
 	game = Game()
+	game_task = None
 
 	async def connect(self):
 		self.room_name = self.scope["url_route"]["kwargs"]["player_id"]
@@ -23,6 +24,7 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		# Leave from Room group
+		self.game_task.cancel()
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 	# Receive data from WebSocket
@@ -38,12 +40,14 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 			self.game.ballPosition["rightEdge"] = game_info_json["ballRightEdge"]
 			self.game.pOnePosition["x"] = game_info_json["pOnePosX"]
 			self.game.pOnePosition["y"] = game_info_json["pOnePosY"]
+			self.game.pOnePosition["leftEdge"] = game_info_json["pOneLeftEdge"]
 			self.game.pOnePosition["rightEdge"] = game_info_json["pOneRightEdge"]
 			self.game.pOnePosition["topEdge"] = game_info_json["pOneTopEdge"]
 			self.game.pOnePosition["bottomEdge"] = game_info_json["pOneBottomEdge"]
 			self.game.pTwoPosition["x"] = game_info_json["pTwoPosX"]
 			self.game.pTwoPosition["y"] = game_info_json["pTwoPosY"]
-			self.game.pTwoPosition["rightEdge"] = game_info_json["pTwoLeftEdge"]
+			self.game.pTwoPosition["leftEdge"] = game_info_json["pTwoLeftEdge"]
+			self.game.pTwoPosition["rightEdge"] = game_info_json["pTwoRightEdge"]
 			self.game.pTwoPosition["topEdge"] = game_info_json["pTwoTopEdge"]
 			self.game.pTwoPosition["bottomEdge"] = game_info_json["pTwoBottomEdge"]
 			await self.channel_layer.group_send(
@@ -59,7 +63,7 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 					"pTwoPosY": self.game.pTwoPosition["y"],
 				}
 			)
-			asyncio.create_task(self.game.runGame())
+			self.game_task = asyncio.create_task(self.game.runGame())
 			return
 
 		if ("playerMovement" in game_info_json.keys()):
@@ -109,6 +113,14 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 				"pOnePosY": self.game.pOnePosition["y"],
 				"pTwoPosX": self.game.pTwoPosition["x"],
 				"pTwoPosY": self.game.pTwoPosition["y"],
+			}))
+			return
+
+		if ("scoreData" in event.keys()):
+			await self.send(text_data=json.dumps({
+				"scoreData": True,
+				"pOneScore": self.game.score["pOne"],
+				"pTwoScore": self.game.score["pTwo"]
 			}))
 			return
 

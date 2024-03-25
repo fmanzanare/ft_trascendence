@@ -43,7 +43,7 @@ export function openNewSocket(data) {
 			$instructionsOne.classList.add('d-none');
 			game.startRemoteGame()
 		}
-		if (data.gameData) {
+		if (data.gameData || data.scoreData) {
 			game.getReceivedDataFromWS(data);
 		}
 	}
