@@ -22,10 +22,15 @@ export function openNewSocket(data) {
 		console.log("connection stablished")
 		if (!data.fullGame) {
 			$loading.classList.remove('d-none');
+			remoteSocket.send(JSON.stringify({
+				"firstConnection": true,
+				"hostId": host
+			}))
 		}
 		else {
             remoteSocket.send(JSON.stringify({
-                'gameReady': true
+                'gameReady': true,
+				'hostId': host
             }));
 		}
 	}
@@ -37,7 +42,6 @@ export function openNewSocket(data) {
 			$divSelect.classList.add('d-none');
 			$instructionsOne.classList.add('d-none');
 			game.startRemoteGame()
-			game.getReceivedDataFromWS(data);
 		}
 		if (data.gameData) {
 			game.getReceivedDataFromWS(data);

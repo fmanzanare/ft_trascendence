@@ -24,6 +24,10 @@ export class GameRemote {
 	score = new Score(this.scene);
 	animation = null;
 
+	limits = {
+		x: this.table.width / 2 + this.ball.totalRadius,
+		y: this.table.height + this.ball.totalRadius
+	}
 	speed = 4;
 
     userId = -1;
@@ -36,21 +40,6 @@ export class GameRemote {
         this.socket = socket;
         this.userId = userId;
         this.host = host;
-
-        // Build animation with AnimationLoopRemote class
-        this.animation = new AnimationLoopRemote(
-            this.socket,
-            this.host,
-            this.userId,
-            this.table,
-            this.ball,
-            this.playerOne,
-            this.playerTwo,
-            this.score,
-            this.renderer,
-            this.scene,
-            this.camera
-        )
     }
 
     addGameToDOM() {
@@ -59,27 +48,65 @@ export class GameRemote {
 
     keyDownMovements(event) {
 		if (event.key == "W" || event.key == "w") {
-			this.animation.pOneMovement.up = true
+            this.socket.send(JSON.stringify({
+                "playerMovement": true,
+                "movementDir": 1,
+                "userId": this.userId
+            }))
 		}
 		if (event.key == "S" || event.key == "s") {
-			this.animation.pOneMovement.down = true
+            this.socket.send(JSON.stringify({
+                "playerMovement": true,
+                "movementDir": -1,
+                "userId": this.userId
+            }))
 		}
     }
 
     keyReleaseMovements(event) {
 		if (event.key == "W" || event.key == "w") {
-			this.animation.pOneMovement.up = false
+            this.socket.send(JSON.stringify({
+                "playerMovement": false,
+                "movementDir": 1,
+                "userId": this.userId
+            }))
 		}
 		if (event.key == "S" || event.key == "s") {
-			this.animation.pOneMovement.down = false
+            this.socket.send(JSON.stringify({
+                "playerMovement": false,
+                "movementDir": -1,
+                "userId": this.userId
+            }))
 		}
     }
 
     startRemoteGame() {
+        this.socket.send(JSON.stringify({
+            "buildGame": true,
+            "userId": this.userId,
+            "limitX": this.limits.x,
+            "limitY": this.limits.y,
+            "ballPosX": this.ball.getBall().position.x,
+            "ballPosY": this.ball.getBall().position.y,
+            "ballLeftEdge": this.ball.getBall().position.x - this.ball.totalRadius,
+            "ballRightEdge": this.ball.getBall().position.x + this.ball.totalRadius,
+            "pOnePosX": this.playerOne.getPlayer().position.x,
+            "pOnePosY": this.playerOne.getPlayer().position.y,
+            "pOneRightEdge": this.playerOne.getPlayer().position.x + this.playerOne.radius,
+            "pOneTopEdge": this.playerOne.getPlayer().position.y + (this.playerOne.length / 2) + 1,
+            "pOneBottomEdge": this.playerOne.getPlayer().position.y - (this.playerOne.length / 2) - 1,
+            "pTwoPosX": this.playerTwo.getPlayer().position.x,
+            "pTwoPosY": this.playerTwo.getPlayer().position.y,
+            "pTwoLeftEdge": this.playerTwo.getPlayer().position.x - this.playerTwo.radius,
+            "pTwoTopEdge": this.playerTwo.getPlayer().position.y + (this.playerTwo.length / 2) + 1,
+            "pTwoBottomEdge": this.playerTwo.getPlayer().position.y - (this.playerTwo.length / 2) - 1,
+        }))
         this.addGameToDOM();
+
         this.renderer.getRenderer().setAnimationLoop( () => {
-            this.animation.animate();
+            this.renderer.getRenderer().render(this.scene, this.camera.getCamera());
         })
+
 		window.addEventListener('keydown', (e) => {
             this.keyDownMovements(e);
 		});
@@ -89,12 +116,15 @@ export class GameRemote {
     }
 
     getReceivedDataFromWS(data) {
-        if (data.ballDir) {
-            this.animation.getBallDirFromReceivedData(data);
+        if (data.gameData) {
+            this.ball.getBall().position.x = data.ballPosX;
+            this.ball.getBall().position.y = data.ballPosY;
+            this.playerOne.getPlayer().position.x = data.pOnePosX;
+            this.playerOne.getPlayer().position.y = data.pOnePosY;
+            this.playerTwo.getPlayer().position.x = data.pTwoPosX;
+            this.playerTwo.getPlayer().position.y = data.pTwoPosY;
         }
-        if (data.playerPos) {
-            this.animation.updatePlayerPosWithReceivedData(data);
-        }
+        console.log(data)
     }
 
 }

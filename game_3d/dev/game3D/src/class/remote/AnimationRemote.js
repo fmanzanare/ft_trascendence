@@ -74,6 +74,14 @@ export class AnimationLoopRemote {
         }
     }
 
+	updateBallPositionAfterImpact(data) {
+        if (data.userId != null && data.userId != this.userId) {
+			this.ball.getBall().position.x = data.ballPosX * -1;
+			this.ball.getBall().position.y = data.ballPosY;
+			console.log(data)
+		}
+	}
+
     playersMovement() {
 		let pOneTopLimit = (this.pOne.getPlayer().position.y + 1 + this.pOne.length / 2) < this.table.height;
 		let pOneBottomLimit = (this.pOne.getPlayer().position.y - 1 - this.pOne.length / 2) > 0;
@@ -148,6 +156,13 @@ export class AnimationLoopRemote {
 					this.calculateNewBallDir(ballYPos, playerYPos, this.pOne.length);
 					this.pOne.impact = true;
 					this.pTwo.impact = false;
+					this.socket.send(JSON.stringify({
+						'gameData': true,
+						'impact': true,
+						'userId': this.userId,
+						'ballPosX': this.ball.getBall().position.x,
+						'ballPosY': this.ball.getBall().position.y
+					}))
 				}
 			} else {
 				if (ballRightEdge >= playerLeftEdge &&

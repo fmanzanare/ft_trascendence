@@ -54,9 +54,11 @@ export class Game {
 			this.animation.pOneMovement.down = true
 		}
 		if (event.key == "ArrowUp") {
+			event.preventDefault()
 			this.animation.pTwoMovement.up = true
 		}
 		if (event.key == "ArrowDown") {
+			event.preventDefault()
 			this.animation.pTwoMovement.down = true
 		}
 	}
@@ -69,9 +71,11 @@ export class Game {
 			this.animation.pOneMovement.down = false;
 		}
 		if (event.key == "ArrowUp") {
+			event.preventDefault()
 			this.animation.pTwoMovement.up = false;
 		}
 		if (event.key == "ArrowDown") {
+			event.preventDefault()
 			this.animation.pTwoMovement.down = false;
 		}
 	}
@@ -82,9 +86,11 @@ export class Game {
 			let winner = this.animation.animate();
 			if (winner == 1) {
 				// TODO -> Add proper div, styles, etc. and two buttons (play again, go back to gameMode)
+				// Reset this.score.resetScore() if the user wants to play another game.
 				this.container.parentElement.innerHTML = '<p>Player 1 wins</p>';
 			} else if (winner == 2) {
 				// TODO -> Add proper div, styles, etc. and two buttons (play again, go back to gameMode)
+				// Reset this.score.resetScore() if the user wants to play another game.
 				this.container.parentElement.innerHTML = '<p>Player 2 wins</p>';
 			}
 		});
