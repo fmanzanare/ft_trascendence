@@ -1,38 +1,45 @@
 export function handleChatInput()
 {
-	// console.log('Hola Victor')
-	const roomname = json.parse(document.getelementbyid('room-name').textcontent);
+	console.log('Hola Victor')
+	// const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
-	const chatsocket = new websocket(
+	// Create new WebSocket and set its name
+	const chatSocket = new WebSocket(
 		'ws://'
-		+ window.location.host
+		+ 'localhost:8000'
 		+ '/ws/chat/'
-		+ roomname
+		+ sessionStorage.getItem('userId')
 		+ '/'
 	);
 
-	chatsocket.onmessage = function(e) {
-		const data = json.parse(e.data);
-		document.queryselector('#chat-log').value += (data.message + '\n');
+	// Receive the message and write it in the chat log
+	chatSocket.onmessage = function(e) {
+		const data = JSON.parse(e.data);
+		document.querySelector('#chat-log').value += (data.message + '\n');
 	};
 
-	chatsocket.onclose = function(e) {
+	// When the WebSocket is closed, it prints a message in the console
+	chatSocket.onclose = function(e) {
 		console.error('chat socket closed unexpectedly');
 	};
 
-	document.queryselector('#chatInput').focus();
-	document.queryselector('#chatInput').onkeyup = function(e) {
+	// It focus on the chatInput and 
+	document.querySelector('#chatInput').focus();
+	document.querySelector('#chatInput').onkeyup = function(e) {
 		if (e.key === 'Enter') {  // enter, return
-			document.queryselector('#chat-message-submit').click();
+			// document.queryselector('#chat-message-submit').click();
+			let userId = sessionStorage.getItem('userId');
+			console.log(userId);
+			const messageinputdom = document.querySelector('#chatInput');
+			const message = userId + ': ' + messageinputdom.value;
+			chatSocket.send(JSON.stringify({
+				'message': message,
+				'userId': sessionStorage.getItem('userId')
+			}));
+			messageinputdom.value = '';
 		}
 	};
 
-	document.queryselector('#chat-message-submit').onclick = function(e) {
-		const messageinputdom = document.queryselector('#chatInput');
-		const message = messageinputdom.value;
-		chatsocket.send(json.stringify({
-			'message': message
-		}));
-		messageinputdom.value = '';
-	};
+	// document.querySelector('#chat-message-submit').onclick = function(e) {
+	// };
 } 

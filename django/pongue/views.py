@@ -183,7 +183,8 @@ def pass2fa(request, user_obj):
 			"redirect": True,
 			"redirect_url": "home",
 			"context": {
-				"jwt": generate_jwt(user_obj)
+				"jwt": generate_jwt(user_obj),
+				"userId": user_obj.id
 			},
 		})
 

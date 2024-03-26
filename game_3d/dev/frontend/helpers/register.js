@@ -28,6 +28,7 @@ export function loginPushButton()
 	.then(data => {
 		if (data.success) {
 			sessionStorage.setItem('pongToken', data.context.jwt);
+			sessionStorage.setItem('userId', data.context.userId);
 			changeUserName();
 			navigateTo("/home");
 		}
