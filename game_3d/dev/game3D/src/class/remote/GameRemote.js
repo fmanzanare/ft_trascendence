@@ -6,7 +6,6 @@ import { Renderer } from "../Renderer";
 import { Score } from "../Score";
 import { Spotlight } from "../Spotlight"
 import { Camera } from '../Camera';
-import { AnimationLoopRemote } from './AnimationRemote';
 import { GameSizes } from '../Sizes';
 
 export class GameRemote {

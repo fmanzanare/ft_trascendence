@@ -24,13 +24,13 @@ export function openNewSocket(data) {
 			$loading.classList.remove('d-none');
 			remoteSocket.send(JSON.stringify({
 				"firstConnection": true,
-				"hostId": host
+				"hostId": id
 			}))
 		}
 		else {
             remoteSocket.send(JSON.stringify({
                 'gameReady': true,
-				'hostId': host
+				'hostId': id
             }));
 		}
 	}
@@ -50,6 +50,10 @@ export function openNewSocket(data) {
 
 	remoteSocket.onclose = function (e) {
 		console.log("Connection closed unexpectedly")
+		remoteSocket.send(JSON.stringify({
+			'closeConnection': true,
+			'userId': userId
+		}));
 	}
 
 }

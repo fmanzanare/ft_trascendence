@@ -1,222 +1,153 @@
-import random, json, asyncio
+import random, json, asyncio, time
+from .game_classes import *
 
 class Game:
-    ready = False
-    hostId = -1
-    initialPositions = {
-        "ballPosX": 0,
-        "ballPosY": 0,
-        "ballLeftEdge": 0,
-        "ballRightEdge": 0,
-        "pOnePosY": 0,
-        "pOneTopEdge": 0,
-        "pOneBottomEdge": 0,
-        "pTwoPosY": 0,
-        "pTwoTopEdge": 0,
-        "pTwoBottomEdge": 0
-    }
-    ballPosition = {
-        "x": 0,
-        "y": 0,
-        "leftEdge": 0,
-        "rightEdge": 0
-    }
-    ballDir = {
-        "x": 0,
-        "y": 0
-    }
-    socket = None
-    pOnePosition = {
-        "x": 0,
-        "y": 0,
-        "leftEdge": 0,
-        "rightEdge": 0,
-        "topEdge": 0,
-        "bottomEdge": 0,
-        "impact": False
-    }
-    pOneMovement = {
-        "up": False,
-        "down": False
-    }
-    pTwoPosition = {
-        "x": 0,
-        "y": 0,
-        "leftEdge": 0,
-        "rightEdge": 0,
-        "topEdge": 0,
-        "bottomEdge": 0,
-        "impact": False
-    }
-    pTwoMovement = {
-        "up": False,
-        "down": False
-    }
-    limits = {
-        "x": 0,
-        "y": 0
-    }
-    score = {
-        "pOne": 0,
-        "pTwo": 0
-    }
-    PLAYERS_SPEED = 0.5
-    ballSpeed = 0.6
-
-    def saveInitialPositions(self):
-        self.initialPositions["ballPosX"] = self.ballPosition["x"]
-        self.initialPositions["ballPosY"] = self.ballPosition["y"]
-        self.initialPositions["ballLeftEdge"] = self.ballPosition["leftEdge"]
-        self.initialPositions["ballRightEdge"] = self.ballPosition["rightEdge"]
-
-        self.initialPositions["pOnePosY"] = self.pOnePosition["y"]
-        self.initialPositions["pOneTopEdge"] = self.pOnePosition["topEdge"]
-        self.initialPositions["pOneBottomEdge"] = self.pOnePosition["bottomEdge"]
-
-        self.initialPositions["pTwoPosY"] = self.pTwoPosition["y"]
-        self.initialPositions["pTwoTopEdge"] = self.pTwoPosition["topEdge"]
-        self.initialPositions["pTwoBottomEdge"] = self.pTwoPosition["bottomEdge"]
-
+    def __init__(self, socket, pOneId, pTwoId):
+        self.table = Table()
+        self.ball = Ball()
+        self.limits = Limits(x=self.table.width / 2 + self.ball.totalRadius, y=self.table.height + self.ball.totalRadius)
+        self.pOne = Player(leftPlayer=True, playerId=pOneId)
+        self.pTwo = Player(leftPlayer=False, playerId=pTwoId)
+        self.score = Score()
+        self.socket = socket
+        self.ready = False
+    
     def calculateRandomBallDir(self):
         initDirX = -1 if random.random() < 0.5 else 1
         initDirY = -1 if random.random() < 0.5 else 1
+        self.ball.xDir = 0.5 * initDirX
         rand = random.random()
-        self.ballDir["x"] = 0.5 * initDirX
-        self.ballDir["y"] = (0.6 if rand > 0.6 else rand) * initDirY
+        self.ball.yDir = (0.6 if rand > 0.6 else rand) * initDirY
+    
+    def checkGameLimitsCollisions(self):
+        topCollision = self.ball.yPos >= self.limits.y
+        bottomCollision = self.ball.yPos <= 0
 
-    def playersMovement(self):
-        pOneTopLimit = self.pOnePosition["topEdge"] < self.limits["y"]
-        pOneBottomLimit = self.pOnePosition["bottomEdge"] > 0
-
-        if (self.pOneMovement["up"] and pOneTopLimit):
-            self.pOnePosition["y"] += self.PLAYERS_SPEED
-            self.pOnePosition["topEdge"] += self.PLAYERS_SPEED
-            self.pOnePosition["bottomEdge"] += self.PLAYERS_SPEED
-        if (self.pOneMovement["down"] and pOneBottomLimit):
-            self.pOnePosition["y"] -= self.PLAYERS_SPEED
-            self.pOnePosition["topEdge"] -= self.PLAYERS_SPEED
-            self.pOnePosition["bottomEdge"] -= self.PLAYERS_SPEED
-
-        pTwoTopLimit = self.pTwoPosition["topEdge"] < self.limits["y"]
-        pTwoBottomLimit = self.pTwoPosition["bottomEdge"] > 0
-
-        if (self.pTwoMovement["up"] and pTwoTopLimit):
-            self.pTwoPosition["y"] += self.PLAYERS_SPEED
-            self.pTwoPosition["topEdge"] += self.PLAYERS_SPEED
-            self.pTwoPosition["bottomEdge"] += self.PLAYERS_SPEED
-        if (self.pTwoMovement["down"] and pTwoBottomLimit):
-            self.pTwoPosition["y"] -= self.PLAYERS_SPEED
-            self.pTwoPosition["topEdge"] -= self.PLAYERS_SPEED
-            self.pTwoPosition["bottomEdge"] -= self.PLAYERS_SPEED
-
-    def checkGameLimitCollisions(self):
-        topCollision = self.ballPosition["y"] >= self.limits["y"]
-        bottomCollision = self.ballPosition["y"] <= 0
-
-        if (topCollision or bottomCollision):
-            self.ballDir["y"] *= -1
-
-    def ballDirAfterCollisionWithPlayer(self, player):
-        self.ballDir["x"] *= -1
-        ballToPlayerDist = self.ballPosition["y"] - player["y"]
-        normalizedDist = ballToPlayerDist / (player["topEdge"]- player["bottomEdge"])
-        self.ballDir["y"] = normalizedDist * 0.6
-        self.ballSpeed = self.ballSpeed + 0.05 if self.ballSpeed < 3 else 3
-
-    def checkBallAndPlayerCollision(self):
-        if (
-            self.ballPosition["y"] <= self.pOnePosition["topEdge"] and
-            self.ballPosition["y"] >= self.pOnePosition["bottomEdge"] and
-            self.ballPosition["leftEdge"] <= self.pOnePosition["rightEdge"] and
-            self.ballPosition["leftEdge"] >= self.pOnePosition["leftEdge"] and
-            not self.pOnePosition["impact"]
-        ):
-            self.ballDirAfterCollisionWithPlayer(self.pOnePosition)
-            self.pOnePosition["impact"] = True
-            self.pTwoPosition["impact"] = False
-
-        if (
-            self.ballPosition["y"] <= self.pTwoPosition["topEdge"] and
-            self.ballPosition["y"] >= self.pTwoPosition["bottomEdge"] and
-            self.ballPosition["rightEdge"] >= self.pTwoPosition["leftEdge"] and
-            self.ballPosition["rightEdge"] <= self.pTwoPosition["rightEdge"] and
-            not self.pTwoPosition["impact"]
-        ):
-            self.ballDirAfterCollisionWithPlayer(self.pTwoPosition)
-            self.pTwoPosition["impact"] = True
-            self.pOnePosition["impact"] = False
+        if (topCollision and not self.ball.topCollision):
+            self.ball.yDir *= -1
+            self.ball.topCollision = True
+            self.ball.bottomCollision = False
+        if (bottomCollision and not self.ball.bottomCollision):
+            self.ball.yDir *= -1
+            self.ball.topCollision = False
+            self.ball.bottomCollision = True
         
-    def restartPositions(self):
-        self.calculateRandomBallDir()
-        self.ballPosition["x"] = self.initialPositions["ballPosX"]
-        self.ballPosition["y"] = self.initialPositions["ballPosY"]
-        self.ballPosition["leftEdge"] = self.initialPositions["ballLeftEdge"]
-        self.ballPosition["rightEdge"] = self.initialPositions["ballRightEdge"]
-        self.pOnePosition["y"] = self.initialPositions["pOnePosY"]
-        self.pOnePosition["topEdge"] = self.initialPositions["pOneTopEdge"]
-        self.pOnePosition["bottomEdge"] = self.initialPositions["pOneBottomEdge"]
-        self.pOnePosition["impact"] = False
-        self.pTwoPosition["y"] = self.initialPositions["pTwoPosY"]
-        self.pTwoPosition["topEdge"] = self.initialPositions["pTwoTopEdge"]
-        self.pTwoPosition["bottomEdge"] = self.initialPositions["pTwoBottomEdge"]
-        self.pTwoPosition["impact"] = False
-        self.ballSpeed = 0.6
+    def calculateNewBallDir(self, player):
+        self.ball.xDir *= -1
+        ballToPlayerDist = self.ball.yPos - player.yPos
+        normalizedDist = ballToPlayerDist / player.length
+        self.ball.yDir = normalizedDist * 0.6
+        self.ball.speed = self.ball.speed + 0.1 if self.ball.speed < 4 else 4
+    
+    def checkBallAndPlayerCollision(self, player):
+        ballLeftEdge = self.ball.xPos - self.ball.totalRadius
+        ballRightEdge = self.ball.xPos + self.ball.totalRadius
 
+        playerTopEdge = player.xPos + (player.length / 2) + 1
+        playerBottomEdge = player.xPos - (player.length / 2) - 1
+        playerLeftEdge = player.xPos - player.radius
+        playerRightEdge = player.xPos + player.radius
+
+        if (self.ball.yPos <= playerTopEdge and self.ball.yPos >= playerBottomEdge):
+            if (player.leftPlayer):
+                if (
+                    ballLeftEdge <= playerRightEdge and
+                    ballLeftEdge >= playerLeftEdge and
+                    not self.pOne.impact
+                ):
+                    self.calculateNewBallDir()
+                    self.pOne.impact = True
+                    self.pTwo.impact = False
+            else:
+                if (
+                    ballRightEdge >= playerLeftEdge and
+                    ballRightEdge <= playerRightEdge and
+                    not self.pTwo.impact
+                ):
+                    self.calculateNewBallDir()
+                    self.pOne.impact = False
+                    self.pTwo.impact = True
+    
+    def playersMovements(self):
+        pOneUpMovAllowed = (self.pOne.yPos + 1 + self.pOne.length / 2) < self.table.height
+        pOneDownMovAllowed = (self.pOne.yPos - 1 - self.pOne.length / 2) > 0
+
+        if (self.pOne.upMovement and pOneUpMovAllowed):
+            self.pOne.yPos += self.pOne.SPEED
+        if (self.pOne.downMovement and pOneDownMovAllowed):
+            self.pOne.yPos -= self.pOne.SPEED
+
+        pTwoUpMovAllowed = (self.pTwo.yPos + 1 + self.pTwo.length / 2) < self.table.height
+        pTwoDownMovAllowed = (self.pTwo.yPos - 1 - self.pTwo.length / 2) > 0
+
+        if (self.pTwo.upMovement and pTwoUpMovAllowed):
+            self.pTwo.yPos += self.pTwo.SPEED
+        if (self.pTwo.downMovement and pTwoDownMovAllowed):
+            self.pTwo.yPos -= self.pTwo.SPEED
+    
+    def restartPositions(self):
+        self.ball.resetPositions()
+        self.pOne.resetPositions()
+        self.pTwo.resetPositions()
+        
     async def checkPoint(self):
-        if (self.ballPosition["x"] >= self.limits["x"]):
-            self.score["pOne"] += 1
+        pOnePoint = self.ball.xPos >= self.limits.x
+        pTwoPoint = self.ball.xPos <= -self.limits.x
+
+        if (pOnePoint or pTwoPoint):
+            if (pOnePoint):
+                self.score.pOne += 1
+            elif ():
+                self.score.pTwo += 1
             self.restartPositions()
             scoreData = {
-                "type": "game.info",
-				"scoreData": True,
-                "hostId": self.hostId,
-                "pOneScore": self.score["pOne"],
-                "pTwoScore": self.score["pTwo"]
+                "type": "add.point",
+                "pOneScore": self.score.pOne,
+                "pTwoScore": self.score.pTwo
             }
             await self.socket.channel_layer.group_send(
-				self.socket.room_group_name, scoreData
-			)
-        if (self.ballPosition["x"] <= -self.limits["x"]):
-            self.score["pTwo"] += 1
-            self.restartPositions()
-            scoreData = {
-                "type": "game.info",
-				"scoreData": True,
-                "hostId": self.hostId,
-                "pOneScore": self.score["pOne"],
-                "pTwoScore": self.score["pTwo"]
-            }
-            await self.socket.channel_layer.group_send(
-				self.socket.room_group_name, scoreData
-			)
+                self.socket.room_group_name, scoreData
+            )
+
 
     async def runGame(self):
-        self.saveInitialPositions()
+        gameStart = time.time()
         self.calculateRandomBallDir()
-        while (self.score["pOne"] < 11 and self.score["pTwo"] < 11):
+
+        while (self.score.pOne < 11 and self.score.pTwo < 11):
             gamePositions = {
                 "type": "game.info",
-				"gameData": True,
-                "hostId": self.hostId,
-                "ballPosX": self.ballPosition["x"],
-                "ballPosY": self.ballPosition["y"],
-                "pOnePosX": self.pOnePosition["x"],
-                "pOnePosY": self.pOnePosition["y"],
-                "pTwoPosX": self.pTwoPosition["x"],
-                "pTwoPosY": self.pTwoPosition["y"]
+                "ballX": self.ball.xPos,
+                "ballY": self.ball.yPos,
+                "pOneY": self.pOne.yPos,
+                "pTwoY": self.pTwo.yPos,
             }
             await self.socket.channel_layer.group_send(
-				self.socket.room_group_name, gamePositions 
-			)
+                self.socket.room_group_name, gamePositions
+            )
 
-            self.checkGameLimitCollisions()
-            self.checkBallAndPlayerCollision()
-            self.playersMovement()
+            self.checkGameLimitsCollisions()
+            self.checkBallAndPlayerCollision(self.pOne)
+            self.checkBallAndPlayerCollision(self.pTwo)
+            self.playersMovements()
             await self.checkPoint()
 
-            self.ballPosition["x"] += self.ballDir["x"] * self.ballSpeed
-            self.ballPosition["y"] += self.ballDir["y"] * self.ballSpeed
-            self.ballPosition["leftEdge"] += self.ballDir["x"] * self.ballSpeed
-            self.ballPosition["rightEdge"] += self.ballDir["x"] * self.ballSpeed
+            self.ball.xPos += self.ball.xDir * self.ball.speed
+            self.ball.yPos += self.ball.yDir * self.ball.speed
 
-            await asyncio.sleep(0.03)
+            await asyncio.sleep(0.025)
+
+        winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
+        finishTime = time.time()
+        finishedGame = {
+                "type": "game.end",
+                "pOneScore": self.score.pOne,
+                "pTwoScore": self.score.pTwo,
+                "winner": winner,
+                "startTime": gameStart,
+                "finishTime": finishTime,
+                "duration": gameStart - finishTime, 
+        }
+        await self.socket.channel_layer.group_send(
+            self.socket.room_group_name, finishedGame
+        )

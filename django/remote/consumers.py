@@ -4,16 +4,15 @@ import asyncio
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .game import Game
+from .game_old import Game
 
 
 class RemoteConsumer(AsyncWebsocketConsumer):
-	game = Game()
-	game_task = None
 
 	async def connect(self):
 		self.room_name = self.scope["url_route"]["kwargs"]["player_id"]
 		self.room_group_name = f"game_{self.room_name}"
+		self.game = Game()
 		self.game.socket = self
 		self.game.hostId = int(self.room_name)
 
@@ -24,7 +23,10 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		# Leave from Room group
-		self.game_task.cancel()
+		print("disconnecting")
+		if (self.game_task != None):
+			self.game_task.cancel()
+		del self.game
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 	# Receive data from WebSocket
