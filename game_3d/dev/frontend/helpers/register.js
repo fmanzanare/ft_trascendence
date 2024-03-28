@@ -27,9 +27,9 @@ export function loginPushButton()
 	})
 	.then(data => {
 		if (data.success) {
+			sessionStorage.setItem('user', $name.value);
 			if (data.redirect_url == "pass2fa")
 			{
-				sessionStorage.setItem('user', $name.value);
 				navigateTo("/twofactor");
 			}
 			else
@@ -121,41 +121,6 @@ export function singPushButton()
 				$pass.classList.add("border-danger");
 				$errorMessage.textContent = "Insecure password";
 			}
-		}
-	})
-	.catch(error => {
-		console.error('Error en la solicitud:', error);
-	});
-}
-
-export function twoFactorPushButton()
-{
-	const $key = document.getElementById("doubleFK");
-	const $userName = sessionStorage.getItem("user");
-	const $doubleFactorUrl = apiUrl + 'submit2fa/';
-	const $doubleFactorData = new URLSearchParams();
-	$doubleFactorData.append('code', $key.value);
-	$doubleFactorData.append('user', $userName);
-	console.log($userName, $key.value);
-	fetch($doubleFactorUrl, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-		body: $doubleFactorData
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
-	.then(data => {
-		if (data.success) {
-			sessionStorage.setItem('pongToken', data.context.jwt);
-			sessionStorage.removeItem('user');
-			changeUserName();
-			navigateTo("/home");
 		}
 	})
 	.catch(error => {
