@@ -4,7 +4,7 @@ import asyncio
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .game_old import Game
+from .game import Game
 
 
 class RemoteConsumer(AsyncWebsocketConsumer):
