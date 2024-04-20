@@ -32,7 +32,7 @@ class Player:
         self.length = ((Sizes.height / 2) * 0.12) * 0.2
         self.leftPlayer = leftPlayer
         self.yPos = self.__defaultYPos
-        self.xPos = self.__defaultXPos if self.leftPlayer else self.__defaultXPos * -1
+        self.xPos = self.__defaultXPos if not self.leftPlayer else self.__defaultXPos * -1
         self.impact = False
         self.playerId = playerId
         self.SPEED = 0.7
@@ -45,6 +45,12 @@ class Player:
         self.upMovement = False
         self.downMovement = False
 
+    def setUpMovement(self, upMovement):
+        self.upMovement = upMovement
+
+    def setDownMovement(self, downMovement):
+        self.downMovement = downMovement
+
 
 class Table:
     def __init__(self):
@@ -56,6 +62,12 @@ class Limits:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def setX(self, newValue):
+        self.x = newValue
+
+    def setY(self, newValue):
+        self.x = newValue
 
 class Score:
     def __init__(self):

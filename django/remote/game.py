@@ -11,7 +11,7 @@ class Game:
         self.score = Score()
         self.socket = socket
         self.ready = False
-    
+
     def calculateRandomBallDir(self):
         initDirX = -1 if random.random() < 0.5 else 1
         initDirY = -1 if random.random() < 0.5 else 1
@@ -33,6 +33,7 @@ class Game:
             self.ball.bottomCollision = True
         
     def calculateNewBallDir(self, player):
+        print("calculateNewBallDir")
         self.ball.xDir *= -1
         ballToPlayerDist = self.ball.yPos - player.yPos
         normalizedDist = ballToPlayerDist / player.length
@@ -43,8 +44,8 @@ class Game:
         ballLeftEdge = self.ball.xPos - self.ball.totalRadius
         ballRightEdge = self.ball.xPos + self.ball.totalRadius
 
-        playerTopEdge = player.xPos + (player.length / 2) + 1
-        playerBottomEdge = player.xPos - (player.length / 2) - 1
+        playerTopEdge = player.yPos + (player.length / 2) + 1
+        playerBottomEdge = player.yPos - (player.length / 2) - 1
         playerLeftEdge = player.xPos - player.radius
         playerRightEdge = player.xPos + player.radius
 
@@ -55,7 +56,9 @@ class Game:
                     ballLeftEdge >= playerLeftEdge and
                     not self.pOne.impact
                 ):
-                    self.calculateNewBallDir()
+                    print(str(self.ball.xDir))
+                    self.calculateNewBallDir(player)
+                    print(str(self.ball.xDir))
                     self.pOne.impact = True
                     self.pTwo.impact = False
             else:
@@ -64,7 +67,9 @@ class Game:
                     ballRightEdge <= playerRightEdge and
                     not self.pTwo.impact
                 ):
-                    self.calculateNewBallDir()
+                    print(str(self.ball.xDir))
+                    self.calculateNewBallDir(player)
+                    print(str(self.ball.xDir))
                     self.pOne.impact = False
                     self.pTwo.impact = True
     
@@ -117,6 +122,7 @@ class Game:
         while (self.score.pOne < 11 and self.score.pTwo < 11):
             gamePositions = {
                 "type": "game.info",
+                "gameData": True,
                 "ballX": self.ball.xPos,
                 "ballY": self.ball.yPos,
                 "pOneY": self.pOne.yPos,
@@ -135,7 +141,7 @@ class Game:
             self.ball.xPos += self.ball.xDir * self.ball.speed
             self.ball.yPos += self.ball.yDir * self.ball.speed
 
-            await asyncio.sleep(0.025)
+            await asyncio.sleep(0.033)
 
         winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
         finishTime = time.time()
