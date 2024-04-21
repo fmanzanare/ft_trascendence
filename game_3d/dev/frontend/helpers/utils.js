@@ -1,5 +1,6 @@
 import { RED_RGTC1_Format } from "three";
-import { loginPushButton, singPushButton, twoFactorPushButton } from "./register.js";
+import { loginPushButton, singPushButton} from "./register.js";
+import { twoFactorPushButton } from "./twoFactor.js"
 
 function LogInEnterKeyPress(event)
 {

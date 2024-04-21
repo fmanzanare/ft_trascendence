@@ -72,29 +72,25 @@ export default class extends AbstractView {
 											page +=
 											`
 											</div>
-										<div class="col-md-6" id="dataUserShow">
+										<div class="col-md-6 d-flex flex-column" id="dataUserShow">
 											<h2>${data.context.user.display_name}</h2>
 											<p>puntos</p>
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
 			{
-				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked disabled >`
+				page += ` 	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked disabled >
+							<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
+							</div>
+							<canvas id="qrCode" style="max-width: 200px"></canvas>`
 			}
 			else
-				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" disabled >`
+				page += ` 	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" disabled >
+							<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
+							</div>`
 			page +=
 			`
-												<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
-											</div>
-											`
-			if (data.context.user.has_2fa)
-			{
-				page += `<p class="text-divided fs-3">${twoFactor}</p>`
-			}
-			page +=
-			`
-											<button class="btn btn-primary" id="changeDataView">Change data</button>
+											<button class="btn btn-primary mt-2" style="max-width: 200px" id="changeDataView">Change data</button>
 										</div>
 										<div class="d-none col-md-6" id="dataUserChange">
 											<div class="form-outline form-white mb-4">

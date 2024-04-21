@@ -1,7 +1,8 @@
 import { playLocal, playOnline } from "./gameMode.js";
-import { loginPushButton, singPushButton, twoFactorPushButton, logOut } from "./register.js";
+import { loginPushButton, singPushButton, logOut } from "./register.js";
 import { changeDataUser } from "./changeDataUser.js";
 import { addKeyPressListener } from "./utils.js";
+import { twoFactorPushButton, generateQr } from "./twoFactor.js";
 import { changeViewProfile, changeViewData, displayChat } from "./changeView.js";
 
 export async function routerFunctions(){
@@ -26,5 +27,7 @@ export async function routerFunctions(){
 			element.addEventListener(button.event, button.handler);
 		}
 	});
+	if (document.getElementById("qrCode"))
+		generateQr();
 	addKeyPressListener();
 }
