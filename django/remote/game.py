@@ -33,7 +33,6 @@ class Game:
             self.ball.bottomCollision = True
         
     def calculateNewBallDir(self, player):
-        print("calculateNewBallDir")
         self.ball.xDir *= -1
         ballToPlayerDist = self.ball.yPos - player.yPos
         normalizedDist = ballToPlayerDist / player.length
@@ -56,22 +55,22 @@ class Game:
                     ballLeftEdge >= playerLeftEdge and
                     not self.pOne.impact
                 ):
-                    print(str(self.ball.xDir))
                     self.calculateNewBallDir(player)
-                    print(str(self.ball.xDir))
                     self.pOne.impact = True
                     self.pTwo.impact = False
+                    self.ball.topCollision = False
+                    self.ball.bottomCollision = False
             else:
                 if (
                     ballRightEdge >= playerLeftEdge and
                     ballRightEdge <= playerRightEdge and
                     not self.pTwo.impact
                 ):
-                    print(str(self.ball.xDir))
                     self.calculateNewBallDir(player)
-                    print(str(self.ball.xDir))
                     self.pOne.impact = False
                     self.pTwo.impact = True
+                    self.ball.topCollision = False
+                    self.ball.bottomCollision = False
     
     def playersMovements(self):
         pOneUpMovAllowed = (self.pOne.yPos + 1 + self.pOne.length / 2) < self.table.height
@@ -102,7 +101,7 @@ class Game:
         if (pOnePoint or pTwoPoint):
             if (pOnePoint):
                 self.score.pOne += 1
-            elif ():
+            else:
                 self.score.pTwo += 1
             self.restartPositions()
             scoreData = {

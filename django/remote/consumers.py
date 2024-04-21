@@ -37,7 +37,7 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 	async def disconnect(self, close_code):
 		# Leave from Room group
 		print("disconnecting")
-		# NOTIFIY PLAYERS THAT CONNECTION HAS BEEN CLOSED !!!
+		# TODO - NOTIFIY PLAYERS THAT CONNECTION HAS BEEN CLOSED !!!
 		if (self.game_task != None):
 			self.game_task.cancel()
 		del self.game
@@ -129,9 +129,17 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 			return
 
 	async def add_point(self, event):
-			await self.send(text_data=json.dumps({
-				"scoreData": True,
-				"pOneScore": self.game.score.pOne,
-				"pTwoScore": self.game.score.pTwo
-			}))
-			return
+		await self.send(text_data=json.dumps({
+			"scoreData": True,
+			"pOneScore": self.game.score.pOne,
+			"pTwoScore": self.game.score.pTwo
+		}))
+		return
+
+	async def game_end(self, event):
+		# TODO - SEND INFO (WINNER) TO BE DISPLAYED ON FRONT SIDE
+		await self.send(text_data=json.dumps({
+			"gameEnd": True
+		}))
+		return
+

@@ -61,7 +61,7 @@ class Table:
 class Limits:
     def __init__(self, x, y):
         self.x = x
-        self.y = y
+        self.y = y - 3
 
     def setX(self, newValue):
         self.x = newValue

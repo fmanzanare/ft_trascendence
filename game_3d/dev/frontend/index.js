@@ -1,7 +1,7 @@
 import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
 
-window.apiUrl = 'http://10.18.200.250:8000/api/';
+window.apiUrl = 'http://localhost:8000/api/';
 
 window.addEventListener("popstate", navigateTo("/home"));
 
