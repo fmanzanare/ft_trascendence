@@ -11,7 +11,7 @@ export function openNewSocket(data) {
 
 	const remoteSocket = new WebSocket(
 		'ws://'
-		+ 'localhost:8000'
+		+ '10.18.200.250:8000'
 		+ '/ws/remote/'
 		+ id
 		+ '/'
@@ -24,19 +24,22 @@ export function openNewSocket(data) {
 			$loading.classList.remove('d-none');
 			remoteSocket.send(JSON.stringify({
 				"firstConnection": true,
-				"hostId": id
+				"hostId": id,
+				"userJwt": sessionStorage.getItem('pongToken')
 			}))
 		}
 		else {
             remoteSocket.send(JSON.stringify({
                 'gameReady': true,
-				'hostId': id
+				'hostId': id,
+				'userJwt': sessionStorage.getItem('pongToken')
             }));
 		}
 	}
 
 	remoteSocket.onmessage = function(e) {
 		const data = JSON.parse(e.data)
+
 		if (data.gameReady) {
 			$loading.classList.add('d-none');
 			$divSelect.classList.add('d-none');
@@ -46,14 +49,55 @@ export function openNewSocket(data) {
 		if (data.gameData || data.scoreData) {
 			game.getReceivedDataFromWS(data);
 		}
+		if (data.gameEnd) {
+			let container = document.getElementById('gameDiv').parentElement;
+			let gameDiv = document.querySelector('canvas');
+			let winnerDiv = document.createElement('p');
+			if (
+				(data.gameEnd.winner == 1 && host) ||
+				(data.gameEnd.winner == 2 && !host)
+			) {
+				winnerDiv.innerHTML = `Congratulations! You win!`;
+				gameDiv.remove()
+				container.appendChild(winnerDiv);
+				remoteSocket.close();
+				// TODO - SEND REQUEST TO ENDPOINT TO REGISTER RESULTS
+			} else {
+				winnerDiv.innerHTML = `Ups! You loss!`;
+				gameDiv.remove()
+				container.appendChild(winnerDiv);
+				remoteSocket.close();
+				const $token = sessionStorage.getItem('pongToken')
+				const $resultData = new URLSearchParams();
+				$resultData.append('player_1', id);
+				$resultData.append('player_2', userId);
+				$resultData.append('player_1_score', data.gameEnd.pOneScore);
+				$resultData.append('player_2_score', data.gameEnd.pTwoScore);
+				$resultData.append('created_at', data.gameEnd.gameStart);
+				$resultData.append('updated_at', data.gameEnd.finishTime);
+				fetch("http://10.18.200.250:8000/api/remote/register-result", {
+					method: "POST",
+					headers: {
+						"Authorization": $token
+					},
+					body: $resultData
+				})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Hubo un problema al realizar la solicitud.');
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log(data)
+				})
+
+			}
+		}
 	}
 
 	remoteSocket.onclose = function (e) {
 		console.log("Connection closed unexpectedly")
-		remoteSocket.send(JSON.stringify({
-			'closeConnection': true,
-			'userId': userId
-		}));
 	}
 
 }

@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from http import HTTPStatus
 from pongue.views import jwt_required, get_user_from_jwt
-from pongue.models import PongueUser
+from pongue.models import PongueUser, GameResults
+import json
 
 def check_opened_game_room(user):
 	"""
@@ -58,3 +59,36 @@ def cancel_find_game(request):
 	return JsonResponse(status=HTTPStatus.OK, data={
 		"debug": "game cancelled successfully"
 	})
+
+@jwt_required
+def register_result(request):
+	player_1 = request.POST.get("player_1")
+	player_2 = request.POST.get("player_2")
+	player_1_score = request.POST.get("player_1_score")
+	player_2_score = request.POST.get("player_2_score")
+	created_at = request.POST.get("created_at")
+	updated_at = request.POST.get("updated_at")
+
+	user1 = PongueUser.objects.get(id=player_1)
+	user1.status = PongueUser.Status.ONLINE
+	user1.save()
+	user2 = PongueUser.objects.get(id=player_2)
+	user2.status = PongueUser.Status.ONLINE
+	user2.save()
+
+	game_result = GameResults()
+	game_result.player_1 = user1
+	game_result.player_2 = user2
+	game_result.player_1_score = player_1_score
+	game_result.player_2_score = player_2_score
+	game_result.created_at = created_at
+	game_result.updated_at = updated_at
+	game_result.save()
+
+	# TODO - SAVE USER POINTS, WINS AND LOSSES.
+
+
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"debug": "received"
+	})
+

@@ -6,6 +6,8 @@ import copy
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .game import Game
+from pongue.models import GameResults, PongueUser
+from pongue.views import jwt_required, get_user_from_jwt
 
 
 class RemoteConsumer(AsyncWebsocketConsumer):
@@ -38,7 +40,7 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		# Leave from Room group
 		print("disconnecting")
 		# TODO - NOTIFIY PLAYERS THAT CONNECTION HAS BEEN CLOSED !!!
-		if (self.game_task != None):
+		if (hasattr(self, "game_task") and self.game_task != None):
 			self.game_task.cancel()
 		del self.game
 		if (self.room_group_name in self.rooms):
@@ -95,6 +97,7 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 			return
 
 		if ("gameReady" in game_info_json.keys()):
+			self.rooms[self.room_group_name]["player2Jwt"] = game_info_json["userJwt"]
 			self.game = self.rooms[self.room_group_name]["game"]
 			ready = game_info_json["gameReady"]
 			await self.channel_layer.group_send(
@@ -104,6 +107,11 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 				}
 			)
 			return
+		
+		if ("firstConnection" in game_info_json.keys()):
+			self.rooms[self.room_group_name]["player1Jwt"] = game_info_json["userJwt"]
+			return
+
 
 	# Recive data from Room group
 	async def game_info(self, event):
@@ -137,9 +145,8 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		return
 
 	async def game_end(self, event):
-		# TODO - SEND INFO (WINNER) TO BE DISPLAYED ON FRONT SIDE
 		await self.send(text_data=json.dumps({
-			"gameEnd": True
+			"gameEnd": event
 		}))
 		return
 

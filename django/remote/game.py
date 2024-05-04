@@ -1,5 +1,7 @@
 import random, json, asyncio, time
 from .game_classes import *
+from pongue.models import PongueUser, GameResults
+from pongue.views import jwt_required, get_user_from_jwt
 
 class Game:
     def __init__(self, socket, pOneId, pTwoId):
@@ -151,8 +153,9 @@ class Game:
                 "winner": winner,
                 "startTime": gameStart,
                 "finishTime": finishTime,
-                "duration": gameStart - finishTime, 
+                "duration": finishTime - gameStart, 
         }
+
         await self.socket.channel_layer.group_send(
             self.socket.room_group_name, finishedGame
         )
