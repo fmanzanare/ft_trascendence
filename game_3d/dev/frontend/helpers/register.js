@@ -116,7 +116,7 @@ export function singPushButton()
 				$username.classList.add("border-danger");
 				$errorMessage.textContent = "Username in use";
 			}
-			else if ($error == "password_too_common")
+			else if ($error == "password_too_common" || $error == "password_too_similar")
 			{
 				$pass.classList.add("border-danger");
 				$errorMessage.textContent = "Insecure password";

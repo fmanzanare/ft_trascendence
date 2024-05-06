@@ -14,16 +14,29 @@ export default class extends AbstractView {
 						<h1 class="display-1 fw-bold mb-3 text-uppercase text-center" style="color:#80dbef;">Tournament</h1>	
 					</div>
 					<div class="position-absolute top-50 start-50 translate-middle">
-						<div class="fs-3 p-5 text-center" id="playOnline" role="button" style="background-color: #5272c1;">
-							<div id="joinTournament">
-								<p class="mt-4">Take part in an 8-player tournament</p>
-								<p>in which you will play 3 best-of-5 matches</p>
-								<p>and get extra points in the standings</p>
+						<div class="card h-60" style="border-radius: 1rem; background-color: #5272c1;">
+							<div class="card-body p-5 text-center" >
+								<div class=" md-5 mt-md-4 pb-5">
+									<div id="joinTournament">
+										<p class="mt-4">Take part in an 4-player tournament</p>
+										<div class="form-outline form-white mb-4">
+											<input type="text" id="nickTournament" placeholder="Nick for the tournament" class="inputLogIn form-control form-control-lg"/>
+										</div>
+										<div id="errorDiv">
+											<p class="text-danger" id="errorMessage"></p>
+										</div>
+										<div class="d-grid gap-2">
+											<button id="playOnline" class="btn btn-primary btn-dark" type="submit">Join tournament</button>
+										</div>
+									</div>
+								</div>    
 							</div>
-							<div id="loading" class="fs-3 d-none d-flex justify-content-center align-items-center" style="height: 100%;">
-								<div class="spinner-border" role="status">
-									<span class="visually-hidden">Looking for a rival</span>
-								</div>
+						</div>
+					</div>
+					<div class="position-absolute top-50 start-50 translate-middle">
+						<div id="loading" class="fs-3 d-none d-flex justify-content-center align-items-center" style="height: 100%;">
+							<div class="spinner-border" role="status">
+								<span class="visually-hidden">Looking for a rival</span>
 							</div>
 						</div>
 					</div>
