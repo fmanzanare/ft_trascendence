@@ -6,6 +6,7 @@ import { Player } from "./Player";
 import { Renderer } from "./Renderer";
 import { Score } from "./Score";
 import { Spotlight } from "./Spotlight"
+import { navigateTo } from "../../../frontend/helpers/navigateto";
 import { Camera } from './Camera';
 import { GameSizes } from './Sizes';
 
@@ -85,13 +86,11 @@ export class Game {
 		this.renderer.getRenderer().setAnimationLoop( () => {
 			let winner = this.animation.animate();
 			if (winner == 1) {
-				// TODO -> Add proper div, styles, etc. and two buttons (play again, go back to gameMode)
-				// Reset this.score.resetScore() if the user wants to play another game.
-				this.container.parentElement.innerHTML = '<p>Player 1 wins</p>';
+				sessionStorage.setItem('winner', "Player one");
+				navigateTo("/home");
 			} else if (winner == 2) {
-				// TODO -> Add proper div, styles, etc. and two buttons (play again, go back to gameMode)
-				// Reset this.score.resetScore() if the user wants to play another game.
-				this.container.parentElement.innerHTML = '<p>Player 2 wins</p>';
+				sessionStorage.setItem('winner', "Player two");
+				navigateTo("/home");
 			}
 		});
 		window.addEventListener('keydown', (e) => {
