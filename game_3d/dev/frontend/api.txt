@@ -2,8 +2,4 @@ Pedir confirmacion al usuario cuando esta jungado una partida y quiere cambiar v
 
 Generar pantalla de Win/Loss en game mode cuando termina un juego con boton de salir.
 
-GameLocal añadir pantalla/div de Win + boton de salir.
-
-En pantalla Loading añadir boton de cancelar busqueda de partida.
-
 Para despues (Chat) -> Desbordabiendo vertical del div de mensajes para hacer scroll y ubicacion de mensajes (derecha / izquierda)

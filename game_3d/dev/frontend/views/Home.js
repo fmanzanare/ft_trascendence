@@ -37,15 +37,18 @@ export default class extends AbstractView {
                                         </div>
                                     </div>
                                 </div>
-                                <div id="loading" class="d-none d-flex justify-content-center align-items-center" style="height: 100%;">
+                                <div id="loading" class="d-none d-flex flex-column justify-content-center align-items-center h-100">
                                     <div class="spinner-border" role="status">
                                         <span class="visually-hidden">Looking for a rival</span>
+                                    </div>
+                                    <div style="margin-top:20px">
+                                        <button id="cancelGame" class="mt-1 btn btn-secondary btn-lg">Cancelar</button>
                                     </div>
                                 </div>
                             </div>
                             <div id="winnerDiv" class="d-none position-relative" style="Height:${$Height}px;width:${$width}px;background-color:#1e1e1e">
                                 <div class="d-flex flex-column justify-content-evenly align-items-center h-100">
-                                    <h1 id="playerWinner" style="color:white;"> dfadsfdfs </h1>
+                                    <h1 id="playerWinner" style="color:white;"></h1>
                                     <button id="btnCloseWinner" class="btn btn-secondary btn-lg">Close</button>
                                 </div>
                             </div>
