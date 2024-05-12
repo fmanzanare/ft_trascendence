@@ -3,10 +3,10 @@ import random
 import asyncio
 import copy
 
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .game import Game
-from pongue.models import GameResults, PongueUser
+from pongue.models import GameResults, PongueUser, Tournament
 from pongue.views import jwt_required, get_user_from_jwt
 
 
@@ -150,3 +150,77 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		}))
 		return
 
+class TournamentConsumer(AsyncWebsocketConsumer):
+	rooms = {}
+
+	async def connect(self):
+		self.room_name = self.scope["url_route"]["kwargs"]["player_id"]
+		self.room_group_name = f"tournament_{self.room_name}"
+
+		if self.room_group_name in self.rooms and "tournament" in self.rooms[self.room_group_name]:
+			await self.accept()
+			await self.close(4001)
+			return
+
+		if self.room_group_name not in self.rooms.keys():
+			self.rooms[self.room_group_name] = {"players": {"player1": -1}}
+		elif "player2" not in self.rooms[self.room_group_name]["players"].keys():
+			self.rooms[self.room_group_name]["players"]["player2"] = -1
+		elif "player3" not in self.rooms[self.room_group_name]["players"].keys():
+			self.rooms[self.room_group_name]["players"]["player3"] = -1
+		else:
+			self.rooms[self.room_group_name]["players"]["player4"] = -1
+			self.rooms[self.room_group_name]["tournament"] = True
+
+		# Join Room group
+		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+
+		await self.accept()
+
+	async def disconnect(self):
+		# Leave from Room group
+		print("disconnecting")
+		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+	# Receive data from WebSocket
+	async def receive(self, text_data):
+		print(text_data)
+		data = json.loads(text_data)
+		print(data)
+
+		if ("register" in data.keys()):
+			if (self.rooms[self.room_group_name]["players"]["player1"] == -1):
+				self.rooms[self.room_group_name]["players"]["player1"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+			elif (self.rooms[self.room_group_name]["players"]["player2"] == -1):
+				self.rooms[self.room_group_name]["players"]["player2"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+			elif (self.rooms[self.room_group_name]["players"]["player3"] == -1):
+				self.rooms[self.room_group_name]["players"]["player3"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+			elif (self.rooms[self.room_group_name]["players"]["player4"] == -1):
+				self.rooms[self.room_group_name]["players"]["player4"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+				userP1 = self.rooms[self.room_group_name]["players"]["player1"]
+				userP1.status = PongueUser.Status.INTOURNAMENT
+				await sync_to_async(userP1.save)()
+				userP2 = self.rooms[self.room_group_name]["players"]["player2"]
+				userP2.status = PongueUser.Status.INTOURNAMENT
+				await sync_to_async(userP2.save)()
+				userP3 = self.rooms[self.room_group_name]["players"]["player3"]
+				userP3.status = PongueUser.Status.INTOURNAMENT
+				await sync_to_async(userP3.save)()
+				userP4 = self.rooms[self.room_group_name]["players"]["player4"]
+				userP4.status = PongueUser.Status.INTOURNAMENT
+				await sync_to_async(userP4.save)()
+
+			await self.channel_layer.group_send(
+				self.room_group_name, {
+					"type": "new.player",
+					"hostId": self.rooms[self.room_group_name]["players"]["player1"].id,
+					"userId": data["userId"]
+				}
+			)
+			return
+		
+	async def new_player(self, event):
+		await self.send(text_data=json.dumps({
+			"newPlayer": event
+		}))
+		return

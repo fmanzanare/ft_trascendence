@@ -561,3 +561,25 @@ def ranking(request):
 	return JsonResponse(status=HTTPStatus.OK, data={
 		"users": userDtos
 	})
+
+@jwt_required
+def nickname(request):
+	if request.method == "GET":
+		user = get_user_from_jwt(request)
+		return JsonResponse({
+			"userId": user.id,
+			"nickname": user.nickname
+		})
+	elif request.method == "POST":
+		user = get_user_from_jwt(request)
+		if (request.POST.get("nickname") != ""):
+			user.nickname = request.POST.get("nickname")
+		else:
+			return JsonResponse(HTTPStatus.BAD_REQUEST, {
+				"error": "Nickname field must be filled"
+			})
+		user.save()
+		return JsonResponse({
+			"userId": user.id,
+			"nickname": user.nickname
+		})

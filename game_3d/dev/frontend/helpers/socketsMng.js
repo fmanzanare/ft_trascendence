@@ -101,3 +101,42 @@ export function openNewSocket(data) {
 	}
 
 }
+
+export function openNewSocketTournament(data) {
+
+	const id = data.roomId;
+	const userId = data.userId;
+	const host = id == userId;
+
+	const $loading = document.getElementById("loading");
+	const $divSelect = document.getElementById("blackDiv");
+	const $instructionsOne = document.getElementById("instructions");
+
+	const remoteSocket = new WebSocket(
+		'ws://'
+		+ 'localhost:8000'
+		+ '/ws/tournament/'
+		+ id
+		+ '/'
+	)
+
+	remoteSocket.onopen = function(e) {
+		console.log("connection stablished")
+		remoteSocket.send(JSON.stringify({
+			'register': true,
+			'hostId': id,
+			'userId': userId,
+			'userJwt': sessionStorage.getItem('pongToken')
+		}));
+	}
+
+	remoteSocket.onmessage = function(e) {
+		const data = JSON.parse(e.data)
+
+		console.log(data)
+	}
+
+	remoteSocket.onclose = function (e) {
+		console.log("Connection closed unexpectedly")
+	}
+}
