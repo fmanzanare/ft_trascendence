@@ -13,6 +13,7 @@ class Game:
         self.score = Score()
         self.socket = socket
         self.ready = False
+        self.winner = False
 
     def calculateRandomBallDir(self):
         initDirX = -1 if random.random() < 0.5 else 1
@@ -108,6 +109,8 @@ class Game:
             self.restartPositions()
             scoreData = {
                 "type": "add.point",
+                "pOneId": self.pOneId,
+                "pTwoId": self.pTwoId,
                 "pOneScore": self.score.pOne,
                 "pTwoScore": self.score.pTwo
             }
@@ -124,6 +127,8 @@ class Game:
             gamePositions = {
                 "type": "game.info",
                 "gameData": True,
+                "pOneId": self.pOneId,
+                "pTwoId": self.pTwoId,
                 "ballX": self.ball.xPos,
                 "ballY": self.ball.yPos,
                 "pOneY": self.pOne.yPos,
@@ -144,13 +149,15 @@ class Game:
 
             await asyncio.sleep(0.033)
 
-        winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
+        self.winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
         finishTime = time.time()
         finishedGame = {
                 "type": "game.end",
+                "pOneId": self.pOneId,
+                "pTwoId": self.pTwoId,
                 "pOneScore": self.score.pOne,
                 "pTwoScore": self.score.pTwo,
-                "winner": winner,
+                "winner": self.winner,
                 "startTime": gameStart,
                 "finishTime": finishTime,
                 "duration": finishTime - gameStart, 

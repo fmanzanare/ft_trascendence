@@ -119,6 +119,7 @@ export function openNewSocketTournament(data) {
 		+ id
 		+ '/'
 	)
+	const game = new GameRemote(remoteSocket, userId, host)
 
 	remoteSocket.onopen = function(e) {
 		console.log("connection stablished")
@@ -132,8 +133,19 @@ export function openNewSocketTournament(data) {
 
 	remoteSocket.onmessage = function(e) {
 		const data = JSON.parse(e.data)
-
 		console.log(data)
+
+		if (data.gameReady && (data.pOneId == userId || data.pTwoId == userId)) {
+			$loading.classList.add('d-none');
+			$divSelect.classList.add('d-none');
+			$instructionsOne.classList.add('d-none');
+			game.startRemoteGame()
+		}
+		if (data.gameData || data.scoreData) {
+			if (data.pOneId == userId || data.pTwoId == userId) {
+				game.getReceivedDataFromWS(data);
+			}
+		}
 	}
 
 	remoteSocket.onclose = function (e) {

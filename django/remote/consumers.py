@@ -154,6 +154,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 	rooms = {}
 
 	async def connect(self):
+		if (self.scope["user"].is_authenticated):
+			self.accept()
+		else:
+			self.close()
+
 		self.room_name = self.scope["url_route"]["kwargs"]["player_id"]
 		self.room_group_name = f"tournament_{self.room_name}"
 
@@ -184,9 +189,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	# Receive data from WebSocket
 	async def receive(self, text_data):
-		print(text_data)
 		data = json.loads(text_data)
-		print(data)
 
 		if ("register" in data.keys()):
 			if (self.rooms[self.room_group_name]["players"]["player1"] == -1):
@@ -210,6 +213,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				userP4.status = PongueUser.Status.INTOURNAMENT
 				await sync_to_async(userP4.save)()
 
+				await self.channel_layer.group_send(
+					self.room_group_name, {
+						"type": "matchmaking_bracket",
+						"match1": "{}, {}".format(self.rooms[self.room_group_name]["players"]["player1"].username, self.rooms[self.room_group_name]["players"]["player2"].username),
+						"match2": "{}, {}".format(self.rooms[self.room_group_name]["players"]["player3"].username, self.rooms[self.room_group_name]["players"]["player4"].username)
+					}
+				)
+
+				# TODO - Tournament logic (loop until we got winners, start final match, and get final winner).
+				self.build_tournament()
+
+				return
+
 			await self.channel_layer.group_send(
 				self.room_group_name, {
 					"type": "new.player",
@@ -224,3 +240,99 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			"newPlayer": event
 		}))
 		return
+
+	async def matchmaking_bracket(self, event):
+		await self.send(text_data=json.dumps({
+			"bracket": event
+		}))
+	
+	async def game_ready(self, event):
+		await self.sent(text_data=json.dumps({
+			"gameReady": True,
+			"pOneId": event["pOneId"],
+			"pTwoId": event["pTwoId"]
+		}))
+
+	async def game_info(self, event):
+		await self.send(text_data=json.dumps({
+			"gameData": True,
+			"ballPosX": self.game.ball.xPos,
+			"ballPosY": self.game.ball.yPos,
+			"pOnePosX": self.game.pOne.xPos,
+			"pOnePosY": self.game.pOne.yPos,
+			"pTwoPosX": self.game.pTwo.xPos,
+			"pTwoPosY": self.game.pTwo.yPos,
+		}))
+
+	async def add_point(self, event):
+		await self.send(text_data=json.dumps({
+			"scoreData": True,
+			"pOneScore": self.game.score.pOne,
+			"pTwoScore": self.game.score.pTwo
+		}))
+
+	# TODO - Receive data from Game class when game ends.
+	async def game_end(self, event):
+		return
+
+	async def build_tournament(self):	
+		# TODO - Issues going into build_tournament...
+		print("GOES INTO build_tournament")
+
+		self.rooms[self.room_group_name] = {"games": {"match1": False, "match2": False, "match3": False}}
+
+		self.rooms[self.room_group_name]["players"]["player1"] = {"ready": False}
+		self.rooms[self.room_group_name]["players"]["player2"] = {"ready": False}
+		self.rooms[self.room_group_name]["players"]["player3"] = {"ready": False}
+		self.rooms[self.room_group_name]["players"]["player4"] = {"ready": False}
+
+		p1Ready = self.rooms[self.room_group_name]["players"]["player1"]["ready"]
+		p2Ready = self.rooms[self.room_group_name]["players"]["player2"]["ready"]
+		p3Ready = self.rooms[self.room_group_name]["players"]["player3"]["ready"]
+		p4Ready = self.rooms[self.room_group_name]["players"]["player4"]["ready"]
+
+		# TODO - Loop to get players ready State.
+
+		player1 = self.rooms[self.room_group_name]["players"]["player1"]
+		player2 = self.rooms[self.room_group_name]["players"]["player2"]
+		player3 = self.rooms[self.room_group_name]["players"]["player3"]
+		player4 = self.rooms[self.room_group_name]["players"]["player4"]
+
+		# TODO - Loop to get a Winner in Semifinals.
+		game1 = self.rooms[self.room_group_name]["games"]["match1"] = Game(self, player1.id, player2.id)
+		game2 = self.rooms[self.room_group_name]["games"]["match2"] = Game(self, player3.id, player4.id)
+		print("LEAVES Games CONSTRUCTION")
+
+		asyncio.create_task(game1.runGame())
+		await self.channel_layer.group_send(
+			self.room_group_name, {
+				"type": "game.ready",
+				"pOneId": player1.id,
+				"pTwoId": player2.id 
+			}
+		)
+		print("RUN GAME 1")
+
+		asyncio.create_task(game2.runGame())
+		await self.channel_layer.group_send(
+			self.room_group_name, {
+				"type": "game.ready",
+				"pOneId": player3.id,
+				"pTwoId": player4.id 
+			}
+		)
+		print("RUN GAME 2")
+
+		winner1 = False
+		winner2 = False
+		while not winner1 or not winner2:
+			winner1 = game1.winner
+			winner2 = game2.winner
+
+
+		# TODO - Loop to get a Winner in Final.
+
+
+
+
+
