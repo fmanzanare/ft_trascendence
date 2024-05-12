@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 import requests
 import os
-from .models import GameResults, PongueUser
+from .models import GameResults, PongueUser, RankingUserDTO
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
@@ -546,7 +546,18 @@ def user_status(request):
 @jwt_required
 def ranking(request):
 	users = PongueUser.objects.all().order_by("-points")
-	data = serializers.serialize("json", users)
+	userDtos = []
+	for user in users:
+		userDto: RankingUserDTO = RankingUserDTO.toRankingUserDTO(user)
+		userDtos.append({
+			"id": userDto.id,
+			"username": userDto.username,
+			"games_won": userDto.games_won,
+			"games_lost": userDto.games_lost,
+			"games_played": userDto.games_played,
+			"tournaments": userDto.tournaments,
+			"points": userDto.points
+		})
 	return JsonResponse(status=HTTPStatus.OK, data={
-		"users": json.loads(data)
+		"users": userDtos
 	})

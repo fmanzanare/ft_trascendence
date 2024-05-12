@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.core import serializers
+from dataclasses import dataclass
+
 
 # Create your models here.
 class PongueUser(AbstractUser):
@@ -59,3 +62,23 @@ class GameResults(models.Model):
 	def __str__(self):
 		return f"{self.player_1} vs {self.player_2} - {self.player_1_score} - {self.player_2_score}"
 
+@dataclass
+class RankingUserDTO:
+	id = 0
+	username = ""
+	games_won = 0
+	games_lost = 0
+	games_played = 0
+	tournaments = 0
+	points = 0
+
+	def toRankingUserDTO(user: PongueUser):
+		userDto = RankingUserDTO()
+		userDto.id = user.id
+		userDto.username = user.username
+		userDto.games_won = user.games_won
+		userDto.games_lost = user.games_lost
+		userDto.games_played = user.games_played
+		userDto.tournaments = user.tournaments
+		userDto.points = user.points
+		return userDto
