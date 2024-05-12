@@ -1,28 +1,5 @@
-log -> api/login -> si -> token -> entra donde me diga
-				 -> no -> fuera
-				 	   -> 2f input
-	-> token -> api/token -> si -> lo que sea
-						  -> no -> login
-
-registre -> api/rigister -> usuario nombre pass1 pass2
-
-tournament -> api/tournament/create-room -> ...
-
-ranking -> api/ranking -> obtienes los 10 primeros con sus datos
-
-perfil	-> historial -> api/historial
-		-> clave 2f
-		-> foto perfil -> ...
-
-X4ZQE5QXD3IFFHQQZSF67AWF6Z5FG4CIDM5YIGMFNKJUN4LMPYMG66E6DHZXO6XYJ6DWG4P3HDRXL4O4FA4UPNC3JVKKPND4NQ7LODI=
-
-
 Pedir confirmacion al usuario cuando esta jungado una partida y quiere cambiar ventana
 
 Generar pantalla de Win/Loss en game mode cuando termina un juego con boton de salir.
-
-GameLocal añadir pantalla/div de Win + boton de salir.
-
-En pantalla Loading añadir boton de cancelar busqueda de partida.
 
 Para despues (Chat) -> Desbordabiendo vertical del div de mensajes para hacer scroll y ubicacion de mensajes (derecha / izquierda)

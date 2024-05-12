@@ -2,6 +2,10 @@ import { runGame } from "../../game3D/src/old_version/scripts";
 import { Game } from "../../game3D/src/class/Game";
 import { openNewSocket } from "./socketsMng";
 
+function isEmptyOrSpaces(str) {
+    return str === null || str.match(/^ *$/) !== null;
+}
+
 export function playOnline()
 {
 	if (document.getElementById("selectMode"))
@@ -14,6 +18,13 @@ export function playOnline()
 	{
 		// Se ejecuta si se clicka el botón de buscar torneo
 		const $joinTournament = document.getElementById("joinTournament");
+		const $nickName = document.getElementById("nickTournament");
+		const $errorMessage = document.getElementById("errorMessage");
+		if (isEmptyOrSpaces($nickName.value))
+		{
+			$errorMessage.textContent = "campo obligatorio";
+			return ;
+		}
 		$joinTournament.classList.add('d-none');
 	}
 	const $token = sessionStorage.getItem('pongToken');

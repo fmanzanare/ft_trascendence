@@ -1,6 +1,7 @@
 import { RED_RGTC1_Format } from "three";
 import { loginPushButton, singPushButton} from "./register.js";
 import { twoFactorPushButton } from "./twoFactor.js"
+import { navigateTo } from "./navigateto.js";
 
 function LogInEnterKeyPress(event)
 {
@@ -24,6 +25,11 @@ function twoFactorEnterKeyPress(event)
 		event.preventDefault();
 		twoFactorPushButton();
 	}
+}
+
+export function closeWinnerMsg(){
+	sessionStorage.removeItem('winner');
+	navigateTo("/home")
 }
 
 export function addKeyPressListener() {
