@@ -35,7 +35,6 @@ def find_game(request):
 	user.save()
 	playerId = check_opened_game_room(user)
 	if playerId != -1:
-		print(user.status)
 		return JsonResponse(status=HTTPStatus.OK, data={
 			"debug": "player with ws already opened",
 			"roomId": playerId,
@@ -43,7 +42,6 @@ def find_game(request):
 			"fullGame": True
 		})
 	else:
-		print(user.status)
 		return JsonResponse(status=HTTPStatus.OK, data={
 			"debug": "needs to open new game_room",
 			"roomId": user.id,

@@ -11,7 +11,7 @@ export function openNewSocket(data) {
 
 	const remoteSocket = new WebSocket(
 		'ws://'
-		+ '10.18.200.250:8000'
+		+ 'localhost:8000'
 		+ '/ws/remote/'
 		+ id
 		+ '/'
@@ -75,7 +75,7 @@ export function openNewSocket(data) {
 				$resultData.append('player_2_score', data.gameEnd.pTwoScore);
 				$resultData.append('created_at', data.gameEnd.gameStart);
 				$resultData.append('updated_at', data.gameEnd.finishTime);
-				fetch("http://10.18.200.250:8000/api/remote/register-result", {
+				fetch("http://localhost:8000/api/remote/register-result", {
 					method: "POST",
 					headers: {
 						"Authorization": $token

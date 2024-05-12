@@ -534,3 +534,11 @@ def profile(request):
 			"redirect_url": "",
 			"context": {},
 		})
+
+@jwt_required
+def user_status(request):
+	user = get_user_from_jwt(request)
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"userId": user.id,
+		"userStatus": user.status
+	})

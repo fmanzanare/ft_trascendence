@@ -28,7 +28,7 @@ export function playOnline()
 		$joinTournament.classList.add('d-none');
 	}
 	const $token = sessionStorage.getItem('pongToken');
-	fetch("http://10.18.200.250:8000/api/remote/find-game", {
+	fetch("http://localhost:8000/api/remote/find-game", {
 		method: "GET",
 		headers: {
 			"Authorization": $token
@@ -49,6 +49,22 @@ export function playOnline()
 
 export function playLocal()
 {
+	const $token = sessionStorage.getItem('pongToken');
+	fetch("http://localhost:8000/api/user_status/", {
+		method: "GET",
+		headers: {
+			"Authorization": $token
+		}
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Hubo un problema al realizar la solicitud.');
+		}
+		return response.json();
+	})
+	.then(data => {
+		console.log(data)
+	})
 	const $divSelect = document.getElementById("blackDiv");
 	$divSelect.classList.add('d-none');
 	const $instructionsOne = document.getElementById("instructions");
