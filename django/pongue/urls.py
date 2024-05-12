@@ -16,4 +16,5 @@ urlpatterns = [
 	path("api/profile/", views.profile, name="profile"),
 	path("api/get2fa/", views.get2fa, name="get2fa"),
 	path("api/user_status/", views.user_status, name="user_status"),
+	path("api/ranking/", views.ranking, name="ranking"),
 ]

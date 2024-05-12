@@ -69,9 +69,21 @@ def register_result(request):
 
 	user1 = PongueUser.objects.get(id=player_1)
 	user1.status = PongueUser.Status.ONLINE
-	user1.save()
 	user2 = PongueUser.objects.get(id=player_2)
 	user2.status = PongueUser.Status.ONLINE
+
+	if (player_1_score > player_2_score):
+		user1.points += 10
+		user1.games_won += 1
+		user2.games_lost += 1
+	else:
+		user2.points += 10
+		user2.games_won += 1
+		user1.games_lost += 1
+	user1.games_played += 1
+	user2.games_played += 1
+
+	user1.save()
 	user2.save()
 
 	game_result = GameResults()
@@ -83,10 +95,6 @@ def register_result(request):
 	game_result.updated_at = updated_at
 	game_result.save()
 
-	# TODO - SAVE USER POINTS, WINS AND LOSSES.
-
-
 	return JsonResponse(status=HTTPStatus.OK, data={
 		"debug": "received"
 	})
-

@@ -25,10 +25,12 @@ class PongueUser(AbstractUser):
 	games_won = models.IntegerField(default=0, verbose_name="Wins")
 	games_lost = models.IntegerField(default=0, verbose_name="Losses")
 	games_played = models.IntegerField(default=0, verbose_name="Games played")
+	tournaments = models.IntegerField(default=0, verbose_name="Tournaments played")
 	has_2fa = models.BooleanField(default=False, verbose_name="2FA activated")
 	from_42 = models.BooleanField(default=False, verbose_name="42 User")
 	friends = models.CharField(max_length=1000, default="", verbose_name="Friends")
 	# friends = models.ManyToManyField('self', related_name="Friends", symmetrical=False, verbose_name="Friends")
+	points = models.BigIntegerField(default=0, verbose_name="Ranking points")
 
 	class Meta:
 		db_table = "Users"

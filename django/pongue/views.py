@@ -542,3 +542,11 @@ def user_status(request):
 		"userId": user.id,
 		"userStatus": user.status
 	})
+
+@jwt_required
+def ranking(request):
+	users = PongueUser.objects.all().order_by("-points")
+	data = serializers.serialize("json", users)
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"users": json.loads(data)
+	})

@@ -7,6 +7,22 @@ export default class extends AbstractView {
     }
 
     async getHtml() {
+	    const $token = sessionStorage.getItem('pongToken');
+        fetch("http://localhost:8000/api/ranking/", {
+            method: "GET",
+            headers: {
+                "Authorization": $token
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Hubo un problema al realizar la solicitud.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data)
+        })
         let page =
             `
                 <div class="container-fluid py-10 h-100">
