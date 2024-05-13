@@ -1,11 +1,12 @@
 import { router } from "./router.js";
-import { checkJwt, changeUserName } from "./utils.js";
+import { checkJwt, changeUserName, changeState } from "./utils.js";
 
 function tokenTrue(url)
 {
 	const $appElement = document.getElementById("app");
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
+	changeState("online");
 	if ($navElement.classList.contains('d-none'))
 	{
 		$navElement.classList.remove('d-none');

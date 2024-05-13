@@ -27,6 +27,25 @@ function twoFactorEnterKeyPress(event)
 	}
 }
 
+export function changeState(status){
+	const $userStatus = document.getElementById("userStatus");
+	$userStatus.style.color = "blue"
+	if (status == "online")
+	{
+		$userStatus.textContent = "Online"
+		$userStatus.style.color = "#56ba6f"
+	}
+	else if (status == "searchingGame")
+		$userStatus.textContent = "Searching game"
+	else if (status == "searchingTournament")
+		$userStatus.textContent = "Searching tournament"
+	else if (status == "inGame")
+	{
+		$userStatus.textContent = "In game"
+		$userStatus.style.color = "#ff5252"
+	}
+}
+
 export function closeWinnerMsg(){
 	sessionStorage.removeItem('winner');
 	navigateTo("/home")
