@@ -1,4 +1,5 @@
 import { GameRemote } from "../../game3D/src/class/remote/GameRemote";
+import { navigateTo } from "./navigateto";
 
 export function openNewSocket(data) {
 	const id = data.roomId;
@@ -57,15 +58,13 @@ export function openNewSocket(data) {
 				(data.gameEnd.winner == 1 && host) ||
 				(data.gameEnd.winner == 2 && !host)
 			) {
-				winnerDiv.innerHTML = `Congratulations! You win!`;
-				gameDiv.remove()
-				container.appendChild(winnerDiv);
+				sessionStorage.setItem('winner', "You");
+				navigateTo("home")
 				remoteSocket.close();
 				// TODO - SEND REQUEST TO ENDPOINT TO REGISTER RESULTS
 			} else {
-				winnerDiv.innerHTML = `Ups! You loss!`;
-				gameDiv.remove()
-				container.appendChild(winnerDiv);
+				sessionStorage.setItem('winner', "YOUAREALOSSERMAN");
+				navigateTo("home")
 				remoteSocket.close();
 				const $token = sessionStorage.getItem('pongToken')
 				const $resultData = new URLSearchParams();

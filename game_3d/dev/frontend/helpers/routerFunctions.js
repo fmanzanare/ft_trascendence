@@ -34,7 +34,10 @@ export async function routerFunctions(){
 		const $divSelect = document.getElementById("blackDiv");
 		const $divWinner = document.getElementById("winnerDiv");
 		const $playerWinner = document.getElementById("playerWinner");
-		$playerWinner.textContent = $winner + " win"
+		if ($winner == "YOUAREALOSSERMAN")
+			$playerWinner.textContent = "You loss"
+		else
+			$playerWinner.textContent = $winner + " win"
 		$divSelect.classList.add('d-none');
 		$divWinner.classList.remove('d-none');
 	}

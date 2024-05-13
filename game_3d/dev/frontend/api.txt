@@ -1,5 +1,3 @@
 Pedir confirmacion al usuario cuando esta jungado una partida y quiere cambiar ventana
 
-Generar pantalla de Win/Loss en game mode cuando termina un juego con boton de salir.
-
 Para despues (Chat) -> Desbordabiendo vertical del div de mensajes para hacer scroll y ubicacion de mensajes (derecha / izquierda)
