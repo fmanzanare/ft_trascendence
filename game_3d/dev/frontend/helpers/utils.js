@@ -27,23 +27,56 @@ function twoFactorEnterKeyPress(event)
 	}
 }
 
+export function getAlertConfirm(state) {
+    return new Promise((resolve) => {
+        let message;
+        switch (state) {
+            case "Searching game":
+                message = "¿Estás seguro de que deseas dejar de buscar partida?";
+                break;
+            case "Searching tournament":
+                message = "¿Estás seguro de que deseas dejar de buscar torneo?";
+                break;
+            case "In game":
+                message = "¿Estás seguro de que deseas salir del juego?";
+                break;
+            case "In tournament":
+                message = "¿Estás seguro de que deseas salir del torneo?";
+                break;
+            default:
+                console.error("Estado no reconocido:", state);
+                resolve(false); // Resolvemos la promesa con false en caso de estado no reconocido
+                return;
+        }
+
+        const confirmDialog = confirm(message);
+        resolve(confirmDialog);
+    });
+}
+
 export function changeState(status){
 	const $userStatus = document.getElementById("userStatus");
 	$userStatus.style.color = "blue"
-	if (status == "online")
-	{
-		$userStatus.textContent = "Online"
-		$userStatus.style.color = "#56ba6f"
-	}
-	else if (status == "searchingGame")
-		$userStatus.textContent = "Searching game"
-	else if (status == "searchingTournament")
-		$userStatus.textContent = "Searching tournament"
-	else if (status == "inGame")
-	{
-		$userStatus.textContent = "In game"
-		$userStatus.style.color = "#ff5252"
-	}
+	switch (status) {
+        case "Searching game":
+            $userStatus.textContent = "Searching game"
+            break;
+        case "Searching tournament":
+            $userStatus.textContent = "Searching tournament"
+            break;
+        case "In game":
+            $userStatus.textContent = "In game"
+			$userStatus.style.color = "#ff5252"
+            break;
+        case "In tournament":
+            $userStatus.textContent = "In tournament"
+			$userStatus.style.color = "#ff5252"
+            break;
+        default:
+            $userStatus.textContent = "Online"
+			$userStatus.style.color = "#56ba6f"
+            break;
+    }
 }
 
 export function closeWinnerMsg(){

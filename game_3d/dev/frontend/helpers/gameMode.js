@@ -14,7 +14,7 @@ export function playOnline()
 		// Se ejecuta si se clicka el botón de buscar partida online
 		const $selectMode = document.getElementById("selectMode");
 		$selectMode.classList.add('d-none');
-		changeState("searchingGame")
+		changeState("Searching game")
 	}
 	else
 	{
@@ -27,7 +27,7 @@ export function playOnline()
 			$errorMessage.textContent = "campo obligatorio";
 			return ;
 		}
-		changeState("searchingTournament")
+		changeState("Searching tournament")
 		$joinTournament.classList.add('d-none');
 	}
 	const $token = sessionStorage.getItem('pongToken');
@@ -68,7 +68,7 @@ export function playLocal()
 	.then(data => {
 		console.log(data)
 	})
-	changeState("inGame");
+	changeState("In game");
 	const $divSelect = document.getElementById("blackDiv");
 	$divSelect.classList.add('d-none');
 	const $instructionsOne = document.getElementById("instructions");
