@@ -78,8 +78,8 @@ export function playOnline()
 			openNewSocketTournament(data)
 		})
 	}
-	// const $loading = document.getElementById("loading");
-	// $loading.classList.remove('d-none');
+	const $loading = document.getElementById("loading");
+	$loading.classList.remove('d-none');
 }
 
 export function playLocal()

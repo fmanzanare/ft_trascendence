@@ -15,6 +15,7 @@ class PongueUser(AbstractUser):
 		LTOURNAMENT ='L_TOURNAMENT', _('Looking for a tournament')
 		INGAME = 'IN_GAME', _('Playing a game')
 		INTOURNAMENT = 'IN_TOURNAMENT', _('Registered on a tournament')
+		HTOURNAMENT = 'H_TOURNAMENT', _('Hosting a tournament')
 
 	id = models.AutoField(primary_key=True)
 	username = models.CharField(max_length=50, unique=True, verbose_name="Username")

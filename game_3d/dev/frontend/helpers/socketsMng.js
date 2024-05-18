@@ -107,10 +107,9 @@ export function openNewSocketTournament(data) {
 	const id = data.roomId;
 	const userId = data.userId;
 	const host = id == userId;
+	let matchId = 0;
 
 	const $loading = document.getElementById("loading");
-	const $divSelect = document.getElementById("blackDiv");
-	const $instructionsOne = document.getElementById("instructions");
 
 	const remoteSocket = new WebSocket(
 		'ws://'
@@ -133,16 +132,29 @@ export function openNewSocketTournament(data) {
 
 	remoteSocket.onmessage = function(e) {
 		const data = JSON.parse(e.data)
-		console.log(data)
 
-		if (data.gameReady && (data.pOneId == userId || data.pTwoId == userId)) {
-			$loading.classList.add('d-none');
-			$divSelect.classList.add('d-none');
-			$instructionsOne.classList.add('d-none');
-			game.startRemoteGame()
+		if (data.bracket) {
+			console.log('-----> Brackets <-----')
+			console.log(data)
+			if (data.bracket.match1Ids.split(',')[0] == userId || data.bracket.match1Ids.split(',')[1] == userId ) {
+				matchId = 1
+			} else {
+				matchId = 2
+			}
+		}
+
+		if (data.ids) {
+			console.log(data)
+			if (data.ids.gameReady && (data.ids.pOneId == userId || data.ids.pTwoId == userId)) {
+				$loading.classList.add('d-none');
+				let gameDiv = document.createElement('div')
+				gameDiv.setAttribute("id", "gameDiv")
+				$loading.parentElement.appendChild(gameDiv)
+				game.startRemoteGame()
+			}
 		}
 		if (data.gameData || data.scoreData) {
-			if (data.pOneId == userId || data.pTwoId == userId) {
+			if (data.matchId == matchId) {
 				game.getReceivedDataFromWS(data);
 			}
 		}
