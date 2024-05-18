@@ -182,7 +182,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 		await self.accept()
 
-	async def disconnect(self):
+	async def disconnect(self, close_code):
 		# Leave from Room group
 		print("disconnecting")
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -234,6 +234,37 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				}
 			)
 			return
+
+		if ("playerMovement" in data.keys()):
+			userP1: PongueUser = self.rooms[self.room_group_name]["players"]["player1"]
+			userP2: PongueUser = self.rooms[self.room_group_name]["players"]["player2"]
+			userP3: PongueUser = self.rooms[self.room_group_name]["players"]["player3"]
+			userP4: PongueUser = self.rooms[self.room_group_name]["players"]["player4"]
+
+			game1: Game = self.rooms[self.room_group_name]["games"]["match1"]
+			game2: Game = self.rooms[self.room_group_name]["games"]["match2"]
+
+			if (data["userId"] == userP1.id):
+				if (data["movementDir"] == 1):
+					game1.pOne.setUpMovement(data["playerMovement"])
+				else:
+					game1.pOne.setDownMovement(data["playerMovement"])
+			elif (data["userId"] == userP2.id):
+				if (data["movementDir"] == 1):
+					game1.pTwo.setUpMovement(data["playerMovement"])
+				else:
+					game1.pTwo.setDownMovement(data["playerMovement"])
+			elif (data["userId"] == userP3.id):
+				if (data["movementDir"] == 1):
+					game2.pOne.setUpMovement(data["playerMovement"])
+				else:
+					game2.pOne.setDownMovement(data["playerMovement"])
+			elif (data["userId"] == userP4.id):
+				if (data["movementDir"] == 1):
+					game2.pTwo.setUpMovement(data["playerMovement"])
+				else:
+					game2.pTwo.setDownMovement(data["playerMovement"])
+
 		
 	async def new_player(self, event):
 		await self.send(text_data=json.dumps({
@@ -260,7 +291,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			"pTwoId": event["pTwoId"],
 			"ballPosX": event["ballX"],
 			"ballPosY": event["ballY"],
+			"pOnePosX": event["pOneX"],
 			"pOnePosY": event["pOneY"],
+			"pTwoPosX": event["pTwoX"],
 			"pTwoPosY": event["pTwoY"],
 			"matchId": event["matchId"]
 		}))

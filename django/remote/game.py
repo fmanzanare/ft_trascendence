@@ -133,7 +133,9 @@ class Game:
                 "pTwoId": self.pTwo.playerId,
                 "ballX": self.ball.xPos,
                 "ballY": self.ball.yPos,
+                "pOneX": self.pOne.xPos,
                 "pOneY": self.pOne.yPos,
+                "pTwoX": self.pTwo.xPos,
                 "pTwoY": self.pTwo.yPos,
                 "matchId": self.matchId
             }

@@ -147,9 +147,7 @@ export function openNewSocketTournament(data) {
 			console.log(data)
 			if (data.ids.gameReady && (data.ids.pOneId == userId || data.ids.pTwoId == userId)) {
 				$loading.classList.add('d-none');
-				let gameDiv = document.createElement('div')
-				gameDiv.setAttribute("id", "gameDiv")
-				$loading.parentElement.appendChild(gameDiv)
+				$loading.setAttribute("id", "gameDiv")
 				game.startRemoteGame()
 			}
 		}
