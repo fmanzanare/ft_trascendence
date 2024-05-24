@@ -59,6 +59,7 @@ export function changeUserName()
 	})
 	.then(data => {
 		$userName.textContent = data.context.user.display_name;
+		sessionStorage.setItem('userName', data.context.user.display_name);
 	})
 	.catch(error => {
 		console.error('Error:', error);

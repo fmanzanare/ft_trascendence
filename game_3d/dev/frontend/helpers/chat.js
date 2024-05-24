@@ -28,13 +28,13 @@ export function handleChatInput()
 	document.querySelector('#chatInput').onkeyup = function(e) {
 		if (e.key === 'Enter') {  // enter, return
 			// document.queryselector('#chat-message-submit').click();
-			let userId = sessionStorage.getItem('userId');
-			console.log(userId);
+			let userName = sessionStorage.getItem('userName');
+			console.log(userName);
 			const messageinputdom = document.querySelector('#chatInput');
-			const message = userId + ': ' + messageinputdom.value;
+			const message = userName + ': ' + messageinputdom.value;
 			chatSocket.send(JSON.stringify({
 				'message': message,
-				'userId': sessionStorage.getItem('userId')
+				'userName': userName
 			}));
 			messageinputdom.value = '';
 		}
