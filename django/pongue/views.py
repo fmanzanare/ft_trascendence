@@ -1,5 +1,6 @@
+import json
 from functools import wraps
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CreateUserForm
 from django.contrib import messages
@@ -409,13 +410,15 @@ def auth(request):
 @jwt_required
 def friends(request):
 	if request.method == "POST":
-		username = request.POST.get("username")
-		action = request.POST.get("action")
+		body = json.loads(request.body)
+		username = body.get("username")
+		action = body.get("action")
 		user = PongueUser.objects.get(username=get_user_from_jwt(request))
+		friend = get_object_or_404(PongueUser, username=username)
 		if action == "add":
-			user.friends += username + ","
+			user.friends.add(friend)
 		elif action == "remove":
-			user.friends = user.friends.replace(username + ",", "")
+			user.friends.remove(friend)
 		user.save()
 		return JsonResponse({
 			"success": True,
@@ -426,8 +429,7 @@ def friends(request):
 		})
 	elif request.method == "GET":
 		user = PongueUser.objects.get(username=get_user_from_jwt(request))
-		friends = user.friends.split(",")
-		friends.pop()
+		friends = list(user.friends.values_list("username", flat=True))
 		return JsonResponse({
 			"success": True,
 			"message": "",

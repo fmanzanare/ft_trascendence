@@ -2,7 +2,13 @@ export function handleChatInput()
 {
 	console.log('Hola Victor')
 	// const roomName = JSON.parse(document.getElementById('room-name').textContent);
+	// const userName = JSON.parse(document.getElementById('user-name').textContent);
 
+	
+	if (sessionStorage.getItem('userId') === null) {
+		console.error('User not logged in');
+		return;
+	}
 	// Create new WebSocket and set its name
 	const chatSocket = new WebSocket(
 		'ws://'

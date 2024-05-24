@@ -14,6 +14,12 @@ down:
 clean:
 	$(DOCKER_COMPOSE) down -v --remove-orphans
 
+p_shell:
+	docker exec -it ft_transcendence_backend_1 python manage.py shell_plus
+
+db_debug:
+	docker exec -it ft_transcendence_db_1 psql -U ft_db
+
 .PHONY: re
 re: down up
 
