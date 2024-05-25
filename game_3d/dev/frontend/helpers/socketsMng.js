@@ -1,4 +1,6 @@
 import { GameRemote } from "../../game3D/src/class/remote/GameRemote";
+import { navigateTo } from "./navigateto";
+import { changeState } from "./utils";
 
 export function openNewSocket(data) {
 	const id = data.roomId;
@@ -57,9 +59,9 @@ export function openNewSocket(data) {
 				(data.gameEnd.winner == 1 && host) ||
 				(data.gameEnd.winner == 2 && !host)
 			) {
-				winnerDiv.innerHTML = `Congratulations! You win!`;
-				gameDiv.remove()
-				container.appendChild(winnerDiv);
+				sessionStorage.setItem('winner', "You");
+				changeState('Online');
+				navigateTo("home")
 				remoteSocket.close();
 				const $token = sessionStorage.getItem('pongToken')
 				fetch("http://localhost:8000/api/online-status/", {
@@ -74,9 +76,9 @@ export function openNewSocket(data) {
 					}
 				})
 			} else {
-				winnerDiv.innerHTML = `Ups! You loss!`;
-				gameDiv.remove()
-				container.appendChild(winnerDiv);
+				sessionStorage.setItem('winner', "YOUAREALOSSERMAN");
+				changeState('Online');
+				navigateTo("home")
 				remoteSocket.close();
 				const $token = sessionStorage.getItem('pongToken')
 				const $resultData = new URLSearchParams();

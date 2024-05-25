@@ -1,18 +1,28 @@
 import { router } from "./router.js";
-import { checkJwt, changeUserName } from "./utils.js";
+import { checkJwt, changeUserName, changeState, getAlertConfirm } from "./utils.js";
 
-function tokenTrue(url)
+async function tokenTrue(url)
 {
 	const $appElement = document.getElementById("app");
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
+	const $currentState = document.getElementById("userStatus").textContent;
 	if ($navElement.classList.contains('d-none'))
 	{
 		$navElement.classList.remove('d-none');
 		$chatButton.classList.remove('d-none');
 	}
+	if ($currentState != "Online")
+	{
+		const $shouldContinue = await getAlertConfirm($currentState);
+		if (!$shouldContinue){
+			changeState($currentState);
+			return ;
+		}
+	}
 	history.pushState(null, null, url);
 	$appElement.innerHTML = "";
+	changeState("Online");
 	changeUserName();
 	router();
 }

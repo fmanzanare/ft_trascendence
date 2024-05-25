@@ -1,6 +1,7 @@
 import { runGame } from "../../game3D/src/old_version/scripts";
 import { Game } from "../../game3D/src/class/Game";
 import { openNewSocket, openNewSocketTournament } from "./socketsMng";
+import { changeState } from "./utils";
 
 function isEmptyOrSpaces(str) {
     return str === null || str.match(/^ *$/) !== null;
@@ -13,6 +14,7 @@ export function playOnline()
 		// Se ejecuta si se clicka el botón de buscar partida online
 		const $selectMode = document.getElementById("selectMode");
 		$selectMode.classList.add('d-none');
+		changeState("Searching game")
 		const $token = sessionStorage.getItem('pongToken');
 		fetch("http://localhost:8000/api/remote/find-game", {
 			method: "GET",
@@ -41,6 +43,7 @@ export function playOnline()
 			$errorMessage.textContent = "campo obligatorio";
 			return ;
 		}
+		changeState("Searching tournament")
 		const $token = sessionStorage.getItem('pongToken');
 		const $nickNameData = new URLSearchParams();
 		$nickNameData.append('nickname', $nickName.value);
@@ -100,6 +103,7 @@ export function playLocal()
 	.then(data => {
 		console.log(data)
 	})
+	changeState("In game");
 	const $divSelect = document.getElementById("blackDiv");
 	$divSelect.classList.add('d-none');
 	const $instructionsOne = document.getElementById("instructions");

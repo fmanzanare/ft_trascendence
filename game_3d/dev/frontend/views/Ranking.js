@@ -7,8 +7,9 @@ export default class extends AbstractView {
     }
 
     async getHtml() {
+        let rankig;
 	    const $token = sessionStorage.getItem('pongToken');
-        fetch("http://localhost:8000/api/ranking/", {
+        return fetch("http://localhost:8000/api/ranking/", {
             method: "GET",
             headers: {
                 "Authorization": $token
@@ -21,63 +22,36 @@ export default class extends AbstractView {
             return response.json();
         })
         .then(data => {
-            console.log(data)
-        })
-        let page =
+            rankig = data.users
+            let page =
             `
                 <div class="container-fluid py-10 h-100">
                     <div class="row d-flex justify-content-center align-items-center" style="height:20vh">
                         <h1 class="display-1 fw-bold mb-3 text-uppercase text-center" style="color:#80dbef;">Ranking</h1>	
                     </div>
-                        <div class="container fs-3 mx-auto" style="margin-top: 4rem;">
-                            <ol class="list-group">
-                                <li class="list-group-item d-flex justify-content-around" style="background-color: #5272c1;">
-                                    <div class="p-2">Name</div>
-                                    <div class="p-2">Wins</div>
-                                    <div class="p-2">Loss</div>
-                                    <div class="p-2">Tournaments</div>
-                                    <div class="p-2">Points</div>
-                                </li>
+                    <div class="container fs-3 mx-auto" style="margin-top: 4rem;">
+                        <ol id="rankigList" class="list-group">
+                            <li class="list-group-item d-flex justify-content-around" style="background-color: #5272c1;">
+                                <div class="col p-2 text-center">Name</div>
+                                <div class="col p-2 text-center">Wins</div>
+                                <div class="col p-2 text-center">Loss</div>
+                                <div class="col p-2 text-center">Tournaments</div>
+                                <div class="col p-2 text-center">Points</div>
+                            </li>
+                            ${rankig.slice(0, 5).map(item => `
                                 <li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-                                    <div class="p-2">Name</div>
-                                    <div class="p-2">Wins</div>
-                                    <div class="p-2">Loss</div>
-                                    <div class="p-2">Tournaments</div>
-                                    <div class="p-2">Points</div>
+                                    <div class="col p-2 text-center">${item.username}</div>
+                                    <div class="col p-2 text-center">${item.games_won}</div>
+                                    <div class="col p-2 text-center">${item.games_played - item.games_won}</div>
+                                    <div class="col p-2 text-center">${item.tournaments}</div>
+                                    <div class="col p-2 text-center">${item.points}</div>
                                 </li>
-                                <li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-                                    <div class="p-2">Name</div>
-                                    <div class="p-2">Wins</div>
-                                    <div class="p-2">Loss</div>
-                                    <div class="p-2">Tournaments</div>
-                                    <div class="p-2">Points</div>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-                                    <div class="p-2">Name</div>
-                                    <div class="p-2">Wins</div>
-                                    <div class="p-2">Loss</div>
-                                    <div class="p-2">Tournaments</div>
-                                    <div class="p-2">Points</div>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-                                    <div class="p-2">Name</div>
-                                    <div class="p-2">Wins</div>
-                                    <div class="p-2">Loss</div>
-                                    <div class="p-2">Tournaments</div>
-                                    <div class="p-2">Points</div>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-                                    <div class="p-2">Name</div>
-                                    <div class="p-2">Wins</div>
-                                    <div class="p-2">Loss</div>
-                                    <div class="p-2">Tournaments</div>
-                                    <div class="p-2">Points</div>
-                                </li>
-                            </ol>
-                        </div>
+                            `).join('')}
+                        </ol>
                     </div>
                 </div>
             `;
-		return page;
+		    return page;
+        })
     }
 }
