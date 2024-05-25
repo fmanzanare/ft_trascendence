@@ -236,36 +236,46 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			return
 
 		if ("playerMovement" in data.keys()):
-			userP1: PongueUser = self.rooms[self.room_group_name]["players"]["player1"]
-			userP2: PongueUser = self.rooms[self.room_group_name]["players"]["player2"]
-			userP3: PongueUser = self.rooms[self.room_group_name]["players"]["player3"]
-			userP4: PongueUser = self.rooms[self.room_group_name]["players"]["player4"]
-
 			game1: Game = self.rooms[self.room_group_name]["games"]["match1"]
 			game2: Game = self.rooms[self.room_group_name]["games"]["match2"]
+			game3: Game = self.rooms[self.room_group_name]["games"]["match3"]
 
-			if (data["userId"] == userP1.id):
-				if (data["movementDir"] == 1):
-					game1.pOne.setUpMovement(data["playerMovement"])
-				else:
-					game1.pOne.setDownMovement(data["playerMovement"])
-			elif (data["userId"] == userP2.id):
-				if (data["movementDir"] == 1):
-					game1.pTwo.setUpMovement(data["playerMovement"])
-				else:
-					game1.pTwo.setDownMovement(data["playerMovement"])
-			elif (data["userId"] == userP3.id):
-				if (data["movementDir"] == 1):
-					game2.pOne.setUpMovement(data["playerMovement"])
-				else:
-					game2.pOne.setDownMovement(data["playerMovement"])
-			elif (data["userId"] == userP4.id):
-				if (data["movementDir"] == 1):
-					game2.pTwo.setUpMovement(data["playerMovement"])
-				else:
-					game2.pTwo.setDownMovement(data["playerMovement"])
+			target = data["userId"]
 
+			if (game3 == None):
+				if (game1.pOne.playerId == target):
+					if (data["movementDir"] == 1):
+						game1.pOne.setUpMovement(data["playerMovement"])
+					else:
+						game1.pOne.setDownMovement(data["playerMovement"])
+				elif (game1.pTwo.playerId == target):
+					if (data["movementDir"] == 1):
+						game1.pTwo.setUpMovement(data["playerMovement"])
+					else:
+						game1.pTwo.setDownMovement(data["playerMovement"])
+				elif (game2.pOne.playerId == target):
+					if (data["movementDir"] == 1):
+						game2.pOne.setUpMovement(data["playerMovement"])
+					else:
+						game2.pOne.setDownMovement(data["playerMovement"])
+				elif (game2.pTwo.playerId == target):
+					if (data["movementDir"] == 1):
+						game2.pTwo.setUpMovement(data["playerMovement"])
+					else:
+						game2.pTwo.setDownMovement(data["playerMovement"])
+			else:
+				if (game3.pOne.playerId == target):
+					if (data["movementDir"] == 1):
+						game3.pOne.setUpMovement(data["playerMovement"])
+					else:
+						game3.pOne.setDownMovement(data["playerMovement"])
+				elif (game3.pTwo.playerId == target):
+					if (data["movementDir"] == 1):
+						game3.pTwo.setUpMovement(data["playerMovement"])
+					else:
+						game3.pTwo.setDownMovement(data["playerMovement"])
 		
+
 	async def new_player(self, event):
 		await self.send(text_data=json.dumps({
 			"newPlayer": event
@@ -314,6 +324,23 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		}))
 		return
 
+	async def semifinal_winners(self, event):
+		await self.send(text_data=json.dumps({
+			"semifinalWinners": True,
+			"pOneId": event["pOneId"],
+			"pTwoId": event["pTwoId"],
+			"matchId": event["matchId"]
+		}))
+		return
+
+	async def final_winner(self, event):
+		await self.send(text_data=json.dumps({
+			"finalWinner": True,
+			"tournamentWinner": event["tournamentWinner"],
+			"matchId": event["matchId"]
+		}))
+		return
+
 	async def build_tournament(self):	
 		self.rooms[self.room_group_name]["games"] = {"match1": False, "match2": False, "match3": False}
 
@@ -331,6 +358,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		game1.matchId = 1
 		game2 = self.rooms[self.room_group_name]["games"]["match2"] = Game(self, player3.id, player4.id)
 		game2.matchId = 2
+		game3 = self.rooms[self.room_group_name]["games"]["match3"] = None
 
 		await self.channel_layer.group_send(
 			self.room_group_name, {
@@ -353,11 +381,36 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		)
 
 		flag = asyncio.Event()
-		asyncio.create_task(self.getSemifinalWinners(game1, game2, flag))
+		semifinalTask = asyncio.create_task(self.getSemifinalWinners(game1, game2, flag))
 		await flag.wait()
+		semifinalTask.cancel()
 
-		print("Game 1: {}".format(game1.winner))
-		print("Game 2: {}".format(game2.winner))
+		game3 = self.rooms[self.room_group_name]["games"]["match3"] = Game(self, game1.winner, game2.winner)
+		game3.matchId = 3
+
+		await self.channel_layer.group_send(
+			self.room_group_name, {
+				"type": "semifinal.winners",
+				"semifinalWinners": True,
+				"pOneId": game1.winner,
+				"pTwoId": game2.winner,
+				"matchId": game3.matchId
+			}
+		)
+
+		flag = asyncio.Event()
+		finalTask = asyncio.create_task(self.getFinalWinner(game3, flag))
+		await flag.wait()
+		finalTask.cancel()
+
+		await self.channel_layer.group_send(
+			self.room_group_name, {
+				"type": "final.winner",
+				"finalWinner": True,
+				"tournamentWinner": game3.winner,
+				"matchId": game3.matchId
+			}
+		)
 
 		return
 
@@ -365,16 +418,31 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 		# TODO - Loop to get a Winner in Final.
 
 	async def getSemifinalWinners(self, game1, game2, flag):
-		asyncio.create_task(game1.runGame())
-		asyncio.create_task(game2.runGame())
+		game1Task = asyncio.create_task(game1.runGame())
+		game2Task = asyncio.create_task(game2.runGame())
 		winner1 = False
 		winner2 = False
 		while not winner1 or not winner2:
 			await asyncio.sleep(5)
-			print("vuelta de bucle")
 			winner1 = game1.winner
 			winner2 = game2.winner
+		
+		game1Task.cancel()
+		game2Task.cancel()
+
 		flag.set()
+
+	async def getFinalWinner(self, game3, flag):
+		game3Task = asyncio.create_task(game3.runGame())
+		winner = False
+		while not winner:
+			await asyncio.sleep(5)
+			winner = game3.winner
+		
+		game3Task.cancel()
+
+		flag.set()
+	
 
 
 

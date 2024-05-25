@@ -486,6 +486,8 @@ def add_game_result(request):
 		elif player_1_score < player_2_score:
 			player_1.games_lost += 1
 			player_2.games_won += 1
+		player_1.status = PongueUser.Status.ONLINE
+		player_2.status = PongueUser.Status.ONLINE
 		player_1.save()
 		player_2.save()
 		return JsonResponse({
@@ -583,3 +585,13 @@ def nickname(request):
 			"userId": user.id,
 			"nickname": user.nickname
 		})
+
+@jwt_required
+def change_status_to_online(request):
+	user = get_user_from_jwt(request)
+	user.status = PongueUser.Status.ONLINE
+	user.save()
+	return JsonResponse({
+		"userId": user.id,
+		"status": user.status
+	})
