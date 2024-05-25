@@ -17,4 +17,6 @@ urlpatterns = [
 	path("api/get2fa/", views.get2fa, name="get2fa"),
 	path("api/user_status/", views.user_status, name="user_status"),
 	path("api/ranking/", views.ranking, name="ranking"),
+	path("api/nickname/", views.nickname, name="nickname"),
+	path("api/online-status/", views.change_status_to_online, name="online_status"),
 ]

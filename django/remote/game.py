@@ -13,6 +13,8 @@ class Game:
         self.score = Score()
         self.socket = socket
         self.ready = False
+        self.winner = False
+        self.matchId = 0
 
     def calculateRandomBallDir(self):
         initDirX = -1 if random.random() < 0.5 else 1
@@ -108,8 +110,11 @@ class Game:
             self.restartPositions()
             scoreData = {
                 "type": "add.point",
+                "pOneId": self.pOne.playerId,
+                "pTwoId": self.pTwo.playerId,
                 "pOneScore": self.score.pOne,
-                "pTwoScore": self.score.pTwo
+                "pTwoScore": self.score.pTwo,
+                "matchId": self.matchId
             }
             await self.socket.channel_layer.group_send(
                 self.socket.room_group_name, scoreData
@@ -124,10 +129,15 @@ class Game:
             gamePositions = {
                 "type": "game.info",
                 "gameData": True,
+                "pOneId": self.pOne.playerId,
+                "pTwoId": self.pTwo.playerId,
                 "ballX": self.ball.xPos,
                 "ballY": self.ball.yPos,
+                "pOneX": self.pOne.xPos,
                 "pOneY": self.pOne.yPos,
+                "pTwoX": self.pTwo.xPos,
                 "pTwoY": self.pTwo.yPos,
+                "matchId": self.matchId
             }
             await self.socket.channel_layer.group_send(
                 self.socket.room_group_name, gamePositions
@@ -144,16 +154,19 @@ class Game:
 
             await asyncio.sleep(0.033)
 
-        winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
+        self.winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
         finishTime = time.time()
         finishedGame = {
                 "type": "game.end",
+                "pOneId": self.pOne.playerId,
+                "pTwoId": self.pTwo.playerId,
                 "pOneScore": self.score.pOne,
                 "pTwoScore": self.score.pTwo,
-                "winner": winner,
+                "winner": self.winner,
                 "startTime": gameStart,
                 "finishTime": finishTime,
                 "duration": finishTime - gameStart, 
+                "matchId": self.matchId
         }
 
         await self.socket.channel_layer.group_send(

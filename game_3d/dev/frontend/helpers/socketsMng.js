@@ -63,7 +63,18 @@ export function openNewSocket(data) {
 				changeState('Online');
 				navigateTo("home")
 				remoteSocket.close();
-				// TODO - SEND REQUEST TO ENDPOINT TO REGISTER RESULTS
+				const $token = sessionStorage.getItem('pongToken')
+				fetch("http://localhost:8000/api/online-status/", {
+					method: "POST",
+					headers: {
+						"Authorization": $token
+					}
+				})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Hubo un problema al realizar la solicitud.');
+					}
+				})
 			} else {
 				sessionStorage.setItem('winner', "YOUAREALOSSERMAN");
 				changeState('Online');
@@ -102,4 +113,119 @@ export function openNewSocket(data) {
 		console.log("Connection closed unexpectedly")
 	}
 
+}
+
+export function openNewSocketTournament(data) {
+
+	const id = data.roomId;
+	const userId = data.userId;
+	const host = id == userId;
+	let matchId = 0;
+
+	const $loading = document.getElementById("loading");
+
+	const remoteSocket = new WebSocket(
+		'ws://'
+		+ 'localhost:8000'
+		+ '/ws/tournament/'
+		+ id
+		+ '/'
+	)
+	let game = new GameRemote(remoteSocket, userId, host)
+
+	remoteSocket.onopen = function(e) {
+		console.log("connection stablished")
+		remoteSocket.send(JSON.stringify({
+			'register': true,
+			'hostId': id,
+			'userId': userId,
+			'userJwt': sessionStorage.getItem('pongToken')
+		}));
+	}
+
+	remoteSocket.onmessage = function(e) {
+		const data = JSON.parse(e.data)
+
+		if (data.bracket) {
+			if (data.bracket.match1Ids.split(',')[0] == userId || data.bracket.match1Ids.split(',')[1] == userId ) {
+				matchId = 1
+			} else {
+				matchId = 2
+			}
+		}
+
+		if (data.ids) {
+			console.log(data)
+			if (data.ids.gameReady && (data.ids.pOneId == userId || data.ids.pTwoId == userId)) {
+				$loading.classList.add('d-none');
+				$loading.setAttribute("id", "gameDiv")
+				game.startRemoteGame()
+			}
+		}
+
+		if (data.gameData || data.scoreData) {
+			if (data.matchId == matchId) {
+				game.getReceivedDataFromWS(data);
+			}
+		}
+
+		if (data.semifinalWinners) {
+			let gameCanva = document.querySelector('canvas');
+			gameCanva.remove();
+			if (userId == data.pOneId) {
+				game = new GameRemote(remoteSocket, userId, true);
+				game.startRemoteGame()
+				matchId = 3
+			} else if (userId == data.pTwoId) {
+				game = new GameRemote(remoteSocket, userId, false);
+				game.startRemoteGame()
+				matchId = 3
+			} else {
+				console.log("Sorry, you lost");
+				remoteSocket.close();
+			}
+		}
+
+		if (data.finalWinner) {
+			if (userId == data.tournamentWinner) {
+				console.log("Congratulations! You won the tournament");
+				const $token = sessionStorage.getItem('pongToken')
+				fetch("http://localhost:8000/api/remote/register-tournament-win", {
+					method: "POST",
+					headers: {
+						"Authorization": $token
+					}
+				})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Hubo un problema al realizar la solicitud.');
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log(data)
+				})
+				remoteSocket.close()
+			} else {
+				console.log("Ups! You lost the tournamnet");
+				remoteSocket.close()
+			}
+		}
+	}
+
+	remoteSocket.onclose = function (e) {
+		console.log("Connection closed unexpectedly")
+		const $token = sessionStorage.getItem('pongToken')
+		fetch("http://localhost:8000/api/online-status/", {
+			method: "POST",
+			headers: {
+				"Authorization": $token
+			}
+		})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Hubo un problema al realizar la solicitud.');
+			}
+		})
+	}
 }

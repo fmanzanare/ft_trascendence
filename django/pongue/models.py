@@ -15,11 +15,13 @@ class PongueUser(AbstractUser):
 		LTOURNAMENT ='L_TOURNAMENT', _('Looking for a tournament')
 		INGAME = 'IN_GAME', _('Playing a game')
 		INTOURNAMENT = 'IN_TOURNAMENT', _('Registered on a tournament')
+		HTOURNAMENT = 'H_TOURNAMENT', _('Hosting a tournament')
 
 	id = models.AutoField(primary_key=True)
 	username = models.CharField(max_length=50, unique=True, verbose_name="Username")
 	access_token = models.CharField(max_length=50, blank=True, verbose_name="Token")
 	display_name = models.CharField(max_length=50, verbose_name="Display name")
+	nickname = models.CharField(default="", blank=True, max_length=50, verbose_name="Tournaments nickname")
 	created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
 	updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated at")
 	avatar_base64 = models.TextField(default="", blank=True, verbose_name="Avatar")
@@ -82,3 +84,25 @@ class RankingUserDTO:
 		userDto.tournaments = user.tournaments
 		userDto.points = user.points
 		return userDto
+
+class Tournament(models.Model):
+	id = models.AutoField(primary_key=True)
+	player_1 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_1")
+	player_2 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_2")
+	player_3 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_3")
+	player_4 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_4")
+	player_1_position = 0 
+	player_2_position = 0 
+	player_3_position = 0 
+	player_4_position = 0 
+	winner = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="winner")
+	created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+	updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+
+	class Meta:
+		db_table = "Tournaments"
+		verbose_name = "Tournaments"
+		verbose_name_plural = "Tournaments"
+
+	def __str__(self):
+		return f"{self.player_1} | {self.player_2} | {self.player_3} | {self.player_4} | Winner: {self.winner}"

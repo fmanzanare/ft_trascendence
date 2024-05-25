@@ -27,6 +27,13 @@ def check_opened_game_room(user):
 			return u.id
 	return -1
 
+def check_opened_tournament():
+	users = PongueUser.objects.all()
+	for u in users:
+		if u.status == PongueUser.Status.HTOURNAMENT:
+			return u.id
+	return -1
+
 
 @jwt_required
 def find_game(request):
@@ -95,6 +102,37 @@ def register_result(request):
 	game_result.updated_at = updated_at
 	game_result.save()
 
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"debug": "received"
+	})
+
+@jwt_required
+def find_tournament(request):
+	user = get_user_from_jwt(request)
+	user.status = PongueUser.Status.LTOURNAMENT
+	user.save()
+	playerId = check_opened_tournament()
+	if playerId != -1:
+		return JsonResponse(status=HTTPStatus.OK, data={
+			"debug": "tournament host already assigned",
+			"roomId": playerId,
+			"userId": user.id
+		})
+	else:
+		user.status = PongueUser.Status.HTOURNAMENT
+		user.save()
+		return JsonResponse(status=HTTPStatus.OK, data={
+			"debug": "needs to host the tournament",
+			"roomId": user.id,
+			"userId": user.id,
+		})
+
+@jwt_required
+def register_tournament_win(request):
+	user = get_user_from_jwt(request)
+	user.points += 100
+	user.tournaments += 1
+	user.save()
 	return JsonResponse(status=HTTPStatus.OK, data={
 		"debug": "received"
 	})

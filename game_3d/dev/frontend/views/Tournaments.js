@@ -32,12 +32,14 @@ export default class extends AbstractView {
 								</div>    
 							</div>
 						</div>
-						<div id="loading" class="d-none d-flex flex-column justify-content-center align-items-center h-100">
-							<div class="spinner-border" role="status">
-								<span class="visually-hidden">Looking for a rival</span>
-							</div>
-							<div style="margin-top:20px">
-								<button id="cancelTournament" class="mt-1 btn btn-secondary btn-lg">Cancelar</button>
+						<div id="gameDiv">
+							<div id="loading" class="d-none d-flex flex-column justify-content-center align-items-center h-100">
+								<div class="spinner-border" role="status">
+									<span class="visually-hidden">Looking for a rival</span>
+								</div>
+								<div style="margin-top:20px">
+									<button id="cancelTournament" class="mt-1 btn btn-secondary btn-lg">Cancelar</button>
+								</div>
 							</div>
 						</div>
 					</div>
