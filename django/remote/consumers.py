@@ -224,7 +224,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				)
 
 				# TODO - Tournament logic (loop until we got winners, start final match, and get final winner).
-				await self.build_tournament()
+				asyncio.create_task(self.build_tournament())
 
 			await self.channel_layer.group_send(
 				self.room_group_name, {
@@ -352,19 +352,29 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			}
 		)
 
-		asyncio.create_task(game1.runGame())
-		asyncio.create_task(game2.runGame())
+		flag = asyncio.Event()
+		asyncio.create_task(self.getSemifinalWinners(game1, game2, flag))
+		await flag.wait()
+
+		print("Game 1: {}".format(game1.winner))
+		print("Game 2: {}".format(game2.winner))
 
 		return
 
-		# winner1 = False
-		# winner2 = False
-		# while not winner1 or not winner2:
-		# 	winner1 = game1.winner
-		# 	winner2 = game2.winner
-
 
 		# TODO - Loop to get a Winner in Final.
+
+	async def getSemifinalWinners(self, game1, game2, flag):
+		asyncio.create_task(game1.runGame())
+		asyncio.create_task(game2.runGame())
+		winner1 = False
+		winner2 = False
+		while not winner1 or not winner2:
+			await asyncio.sleep(5)
+			print("vuelta de bucle")
+			winner1 = game1.winner
+			winner2 = game2.winner
+		flag.set()
 
 
 
