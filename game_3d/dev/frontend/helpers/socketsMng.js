@@ -1,5 +1,6 @@
 import { GameRemote } from "../../game3D/src/class/remote/GameRemote";
 import { navigateTo } from "./navigateto";
+import { changeState } from "./utils";
 
 export function openNewSocket(data) {
 	const id = data.roomId;
@@ -59,11 +60,13 @@ export function openNewSocket(data) {
 				(data.gameEnd.winner == 2 && !host)
 			) {
 				sessionStorage.setItem('winner', "You");
+				changeState('Online');
 				navigateTo("home")
 				remoteSocket.close();
 				// TODO - SEND REQUEST TO ENDPOINT TO REGISTER RESULTS
 			} else {
 				sessionStorage.setItem('winner', "YOUAREALOSSERMAN");
+				changeState('Online');
 				navigateTo("home")
 				remoteSocket.close();
 				const $token = sessionStorage.getItem('pongToken')
