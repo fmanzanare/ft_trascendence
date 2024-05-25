@@ -187,6 +187,22 @@ export function openNewSocketTournament(data) {
 		if (data.finalWinner) {
 			if (userId == data.tournamentWinner) {
 				console.log("Congratulations! You won the tournament");
+				const $token = sessionStorage.getItem('pongToken')
+				fetch("http://localhost:8000/api/remote/register-tournament-win", {
+					method: "POST",
+					headers: {
+						"Authorization": $token
+					}
+				})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Hubo un problema al realizar la solicitud.');
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log(data)
+				})
 				remoteSocket.close()
 			} else {
 				console.log("Ups! You lost the tournamnet");

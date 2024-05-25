@@ -126,3 +126,13 @@ def find_tournament(request):
 			"roomId": user.id,
 			"userId": user.id,
 		})
+
+@jwt_required
+def register_tournament_win(request):
+	user = get_user_from_jwt(request)
+	user.points += 100
+	user.tournaments += 1
+	user.save()
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"debug": "received"
+	})
