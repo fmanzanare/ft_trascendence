@@ -146,8 +146,8 @@ export function logOut()
 	})
 	.then(data => {
 		console.log(data);
-		sessionStorage.removeItem('pongToken');
-		navigateTo("/home");
+		sessionStorage.clear();
+		window.location.reload()
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
