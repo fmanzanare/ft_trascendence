@@ -4,6 +4,7 @@ import { changeDataUser } from "./changeDataUser.js";
 import { addKeyPressListener, closeWinnerMsg } from "./utils.js";
 import { twoFactorPushButton, generateQr } from "./twoFactor.js";
 import { changeViewProfile, changeViewData, displayChat } from "./changeView.js";
+import { cancelNav, acceptNav } from "./navegationUtils.js";
 
 export async function routerFunctions(){
 	const buttons = [
@@ -19,7 +20,9 @@ export async function routerFunctions(){
 		{ id: "historyTab", event: 'click', handler: changeViewProfile },
 		{ id: "infoTab", event: 'click', handler: changeViewProfile },
 		{ id: "changeDataView", event: 'click', handler: changeViewData },
-		{ id: "changeDataUser", event: 'click', handler: changeDataUser }
+		{ id: "changeDataUser", event: 'click', handler: changeDataUser },
+		{ id: "cancelNav", event: 'click', handler: cancelNav },
+		{ id: "confirmNav", event: 'click', handler: acceptNav }
 	];
 	
 	buttons.forEach(button => {
@@ -28,6 +31,7 @@ export async function routerFunctions(){
 			element.addEventListener(button.event, button.handler);
 		}
 	});
+
 	const $winner = sessionStorage.getItem('winner');
 	if ($winner)
 	{
