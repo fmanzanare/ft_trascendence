@@ -39,6 +39,14 @@ exec:
 build:
 	$(DOCKER_COMPOSE) build
 
+.PHONY: makemigrations
+makemigrations:
+	docker exec -it ft_transcendence_backend_1 python manage.py makemigrations
+	
+.PHONY: migrate
+migrate:
+	docker exec -it ft_transcendence_backend_1 python manage.py migrate
+
 .PHONY: help
 help:
 	@echo "Available targets:"

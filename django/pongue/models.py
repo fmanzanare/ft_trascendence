@@ -16,7 +16,7 @@ class PongueUser(AbstractUser):
 	games_played = models.IntegerField(default=0)
 	has_2fa = models.BooleanField(default=False)
 	from_42 = models.BooleanField(default=False)
-	friends = models.ManyToManyField('self', blank=True, null=True)
+	friends = models.ManyToManyField('self', blank=True, null=True, through="PlayerFriend")
 
 	def __str__(self):
 		return self.username
@@ -35,3 +35,33 @@ class GameResults(models.Model):
 	def __str__(self):
 		return f"{self.player_1} vs {self.player_2} - {self.player_1_score} - {self.player_2_score}"
 
+STATUS_FRIENDSHIP = (
+	("PENDING", "Pending"),
+	("ACCEPTED", "Accepted"),
+	("BLOCKED", "Blocked")
+)
+
+class PlayerFriend(models.Model):
+	id = models.AutoField(primary_key=True)
+	myUser = models.ForeignKey("PongueUser", on_delete=models.DO_NOTHING, related_name = "my_user")
+	myFriend = models.ForeignKey("PongueUser", on_delete=models.DO_NOTHING, related_name = "my_friend")
+	status = models.CharField(max_length=10, choices=STATUS_FRIENDSHIP, default="PENDING")
+	registerDate = models.DateField(auto_now_add = True)
+
+	@classmethod
+	def search_or_create(cls, player_a, player_b):
+
+		player1 = PongueUser.objects.filter(username__exact=player_a).first()
+		player2 = PongueUser.objects.filter(username__exact=player_b).first()
+
+		if player1 is None or player2 is None:
+			return None
+
+		makeFriend = PlayerFriend.objects.filter(myUser__exact=player1, myFriend__exact=player2) | \
+					 PlayerFriend.objects.filter(myUser__exact=player2, myFriend__exact=player1)
+
+		if makeFriend.count() == 0:
+			makeFriend = PlayerFriend.objects.create(myUser=player1, myFriend=player2)
+		else:
+			makeFriend = makeFriend.first()
+		return makeFriend

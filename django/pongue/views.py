@@ -21,6 +21,8 @@ def get_user_from_jwt(request):
 	jwt = request.headers.get("Authorization")
 	if jwt:
 		payload = decode_jwt(jwt)
+		if not 'user' in payload:
+			return None
 		user = json.loads(payload['user'])[0]['fields']
 		if user and payload['exp'] > datetime.timestamp(datetime.utcnow()):
 			user_django = PongueUser.objects.get(username=user['username'])
@@ -413,7 +415,7 @@ def friends(request):
 		body = json.loads(request.body)
 		username = body.get("username")
 		action = body.get("action")
-		user = PongueUser.objects.get(username=get_user_from_jwt(request))
+		user = get_object_or_404(PongueUser, username=get_user_from_jwt(request))
 		friend = get_object_or_404(PongueUser, username=username)
 		if action == "add":
 			user.friends.add(friend)

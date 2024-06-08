@@ -18,6 +18,26 @@ export function handleChatInput()
 		+ '/'
 	);
 
+	document.querySelector('#addFriend').onclick = function(e) {
+		const friendInputDom = document.querySelector('#searchFriend');
+		const $token = sessionStorage.getItem('pongToken');
+		const friend = friendInputDom.value;
+		const $friendsUrl = apiUrl + 'friends/';
+		const $loginUrl = apiUrl + 'login/';
+		fetch($friendsUrl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					"Authorization": $token					
+				},
+				body: JSON.stringify({
+					"username": friend,
+					"action" : "add"
+				})
+			})
+	};
+
+	// When the WebSocket is opened, it prints a message in the console	
 	// Receive the message and write it in the chat log
 	chatSocket.onmessage = function(e) {
 		const data = JSON.parse(e.data);
