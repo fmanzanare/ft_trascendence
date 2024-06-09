@@ -5,8 +5,8 @@ import path from 'path'
 export default defineConfig({
     server: {
         https: {
-            key: fs.readFileSync(path.resolve('/usr/src/django/https/front/key.pem')),
-            cert: fs.readFileSync(path.resolve('/usr/src/django/https/front/cert.pem'))
+            key: fs.readFileSync(path.resolve('https/key.pem')),
+            cert: fs.readFileSync(path.resolve('https/cert.pem'))
         }
     }
 })
