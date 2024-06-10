@@ -53,7 +53,6 @@ function  tokenFalse(url)
 
 export function navigateTo(url) {
 	const $token = sessionStorage.getItem('pongToken');
-	console.log(url);
 	if ($token)
 	{
 		checkJwt().then(result => {
@@ -68,5 +67,21 @@ export function navigateTo(url) {
 }
 
 window.onpopstate = function(event) {
+	const $url = event.target.location.href
+	const $currentState = document.getElementById("userStatus").textContent;
+	if ($currentState != "Online")
+	{
+		const $modal = document.getElementById('myModal');
+		const $textModalMessage = document.getElementById('textModal');
+		sessionStorage.setItem('urlAlert', $url);
+		$textModalMessage.textContent = getAlertMessage($currentState);
+		$modal.classList.add('show');
+		$modal.style.display = 'block';
+		$modal.setAttribute('aria-modal', 'true');
+		$modal.setAttribute('aria-hidden', 'false');
+		$modal.setAttribute('role', 'dialog');
+
+		return;
+	}
     router();
 }
