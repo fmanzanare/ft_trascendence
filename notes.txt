@@ -5,3 +5,18 @@ https://medium.com/@adabur/introduction-to-django-channels-and-websockets-cb38cd
 https://www.makeuseof.com/django-rest-api-create/
 
 # New repo
+
+# INTERFAZ
+Revisar seguridad de Django a la hora de recibir imágenes para guardarlas en base de datos
+Endpoint para mostrar los datos del perfil (historial) - Ordenar para que se ordene de los registros más actuales a los más antiguos.
+Gestionar la desconexión de sockets cuando se cambia de pantalla en mitad de un juego (ojo con el juego local que se queda corriendo en background).
+    - Posible solución: Objeto global que albergue los sockets correspondientes.
+
+Gestión de ir atrás en una partida para que muestre el popup.
+
+# SEGURIDAD / LOGIN
+HTTPS y WSS.
+Login con token de 42 Intra.
+
+# Pendiente según tiempo:
+Juego contra IA.
