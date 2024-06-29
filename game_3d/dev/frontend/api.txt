@@ -1,7 +1,3 @@
-Pedir confirmacion al usuario cuando esta jungado una partida y quiere cambiar ventana -> Imitar alert/confirm
-
 Para despues (Chat) -> Desbordabiendo vertical del div de mensajes para hacer scroll y ubicacion de mensajes (derecha / izquierda)
-
-Gestionar ir para adelante y para atras.
 
 Endpoint de datos del perfil -> Pendiente Fernando.

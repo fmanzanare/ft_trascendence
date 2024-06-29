@@ -1,5 +1,5 @@
 import { router } from "./router.js";
-import { checkJwt, changeUserName, changeState, getAlertConfirm } from "./utils.js";
+import { checkJwt, changeUserName, changeState, getAlertMessage } from "./utils.js";
 
 async function tokenTrue(url)
 {
@@ -14,11 +14,17 @@ async function tokenTrue(url)
 	}
 	if ($currentState != "Online")
 	{
-		const $shouldContinue = await getAlertConfirm($currentState);
-		if (!$shouldContinue){
-			changeState($currentState);
-			return ;
-		}
+		const $modal = document.getElementById('myModal');
+		const $textModalMessage = document.getElementById('textModal');
+		sessionStorage.setItem('urlAlert', url);
+		$textModalMessage.textContent = getAlertMessage($currentState);
+		$modal.classList.add('show');
+        $modal.style.display = 'block';
+		$modal.setAttribute('aria-modal', 'true');
+        $modal.setAttribute('aria-hidden', 'false');
+        $modal.setAttribute('role', 'dialog');
+
+        return;
 	}
 	history.pushState(null, null, url);
 	$appElement.innerHTML = "";
@@ -58,4 +64,24 @@ export function navigateTo(url) {
 	}
 	else
 		tokenFalse(url);
+}
+
+window.onpopstate = function(event) {
+	const $url = event.target.location.href
+	const $currentState = document.getElementById("userStatus").textContent;
+	if ($currentState != "Online")
+	{
+		const $modal = document.getElementById('myModal');
+		const $textModalMessage = document.getElementById('textModal');
+		sessionStorage.setItem('urlAlert', $url);
+		$textModalMessage.textContent = getAlertMessage($currentState);
+		$modal.classList.add('show');
+		$modal.style.display = 'block';
+		$modal.setAttribute('aria-modal', 'true');
+		$modal.setAttribute('aria-hidden', 'false');
+		$modal.setAttribute('role', 'dialog');
+
+		return;
+	}
+    router();
 }

@@ -27,31 +27,23 @@ function twoFactorEnterKeyPress(event)
 	}
 }
 
-export function getAlertConfirm(state) {
-    return new Promise((resolve) => {
-        let message;
-        switch (state) {
-            case "Searching game":
-                message = "¿Estás seguro de que deseas dejar de buscar partida?";
-                break;
-            case "Searching tournament":
-                message = "¿Estás seguro de que deseas dejar de buscar torneo?";
-                break;
-            case "In game":
-                message = "¿Estás seguro de que deseas salir del juego?";
-                break;
-            case "In tournament":
-                message = "¿Estás seguro de que deseas salir del torneo?";
-                break;
-            default:
-                console.error("Estado no reconocido:", state);
-                resolve(false); // Resolvemos la promesa con false en caso de estado no reconocido
-                return;
-        }
-
-        const confirmDialog = confirm(message);
-        resolve(confirmDialog);
-    });
+export function getAlertMessage(state) {
+	let message;
+	switch (state) {
+		case "Searching game":
+			message = "Are you sure you want to stop searching for a game?";
+			break;
+		case "Searching tournament":
+			message = "Are you sure you want to stop searching for a tournament?";
+			break;
+		case "In game":
+			message = "Are you sure you want to leave the game?";
+			break;
+		case "In tournament":
+			message = "Are you sure you want to leave the tournament?";
+			break;
+	};
+	return(message);
 }
 
 export function changeState(status){
