@@ -1,5 +1,6 @@
 import { navigateTo } from "./navigateto";
 import { changeState } from "./utils";
+import { sockets } from "../index"
 
 export function cancelNav()
 {
@@ -18,4 +19,17 @@ export function acceptNav()
     $modal.style.display = 'none';
 	changeState("Online");
 	navigateTo($url);
+	console.log(sockets.gameSocket);
+	if (sockets.gameSocket != null) {
+		sockets.gameSocket.send(JSON.stringify({
+			"disconnection": true,
+		}))
+		sockets.gameSocket.close();
+	}
+	if (sockets.tournamentSocket != null) {
+		sockets.tournamentSocket.send(JSON.stringify({
+			"disconnection": true,
+		}))
+		sockets.tournamentSocket.close();
+	}
 }

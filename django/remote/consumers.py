@@ -42,7 +42,6 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		# TODO - NOTIFIY PLAYERS THAT CONNECTION HAS BEEN CLOSED !!!
 		if (hasattr(self, "game_task") and self.game_task != None):
 			self.game_task.cancel()
-		del self.game
 		if (self.room_group_name in self.rooms):
 			self.rooms.pop(self.room_group_name)
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -112,6 +111,15 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 			self.rooms[self.room_group_name]["player1Jwt"] = game_info_json["userJwt"]
 			return
 
+		if ("disconnection" in game_info_json.keys()):
+			await self.channel_layer.group_send(
+				self.room_group_name, {
+					"type": "player.disconnection",
+					"message": "player has been disconnected"
+				}
+			)
+			return
+
 
 	# Recive data from Room group
 	async def game_info(self, event):
@@ -148,6 +156,10 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({
 			"gameEnd": event
 		}))
+		return
+
+	async def player_disconnection(self, event):
+		print(event);
 		return
 
 class TournamentConsumer(AsyncWebsocketConsumer):

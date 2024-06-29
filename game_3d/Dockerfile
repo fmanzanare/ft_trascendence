@@ -13,6 +13,6 @@ WORKDIR /usr/src/game_3d/
 COPY . /usr/src/game_3d/
 RUN npm install
 
-EXPOSE 8080
+EXPOSE 3000
 
-CMD ["npx", "vite", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["npx", "vite", "--host", "0.0.0.0", "--port", "3000"]

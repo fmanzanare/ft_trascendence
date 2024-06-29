@@ -1,0 +1,4 @@
+localhost {
+	# Reverse proxy para el backend (Django)
+	reverse_proxy backend:8000
+}

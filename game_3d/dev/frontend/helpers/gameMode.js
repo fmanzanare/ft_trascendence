@@ -16,7 +16,7 @@ export function playOnline()
 		$selectMode.classList.add('d-none');
 		changeState("Searching game")
 		const $token = sessionStorage.getItem('pongToken');
-		fetch("http://localhost:8000/api/remote/find-game", {
+		fetch("https://localhost/api/remote/find-game", {
 			method: "GET",
 			headers: {
 				"Authorization": $token
@@ -47,7 +47,7 @@ export function playOnline()
 		const $token = sessionStorage.getItem('pongToken');
 		const $nickNameData = new URLSearchParams();
 		$nickNameData.append('nickname', $nickName.value);
-		fetch("http://localhost:8000/api/nickname/", {
+		fetch("https://localhost/api/nickname/", {
 			method: "POST",
 			headers: {
 				"Authorization": $token
@@ -65,7 +65,7 @@ export function playOnline()
 		})
 
 		$joinTournament.classList.add('d-none');
-		fetch("http://localhost:8000/api/remote/find-tournament", {
+		fetch("https://localhost/api/remote/find-tournament", {
 			method: "GET",
 			headers: {
 				"Authorization": $token
@@ -88,7 +88,7 @@ export function playOnline()
 export function playLocal()
 {
 	const $token = sessionStorage.getItem('pongToken');
-	fetch("http://localhost:8000/api/user_status/", {
+	fetch("https://localhost/api/user_status/", {
 		method: "GET",
 		headers: {
 			"Authorization": $token
