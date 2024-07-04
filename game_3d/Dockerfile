@@ -11,7 +11,9 @@ FROM node:21-alpine3.17
 WORKDIR /usr/src/game_3d/
 
 COPY . /usr/src/game_3d/
-RUN npm install
+
+RUN npm install \
+    && apk add vim
 
 EXPOSE 8080
 

@@ -33,7 +33,7 @@ logs:
 
 .PHONY: exec
 exec:
-	$(DOCKER_COMPOSE) exec <service_name> <command>
+	$(DOCKER_COMPOSE) exec frontend sh
 
 .PHONY: build
 build:

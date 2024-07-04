@@ -65,7 +65,4 @@ export function handleChatInput()
 			messageinputdom.value = '';
 		}
 	};
-
-	// document.querySelector('#chat-message-submit').onclick = function(e) {
-	// };
-} 
+}
