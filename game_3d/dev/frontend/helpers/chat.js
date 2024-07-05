@@ -6,29 +6,6 @@ export function handleChatInput() {
 	console.log(sessionStorage.getItem('userId'));
 	// const roomName = JSON.parse(document.getElementById('room-name').textContent);
 	// const userName = JSON.parse(document.getElementById('user-name').textContent);
-	const $token = sessionStorage.getItem('pongToken');
-	const $friendsUrl = apiUrl + 'friends/';
-	fetch($friendsUrl, {
-		method: 'GET',
-		headers: {
-			"Authorization": $token
-		}
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
-	.then(data => {
-		const friendList = data.context.friends;
-		printFriends(friendList);
-		console.log(friendList);
-	})
-	.catch(error => {
-		console.error('Error en la solicitud:', error);
-	});
-
 
 	// Create new WebSocket and set its name
 	const chatSocket = new WebSocket(
@@ -59,6 +36,8 @@ export function handleChatInput() {
 		})
 	};
 
+	
+
 	// When the WebSocket is opened, it prints a message in the console	
 	// Receive the message and write it in the chat log
 	chatSocket.onmessage = function (e) {
@@ -87,51 +66,4 @@ export function handleChatInput() {
 		messageinputdom.value = '';
 		}
 	};
-}
-
-function printFriends(friendList) {
-	let chatPeople = document.getElementById('left-bar-chat');
-	if (!chatPeople) {
-		return;
-	}
-	// let newFriendCont = document.createElement('div');
-	let newFriendCont;
-	let nameNode;
-	let btnNode;
-	let lessBtnNode;
-	
-	for (let i = 0; i < friendList.length; i++) {
-		if (chatPeople.querySelector(`p[data-username="${friendList[i].myUser}"]`)) {
-			continue;
-		} else {
-			// Remove nodes that are not in the friendList
-			const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
-			existingNames.forEach(name => {
-				if (!friendList.some(friend => friend.myUser === name)) {
-					const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
-					if (nodeToRemove) {
-						nodeToRemove.remove();
-					}
-				}
-			});
-		}
-		newFriendCont = document.createElement('div');
-		newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
-		console.log(friendList[i].myUser__username);
-		console.log(friendList[i].myUser);
-		nameNode = document.createElement('p');
-		nameNode.innerText = friendList[i].myUser__username;
-		newFriendCont.appendChild(nameNode);
-		btnNode = document.createElement('button');
-		btnNode.innerText = "+";
-		btnNode.setAttribute("type", "button");
-		btnNode.setAttribute("style", "margin-left: auto;");
-		lessBtnNode = document.createElement('button');
-		lessBtnNode.innerText = "-";
-		lessBtnNode.setAttribute("type", "button");
-		newFriendCont.appendChild(nameNode);
-		newFriendCont.appendChild(btnNode);
-		newFriendCont.appendChild(lessBtnNode);
-		chatPeople.appendChild(newFriendCont);
-	}
 }

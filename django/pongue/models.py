@@ -50,6 +50,19 @@ class PlayerFriend(models.Model):
 	registerDate = models.DateField(auto_now_add = True)
 
 	@classmethod
+	def acceptFriendshipRequest(self):
+		self.status = "ACCEPTED"
+		self.save()
+		
+	def rejectFriendshipRequest(self):
+		self.status = "REJECTED"
+		self.save()
+
+	def blockFriendship(self):
+		self.status = "BLOCKED"
+		self.save()
+
+	@classmethod
 	def search_or_create(cls, player_a, player_b):
 
 		player1 = PongueUser.objects.filter(username__exact=player_a).first()
