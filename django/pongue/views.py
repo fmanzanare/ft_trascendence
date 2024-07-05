@@ -432,7 +432,7 @@ def friends(request):
 	elif request.method == "GET":
 		# user = PongueUser.objects.get(username=get_user_from_jwt(request))
 		# friends = list(user.friends.values_list("username", flat=True))
-		friends = list(PlayerFriend.objects.filter(myFriend__username=get_user_from_jwt(request)).values("myFriend__username", "myFriend", "status"))
+		friends = list(PlayerFriend.objects.filter(myFriend__username=get_user_from_jwt(request)).values("myUser__username", "myUser", "status"))
 		return JsonResponse({
 			"success": True,
 			"message": "",

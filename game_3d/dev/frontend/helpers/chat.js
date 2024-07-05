@@ -84,40 +84,48 @@ export function handleChatInput() {
 				'message': message,
 				'userName': userName
 			}));
-			messageinputdom.value = '';
+		messageinputdom.value = '';
 		}
 	};
 }
 
 function printFriends(friendList) {
 	let chatPeople = document.getElementById('left-bar-chat');
-	let newFriendCont = document.createElement('div');
+	if (!chatPeople) {
+		return;
+	}
+	// let newFriendCont = document.createElement('div');
+	let newFriendCont;
 	let nameNode;
 	let btnNode;
 	let lessBtnNode;
-	newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
-
+	
 	for (let i = 0; i < friendList.length; i++) {
-		if (newFriendCont.querySelector(`p[data-username="${friendList[i].myFriend__username}"]`)) {
+		if (chatPeople.querySelector(`p[data-username="${friendList[i].myUser}"]`)) {
 			continue;
 		} else {
 			// Remove nodes that are not in the friendList
-			const existingNames = Array.from(newFriendCont.querySelectorAll('p')).map(node => node.innerText);
+			const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
 			existingNames.forEach(name => {
-				if (!friendList.some(friend => friend.myFriend__username === name)) {
-					const nodeToRemove = newFriendCont.querySelector(`p[data-username="${name}"]`);
-					nodeToRemove.remove();
+				if (!friendList.some(friend => friend.myUser === name)) {
+					const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
+					if (nodeToRemove) {
+						nodeToRemove.remove();
+					}
 				}
 			});
 		}
-		console.log(friendList[i].myFriend__username);
-		console.log(friendList[i].myFriend);
+		newFriendCont = document.createElement('div');
+		newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
+		console.log(friendList[i].myUser__username);
+		console.log(friendList[i].myUser);
 		nameNode = document.createElement('p');
-		nameNode.innerText = friendList[i].myFriend__username;
+		nameNode.innerText = friendList[i].myUser__username;
 		newFriendCont.appendChild(nameNode);
 		btnNode = document.createElement('button');
 		btnNode.innerText = "+";
 		btnNode.setAttribute("type", "button");
+		btnNode.setAttribute("style", "margin-left: auto;");
 		lessBtnNode = document.createElement('button');
 		lessBtnNode.innerText = "-";
 		lessBtnNode.setAttribute("type", "button");
