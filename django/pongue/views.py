@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 import requests
 import os
-from .models import GameResults, PongueUser
+from .models import GameResults, PongueUser ,PlayerFriend
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
@@ -418,7 +418,7 @@ def friends(request):
 		user = get_object_or_404(PongueUser, username=get_user_from_jwt(request))
 		friend = get_object_or_404(PongueUser, username=username)
 		if action == "add":
-			user.friends.add(friend)
+			PlayerFriend.search_or_create(get_user_from_jwt(request), username)
 		elif action == "remove":
 			user.friends.remove(friend)
 		user.save()
@@ -430,8 +430,9 @@ def friends(request):
 			"context": {},
 		})
 	elif request.method == "GET":
-		user = PongueUser.objects.get(username=get_user_from_jwt(request))
-		friends = list(user.friends.values_list("username", flat=True))
+		# user = PongueUser.objects.get(username=get_user_from_jwt(request))
+		# friends = list(user.friends.values_list("username", flat=True))
+		friends = list(PlayerFriend.objects.filter(myUser__username=get_user_from_jwt(request)).values("myFriend__username", "myFriend", "status"))
 		return JsonResponse({
 			"success": True,
 			"message": "",

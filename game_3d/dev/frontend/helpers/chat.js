@@ -1,14 +1,36 @@
 export function handleChatInput()
 {
-	console.log('Hola Victor')
-	// const roomName = JSON.parse(document.getElementById('room-name').textContent);
-	// const userName = JSON.parse(document.getElementById('user-name').textContent);
-
-	
 	if (sessionStorage.getItem('userId') === null) {
 		console.error('User not logged in');
 		return;
 	}
+	console.log(sessionStorage.getItem('userId'));
+	// const roomName = JSON.parse(document.getElementById('room-name').textContent);
+	// const userName = JSON.parse(document.getElementById('user-name').textContent);
+	const $token = sessionStorage.getItem('pongToken');
+	const $friendsUrl = apiUrl + 'friends/';
+	fetch($friendsUrl, {
+		method: 'GET',
+		headers: {
+			"Authorization": $token
+		}
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`Error en la solicitud: ${response.status}`);
+		}
+		return response.json()
+	})
+	.then(data => {
+		const friendList = data.context.friends;
+		printFriends(friendList);
+		console.log(friendList);
+	})
+	.catch(error => {
+		console.error('Error en la solicitud:', error);
+	});
+		
+
 	// Create new WebSocket and set its name
 	const chatSocket = new WebSocket(
 		'ws://'
@@ -22,6 +44,7 @@ export function handleChatInput()
 		const friendInputDom = document.querySelector('#searchFriend');
 		const $token = sessionStorage.getItem('pongToken');
 		const friend = friendInputDom.value;
+		console.log(friend);
 		const $friendsUrl = apiUrl + 'friends/';
 		const $loginUrl = apiUrl + 'login/';
 		fetch($friendsUrl, {
@@ -65,4 +88,30 @@ export function handleChatInput()
 			messageinputdom.value = '';
 		}
 	};
+}
+
+function printFriends(friendList){ 
+	let chatPeople = document.getElementById('left-bar-chat');
+
+	let newFriendCont = document.createElement('div');
+	newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
+	
+	for (let i = 0; i < friendList.length; i++) {
+		console.log(friendList[i].myFriend__username);
+		console.log(friendList[i].myFriend);
+		let nameNode = document.createElement('p');
+		nameNode.innerText = friendList[i].myFriend__username;
+		newFriendCont.appendChild(nameNode);
+		let btnNode = document.createElement('button');
+		btnNode.innerText = "+";
+		btnNode.setAttribute("type", "button");
+		let lessBtnNode = document.createElement('button');
+		lessBtnNode.innerText = "-";
+		lessBtnNode.setAttribute("type", "button");
+		newFriendCont.appendChild(nameNode);
+		newFriendCont.appendChild(btnNode);
+		newFriendCont.appendChild(lessBtnNode);
+		chatPeople.appendChild(newFriendCont);
+
+	}
 }

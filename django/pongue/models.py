@@ -38,6 +38,7 @@ class GameResults(models.Model):
 STATUS_FRIENDSHIP = (
 	("PENDING", "Pending"),
 	("ACCEPTED", "Accepted"),
+	("REJECTED", "Rejected"),
 	("BLOCKED", "Blocked")
 )
 

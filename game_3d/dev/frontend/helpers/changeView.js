@@ -6,6 +6,7 @@ export function displayChat()
 	const $chat = document.getElementById("chat");
 	if($chat.classList.contains('d-none'))
 	{
+		
 		$chatButton.classList.add('d-none');
 		$chat.classList.remove('d-none');
 		console.log("Abre chat");
