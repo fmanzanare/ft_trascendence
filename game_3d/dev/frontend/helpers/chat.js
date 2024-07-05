@@ -1,5 +1,4 @@
-export function handleChatInput()
-{
+export function handleChatInput() {
 	if (sessionStorage.getItem('userId') === null) {
 		console.error('User not logged in');
 		return;
@@ -29,7 +28,7 @@ export function handleChatInput()
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});
-		
+
 
 	// Create new WebSocket and set its name
 	const chatSocket = new WebSocket(
@@ -40,7 +39,7 @@ export function handleChatInput()
 		+ '/'
 	);
 
-	document.querySelector('#addFriend').onclick = function(e) {
+	document.querySelector('#addFriend').onclick = function (e) {
 		const friendInputDom = document.querySelector('#searchFriend');
 		const $token = sessionStorage.getItem('pongToken');
 		const friend = friendInputDom.value;
@@ -48,33 +47,33 @@ export function handleChatInput()
 		const $friendsUrl = apiUrl + 'friends/';
 		const $loginUrl = apiUrl + 'login/';
 		fetch($friendsUrl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					"Authorization": $token					
-				},
-				body: JSON.stringify({
-					"username": friend,
-					"action" : "add"
-				})
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				"Authorization": $token
+			},
+			body: JSON.stringify({
+				"username": friend,
+				"action": "add"
 			})
+		})
 	};
 
 	// When the WebSocket is opened, it prints a message in the console	
 	// Receive the message and write it in the chat log
-	chatSocket.onmessage = function(e) {
+	chatSocket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
 		document.querySelector('#chat-log').value += (data.message + '\n');
 	};
 
 	// When the WebSocket is closed, it prints a message in the console
-	chatSocket.onclose = function(e) {
+	chatSocket.onclose = function (e) {
 		console.error('chat socket closed unexpectedly');
 	};
 
 	// It focus on the chatInput and 
 	document.querySelector('#chatInput').focus();
-	document.querySelector('#chatInput').onkeyup = function(e) {
+	document.querySelector('#chatInput').onkeyup = function (e) {
 		if (e.key === 'Enter') {  // enter, return
 			// document.queryselector('#chat-message-submit').click();
 			let userName = sessionStorage.getItem('userName');
@@ -90,28 +89,41 @@ export function handleChatInput()
 	};
 }
 
-function printFriends(friendList){ 
+function printFriends(friendList) {
 	let chatPeople = document.getElementById('left-bar-chat');
-
 	let newFriendCont = document.createElement('div');
+	let nameNode;
+	let btnNode;
+	let lessBtnNode;
 	newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
-	
+
 	for (let i = 0; i < friendList.length; i++) {
+		if (newFriendCont.querySelector(`p[data-username="${friendList[i].myFriend__username}"]`)) {
+			continue;
+		} else {
+			// Remove nodes that are not in the friendList
+			const existingNames = Array.from(newFriendCont.querySelectorAll('p')).map(node => node.innerText);
+			existingNames.forEach(name => {
+				if (!friendList.some(friend => friend.myFriend__username === name)) {
+					const nodeToRemove = newFriendCont.querySelector(`p[data-username="${name}"]`);
+					nodeToRemove.remove();
+				}
+			});
+		}
 		console.log(friendList[i].myFriend__username);
 		console.log(friendList[i].myFriend);
-		let nameNode = document.createElement('p');
+		nameNode = document.createElement('p');
 		nameNode.innerText = friendList[i].myFriend__username;
 		newFriendCont.appendChild(nameNode);
-		let btnNode = document.createElement('button');
+		btnNode = document.createElement('button');
 		btnNode.innerText = "+";
 		btnNode.setAttribute("type", "button");
-		let lessBtnNode = document.createElement('button');
+		lessBtnNode = document.createElement('button');
 		lessBtnNode.innerText = "-";
 		lessBtnNode.setAttribute("type", "button");
 		newFriendCont.appendChild(nameNode);
 		newFriendCont.appendChild(btnNode);
 		newFriendCont.appendChild(lessBtnNode);
 		chatPeople.appendChild(newFriendCont);
-
 	}
 }
