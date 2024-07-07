@@ -43,24 +43,19 @@ STATUS_FRIENDSHIP = (
 )
 
 class PlayerFriend(models.Model):
+	class Status(models.TextChoices):
+		PENDING = 'PENDING'
+		ACCEPTED = 'ACCEPTED'
+		REJECTED = 'REJECTED'
+		BLOCKED = 'BLOCKED'
+	
 	id = models.AutoField(primary_key=True)
 	myUser = models.ForeignKey("PongueUser", on_delete=models.DO_NOTHING, related_name = "my_user")
 	myFriend = models.ForeignKey("PongueUser", on_delete=models.DO_NOTHING, related_name = "my_friend")
-	status = models.CharField(max_length=10, choices=STATUS_FRIENDSHIP, default="PENDING")
+	status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
 	registerDate = models.DateField(auto_now_add = True)
 
-	@classmethod
-	def acceptFriendshipRequest(self):
-		self.status = "ACCEPTED"
-		self.save()
-		
-	def rejectFriendshipRequest(self):
-		self.status = "REJECTED"
-		self.save()
 
-	def blockFriendship(self):
-		self.status = "BLOCKED"
-		self.save()
 
 	@classmethod
 	def search_or_create(cls, player_a, player_b):

@@ -421,6 +421,16 @@ def friends(request):
 			PlayerFriend.search_or_create(get_user_from_jwt(request), username)
 		elif action == "remove":
 			user.friends.remove(friend)
+		elif action == "accept":
+			friendship = (PlayerFriend.objects.filter(myUser__username=get_user_from_jwt(request).username, myFriend__username=username) |
+			PlayerFriend.objects.filter(myUser__username=username, myFriend__username=get_user_from_jwt(request).username)).first()
+			friendship.status = PlayerFriend.Status.ACCEPTED
+			friendship.save()
+		elif action == "reject":
+			friendship = (PlayerFriend.objects.filter(myUser__username=get_user_from_jwt(request).username, myFriend__username=username) |
+			PlayerFriend.objects.filter(myUser__username=username, myFriend__username=get_user_from_jwt(request).username)).first()
+			friendship.status = PlayerFriend.Status.REJECTED
+			friendship.save()
 		user.save()
 		return JsonResponse({
 			"success": True,
