@@ -15,6 +15,7 @@ class Game:
         self.ready = False
         self.winner = False
         self.matchId = 0
+        self.disconnectionFlag = False
 
     def calculateRandomBallDir(self):
         initDirX = -1 if random.random() < 0.5 else 1
@@ -125,7 +126,7 @@ class Game:
         gameStart = time.time()
         self.calculateRandomBallDir()
 
-        while (self.score.pOne < 11 and self.score.pTwo < 11):
+        while (self.score.pOne < 11 and self.score.pTwo < 11 and not self.disconnectionFlag):
             gamePositions = {
                 "type": "game.info",
                 "gameData": True,
@@ -154,19 +155,34 @@ class Game:
 
             await asyncio.sleep(0.033)
 
-        self.winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
+        if (not self.disconnectionFlag):
+            self.winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
+            finishTime = time.time()
+            finishedGame = {
+                    "type": "game.end",
+                    "pOneId": self.pOne.playerId,
+                    "pTwoId": self.pTwo.playerId,
+                    "pOneScore": self.score.pOne,
+                    "pTwoScore": self.score.pTwo,
+                    "winner": self.winner,
+                    "startTime": gameStart,
+                    "finishTime": finishTime,
+                    "duration": finishTime - gameStart, 
+                    "matchId": self.matchId
+            }
+
+            await self.socket.channel_layer.group_send(
+                self.socket.room_group_name, finishedGame
+            )
+        else:
+            self.disconnection(gameStart)
+    
+    async def disconnection(self, gameStart):
         finishTime = time.time()
         finishedGame = {
-                "type": "game.end",
-                "pOneId": self.pOne.playerId,
-                "pTwoId": self.pTwo.playerId,
-                "pOneScore": self.score.pOne,
-                "pTwoScore": self.score.pTwo,
-                "winner": self.winner,
+                "type": "disconnection",
                 "startTime": gameStart,
                 "finishTime": finishTime,
-                "duration": finishTime - gameStart, 
-                "matchId": self.matchId
         }
 
         await self.socket.channel_layer.group_send(

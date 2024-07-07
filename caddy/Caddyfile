@@ -1,4 +1,9 @@
-localhost {
+api.localhost {
 	# Reverse proxy para el backend (Django)
 	reverse_proxy backend:8000
+}
+
+localhost {
+	# Reverse proxy para el frontend (JS)
+	reverse_proxy frontend:3000
 }

@@ -63,8 +63,8 @@ services:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./caddy/data:/data
       - ./caddy/conf:/config
-      - ./game_3d:/usr/src/game_3d/dev
-      - ./django:/usr/src/django
+      - game_3d:/usr/src/game_3d/dev
+      - django:/usr/src/django
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
       interval: 30s

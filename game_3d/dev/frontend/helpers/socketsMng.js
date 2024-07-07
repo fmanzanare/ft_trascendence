@@ -14,7 +14,7 @@ export function openNewSocket(data) {
 
 	const remoteSocket = new WebSocket(
 		'wss://'
-		+ 'localhost'
+		+ 'api.localhost'
 		+ '/ws/remote/'
 		+ id
 		+ '/'
@@ -53,6 +53,36 @@ export function openNewSocket(data) {
 		if (data.gameData || data.scoreData) {
 			game.getReceivedDataFromWS(data);
 		}
+		if (data.disconnection) {
+			sessionStorage.setItem('winner', "You");
+			changeState('Online');
+			navigateTo("home")
+			remoteSocket.close();
+			const $token = sessionStorage.getItem('pongToken')
+			const $resultData = new URLSearchParams();
+			// $resultData.append('player_1', id);
+			// $resultData.append('player_2', userId);
+			$resultData.append('player_1_score', 11);
+			$resultData.append('player_2_score', 0);
+			$resultData.append('created_at', data.disconnection.gameStart);
+			$resultData.append('updated_at', data.disconnection.finishTime);
+			fetch(`${apiUrl}remote/register-result`, {
+				method: "POST",
+				headers: {
+					"Authorization": $token
+				},
+				body: $resultData
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Hubo un problema al realizar la solicitud.');
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log(data)
+			})
+		}
 		if (data.gameEnd) {
 			let container = document.getElementById('gameDiv').parentElement;
 			let gameDiv = document.querySelector('canvas');
@@ -66,7 +96,7 @@ export function openNewSocket(data) {
 				navigateTo("home")
 				remoteSocket.close();
 				const $token = sessionStorage.getItem('pongToken')
-				fetch("https://localhost/api/online-status/", {
+				fetch(`${apiUrl}online-status/`, {
 					method: "POST",
 					headers: {
 						"Authorization": $token
@@ -90,7 +120,7 @@ export function openNewSocket(data) {
 				$resultData.append('player_2_score', data.gameEnd.pTwoScore);
 				$resultData.append('created_at', data.gameEnd.gameStart);
 				$resultData.append('updated_at', data.gameEnd.finishTime);
-				fetch("https://localhost/api/remote/register-result", {
+				fetch(`${apiUrl}remote/register-result`, {
 					method: "POST",
 					headers: {
 						"Authorization": $token
@@ -128,7 +158,7 @@ export function openNewSocketTournament(data) {
 
 	const remoteSocket = new WebSocket(
 		'wss://'
-		+ 'localhost'
+		+ 'api.localhost'
 		+ '/ws/tournament/'
 		+ id
 		+ '/'
@@ -193,7 +223,7 @@ export function openNewSocketTournament(data) {
 			if (userId == data.tournamentWinner) {
 				console.log("Congratulations! You won the tournament");
 				const $token = sessionStorage.getItem('pongToken')
-				fetch("https://localhost/api/remote/register-tournament-win", {
+				fetch(`${apiUrl}remote/register-tournament-win`, {
 					method: "POST",
 					headers: {
 						"Authorization": $token
@@ -219,7 +249,7 @@ export function openNewSocketTournament(data) {
 	remoteSocket.onclose = function (e) {
 		console.log("Connection closed unexpectedly")
 		const $token = sessionStorage.getItem('pongToken')
-		fetch("https://localhost/api/online-status/", {
+		fetch(`${apiUrl}online-status/`, {
 			method: "POST",
 			headers: {
 				"Authorization": $token

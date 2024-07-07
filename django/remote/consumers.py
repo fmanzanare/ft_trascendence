@@ -16,6 +16,7 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.room_name = self.scope["url_route"]["kwargs"]["player_id"]
 		self.room_group_name = f"game_{self.room_name}"
+		print(self.scope["user"].id)
 
 		if self.room_group_name in self.rooms and "game" in self.rooms[self.room_group_name]:
 			await self.accept()
@@ -112,13 +113,9 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 			return
 
 		if ("disconnection" in game_info_json.keys()):
-			await self.channel_layer.group_send(
-				self.room_group_name, {
-					"type": "player.disconnection",
-					"message": "player has been disconnected"
-				}
-			)
-			return
+			if (hasattr(self, "game") and self.game != None):
+				self.game.disconnection()
+				return
 
 
 	# Recive data from Room group
@@ -159,7 +156,9 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		return
 
 	async def player_disconnection(self, event):
-		print(event);
+		await self.send(text_data=json.dumps({
+			"disconnection": event
+		}))
 		return
 
 class TournamentConsumer(AsyncWebsocketConsumer):
