@@ -35,12 +35,6 @@ class GameResults(models.Model):
 	def __str__(self):
 		return f"{self.player_1} vs {self.player_2} - {self.player_1_score} - {self.player_2_score}"
 
-STATUS_FRIENDSHIP = (
-	("PENDING", "Pending"),
-	("ACCEPTED", "Accepted"),
-	("REJECTED", "Rejected"),
-	("BLOCKED", "Blocked")
-)
 
 class PlayerFriend(models.Model):
 	class Status(models.TextChoices):

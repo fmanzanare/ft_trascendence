@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 import requests
 import os
+from django.db.models import Q
 from .models import GameResults, PongueUser ,PlayerFriend
 from .otp import totp
 import base64, hashlib
@@ -440,16 +441,38 @@ def friends(request):
 			"context": {},
 		})
 	elif request.method == "GET":
-		# user = PongueUser.objects.get(username=get_user_from_jwt(request))
-		# friends = list(user.friends.values_list("username", flat=True))
-		friends = list(PlayerFriend.objects.filter(myFriend__username=get_user_from_jwt(request)).values("myUser__username", "myUser", "status"))
-		return JsonResponse({
-			"success": True,
-			"message": "",
-			"redirect": False,
-			"redirect_url": "",
-			"context": {"friends": friends},
-		})
+		try:
+			# Asumiendo que get_user_from_jwt(request) devuelve un objeto de usuario válido
+			current_user = get_user_from_jwt(request)
+			# Obtener todos los objetos de amistad donde el usuario actual es el usuario o el amigo
+			friendships = PlayerFriend.objects.filter(
+				Q(myUser__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED]) |
+				Q(myFriend__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED])
+			).distinct()
+			print("hola")
+			# Preparar la lista de amigos para la respuesta
+			print(friendships)
+			friends_list = [
+				{
+					"username": friendship.myFriend.username if friendship.myUser == current_user else friendship.myUser.username,
+					"status": friendship.status
+				} for friendship in friendships
+			]
+			return JsonResponse({
+				"success": True,
+				"message": "Friends list fetched successfully.",
+				"redirect": False,
+				"redirect_url": "",
+				"context": {"friends": friends_list},
+			})
+		except Exception as e:
+			return JsonResponse({
+				"success": False,
+				"message": f"An error occurred: {str(e)}",
+				"redirect": False,
+				"redirect_url": "",
+				"context": {}
+			})
 	else:
 		return JsonResponse({
 			"success": False,
