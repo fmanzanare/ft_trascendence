@@ -117,30 +117,50 @@ function printFriends(friendList) {
 	let lessBtnNode;
 	
 	const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
+	existingNames.forEach(name => {
+		const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
+		if (nodeToRemove) {
+			console.log("Removing node: ", nodeToRemove);
+			nodeToRemove.remove();
+		}
+		const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
+		if (plusBtnToRemove) {
+			console.log("Removing plus button: ", plusBtnToRemove);
+			plusBtnToRemove.remove();
+		}
+		const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
+		if (lessBtnToRemove) {
+			console.log("Removing less button: ", lessBtnToRemove);
+			lessBtnToRemove.remove();
+		}
+	});
 	for (let i = 0; i < friendList.length; i++) {
 		// Remove nodes that are not in the friendList
-		if (existingNames.length > 0 && friendList.some(friend => friend.username == existingNames[i])) {
-			existingNames.forEach(name => {
-				console.log("name: ", name);
-				if (!friendList.some(friend => friend.username === name)) {
-					const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
-					if (nodeToRemove) {
-						console.log("Removing node: ", nodeToRemove);
-						nodeToRemove.remove();
-						const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
-					if (plusBtnToRemove) {
-						console.log("Removing plus button: ", plusBtnToRemove);
-						plusBtnToRemove.remove();
-					}
-					const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
-					if (lessBtnToRemove) {
-						console.log("Removing less button: ", lessBtnToRemove);
-						lessBtnToRemove.remove();
-					}
-					}
-				}
-			});
-		} else if (chatPeople.querySelector(`p[data-username="${friendList[i].myUser}"]`)) {
+		// if (existingNames.length > 0 && friendList.some(friend => friend.username == existingNames[i])) {
+		// 	existingNames.forEach(name => {
+		// 		console.log("name: ", name);	
+		// 		if (!friendList.find(friend => friend.username === name)) {
+		// 			const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
+		// 			if (nodeToRemove) {
+		// 				console.log("Removing node: ", nodeToRemove);
+		// 				nodeToRemove.remove();
+		// 			}
+		// 		}
+		// 		const friend = friendList.find(friend => friend.username === name);
+		// 		if (friend.status !== 'PENDING') {
+		// 			const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
+		// 			if (plusBtnToRemove) {
+		// 				console.log("Removing plus button: ", plusBtnToRemove);
+		// 				plusBtnToRemove.remove();
+		// 			}
+		// 			const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
+		// 			if (lessBtnToRemove) {
+		// 				console.log("Removing less button: ", lessBtnToRemove);
+		// 				lessBtnToRemove.remove();
+		// 			}
+		// 		}
+		// 	});
+		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {
 			continue;
 		} else if(friendList[i].status === 'PENDING' || friendList[i].status === 'ACCEPTED') {
 			newFriendCont = document.createElement('div');
