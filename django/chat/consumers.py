@@ -21,9 +21,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        # message_content = text_data_json["message"]
-        # room_name = text_data_json["room_name"]
-        # sender = text_data_json["userName"]
         if ("message" in text_data_json.keys()):
             message = text_data_json["message"]
             # Send message to room group

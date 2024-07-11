@@ -3,9 +3,6 @@ export function handleChatInput(friendshipId) {
 		console.error('User not logged in');
 		return;
 	}
-	console.log(sessionStorage.getItem('userId'));
-
-	console.log(friendshipId);
 	// Create new WebSocket and set its name
 	const chatSocket = new WebSocket(
 		'ws://'

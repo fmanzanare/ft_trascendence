@@ -155,9 +155,9 @@ function printFriends(friendList) {
 			nameNode.innerText = friendList[i].username;
 			nameNode.setAttribute("id", "friendName");
 			nameNode.setAttribute("data-username", friendList[i].username);
-			nameNode.setAttribute("data-friendship-id", friendList[i].id);
+			nameNode.setAttribute("data-friendship-id", friendList[i].friendshipId);
 			if (friendList[i].status === 'ACCEPTED') {
-				nameNode.onclick = () => handleChatInput(friendList[i].id);
+				nameNode.onclick = () => handleChatInput(friendList[i].friendshipId);
 				nameNode.style.cursor = "pointer";
 			}
 			newFriendCont.appendChild(nameNode);
