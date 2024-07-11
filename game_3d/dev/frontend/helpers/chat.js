@@ -1,18 +1,17 @@
-export function handleChatInput() {
+export function handleChatInput(friendshipId) {
 	if (sessionStorage.getItem('userId') === null) {
 		console.error('User not logged in');
 		return;
 	}
 	console.log(sessionStorage.getItem('userId'));
-	// const roomName = JSON.parse(document.getElementById('room-name').textContent);
-	// const userName = JSON.parse(document.getElementById('user-name').textContent);
 
+	console.log(friendshipId);
 	// Create new WebSocket and set its name
 	const chatSocket = new WebSocket(
 		'ws://'
 		+ 'localhost:8000'
 		+ '/ws/chat/'
-		+ sessionStorage.getItem('userId')
+		+ friendshipId
 		+ '/'
 	);
 

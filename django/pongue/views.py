@@ -449,12 +449,12 @@ def friends(request):
 				Q(myUser__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED]) |
 				Q(myFriend__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED])
 			).distinct()
-			print("hola")
 			# Preparar la lista de amigos para la respuesta
-			print(friendships)
 			friends_list = [
 				{
 					"username": friendship.myFriend.username if friendship.myUser == current_user else friendship.myUser.username,
+					"friendUsername": friendship.myFriend.username,
+					"friendshipId": friendship.id,
 					"status": friendship.status
 				} for friendship in friendships
 			]

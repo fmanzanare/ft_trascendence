@@ -11,6 +11,12 @@ export function displayChat()
 		$chat.classList.remove('d-none');
 		document.querySelector("#addFriend").onclick = requestFriendship;
 		getFriends();
+		/**
+		 * implementar un manejador de eventos que escuche cuando el boton asociado a un amigo sea
+		 * pulsado. Este boton deberia tener un campo oculto que lo relacione con el id de la amistad
+		 * o con el id de usuario del amigo. Este manejador, deberia entonces llamar a handleChatInput()
+		 * y cree una sala de chat.
+		 */
 		console.log("Abre chat");
 	}
 	else
@@ -135,34 +141,10 @@ function printFriends(friendList) {
 		}
 	});
 	for (let i = 0; i < friendList.length; i++) {
-		// Remove nodes that are not in the friendList
-		// if (existingNames.length > 0 && friendList.some(friend => friend.username == existingNames[i])) {
-		// 	existingNames.forEach(name => {
-		// 		console.log("name: ", name);	
-		// 		if (!friendList.find(friend => friend.username === name)) {
-		// 			const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
-		// 			if (nodeToRemove) {
-		// 				console.log("Removing node: ", nodeToRemove);
-		// 				nodeToRemove.remove();
-		// 			}
-		// 		}
-		// 		const friend = friendList.find(friend => friend.username === name);
-		// 		if (friend.status !== 'PENDING') {
-		// 			const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
-		// 			if (plusBtnToRemove) {
-		// 				console.log("Removing plus button: ", plusBtnToRemove);
-		// 				plusBtnToRemove.remove();
-		// 			}
-		// 			const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
-		// 			if (lessBtnToRemove) {
-		// 				console.log("Removing less button: ", lessBtnToRemove);
-		// 				lessBtnToRemove.remove();
-		// 			}
-		// 		}
-		// 	});
 		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {
 			continue;
-		} else if(friendList[i].status === 'PENDING' || friendList[i].status === 'ACCEPTED') {
+		} else if((friendList[i].status === 'PENDING' && friendList[i].friendUsername !== friendList[i].username)
+			|| friendList[i].status === 'ACCEPTED') {
 			newFriendCont = document.createElement('div');
 			newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
 
@@ -173,6 +155,11 @@ function printFriends(friendList) {
 			nameNode.innerText = friendList[i].username;
 			nameNode.setAttribute("id", "friendName");
 			nameNode.setAttribute("data-username", friendList[i].username);
+			nameNode.setAttribute("data-friendship-id", friendList[i].id);
+			if (friendList[i].status === 'ACCEPTED') {
+				nameNode.onclick = () => handleChatInput(friendList[i].id);
+				nameNode.style.cursor = "pointer";
+			}
 			newFriendCont.appendChild(nameNode);
 
 			if (friendList[i].status === 'PENDING') {
