@@ -1,6 +1,6 @@
-import { navigateTo } from "./navigateto";
-import { changeState } from "./utils";
-import { sockets } from "../index"
+import { navigateTo } from "./navigateto.js";
+import { changeState } from "./utils.js";
+import { sockets } from "../index.js"
 
 export function cancelNav()
 {

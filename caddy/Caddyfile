@@ -1,9 +1,22 @@
-api.localhost {
-	# Reverse proxy para el backend (Django)
-	reverse_proxy backend:8000
-}
+# api.localhost {
+# 	# Reverse proxy para el backend (Django)
+# 	reverse_proxy backend:8000
+# 	tls /https/cert.pem /https/key.pem
+# }
+
+# localhost {
+# 	# Reverse proxy para el frontend (JS)
+# 	reverse_proxy frontend:3000
+# 	tls /https/cert.pem /https/key.pem
+# }
 
 localhost {
-	# Reverse proxy para el frontend (JS)
-	reverse_proxy frontend:3000
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+
+	handle_path /* {
+		root * /usr/src/game_3d
+		file_server browse
+	}
 }

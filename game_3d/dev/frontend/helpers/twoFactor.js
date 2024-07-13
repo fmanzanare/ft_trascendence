@@ -1,5 +1,5 @@
 import {changeUserName} from "./utils.js";
-import { navigateTo } from "./navigateto";
+import { navigateTo } from "./navigateto.js";
 
 export function twoFactorPushButton()
 {

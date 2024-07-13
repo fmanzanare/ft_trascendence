@@ -1,7 +1,7 @@
-import { runGame } from "../../game3D/src/old_version/scripts";
-import { Game } from "../../game3D/src/class/Game";
-import { openNewSocket, openNewSocketTournament } from "./socketsMng";
-import { changeState } from "./utils";
+import { runGame } from "../../game3D/src/old_version/scripts.js";
+import { Game } from "../../game3D/src/class/Game.js";
+import { openNewSocket, openNewSocketTournament } from "./socketsMng.js";
+import { changeState } from "./utils.js";
 
 function isEmptyOrSpaces(str) {
     return str === null || str.match(/^ *$/) !== null;

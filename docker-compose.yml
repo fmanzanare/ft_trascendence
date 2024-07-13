@@ -1,35 +1,26 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./game_3d
-    volumes:
-      - game_3d:/usr/src/game_3d/dev/
-    ports:
-      - "3000:3000"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # frontend:
+  #   build:
+  #     context: ./game_3d
+  #   volumes:
+  #     - game_3d:/usr/src/game_3d/dev/
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - backend
 
   backend:
     build:
       context: ./django
     command: python manage.py runserver 0.0.0.0:8000
-    # command: python manage.py runserver_plus 0.0.0.0:8000 --cert-file https/cert.pem --key-file https/key.pem
     volumes:
       - django:/usr/src/django/
     ports:
       - "8000:8000"
     env_file:
       - ./.env
-    healthcheck:
-      test: ["CMD-SHELL", "python manage.py check --deploy"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
     depends_on:
       - db
 
@@ -41,35 +32,25 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   caddy:
     image: caddy:alpine
     container_name: caddy
     depends_on:
-      - frontend
       - backend
+      # - frontend
     cap_add:
       - NET_ADMIN
     ports:
       - "8081:80"
       - "443:443"
-      - "443:443/udp"
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./caddy/data:/data
       - ./caddy/conf:/config
-      - game_3d:/usr/src/game_3d/dev
+      - ./caddy/https:/https
+      - game_3d:/usr/src/game_3d
       - django:/usr/src/django
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
   django:
@@ -83,5 +64,5 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${PWD}/game_3d/dev/'
+      device: '${PWD}/game_3d/'
   db_data:

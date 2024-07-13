@@ -16,7 +16,6 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.room_name = self.scope["url_route"]["kwargs"]["player_id"]
 		self.room_group_name = f"game_{self.room_name}"
-		print(self.scope["user"].id)
 
 		if self.room_group_name in self.rooms and "game" in self.rooms[self.room_group_name]:
 			await self.accept()
@@ -24,9 +23,9 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 			return
 
 		if self.room_group_name not in self.rooms.keys():
-			self.rooms[self.room_group_name] = {"players": {"player1": self}}
+			self.rooms[self.room_group_name] = {"players": {"player1": "p1"}}
 		else:
-			self.rooms[self.room_group_name] = {"players": {"player2": self}}
+			self.rooms[self.room_group_name]["players"]["player2"] = "p2"
 			self.rooms[self.room_group_name]["game"] = Game(self, 1, 2)
 			self.game = self.rooms[self.room_group_name]["game"]
 			self.game.socket = self
@@ -41,11 +40,14 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		# Leave from Room group
 		print("disconnecting")
 		# TODO - NOTIFIY PLAYERS THAT CONNECTION HAS BEEN CLOSED !!!
-		if (hasattr(self, "game_task") and self.game_task != None):
-			self.game_task.cancel()
 		if (self.room_group_name in self.rooms):
-			self.rooms.pop(self.room_group_name)
-		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+			if (len(self.rooms[self.room_group_name]["players"]) == 1):
+				self.rooms.pop(self.room_group_name)
+				if (hasattr(self, "game_task") and self.game_task != None):
+					self.game_task.cancel()
+				await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+			else:
+				self.rooms[self.room_group_name]["players"].popitem()
 
 	# Receive data from WebSocket
 	async def receive(self, text_data):
@@ -98,7 +100,12 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 
 		if ("gameReady" in game_info_json.keys()):
 			self.rooms[self.room_group_name]["player2Jwt"] = game_info_json["userJwt"]
+			self.rooms[self.room_group_name]["player2Id"] = game_info_json["userId"]
 			self.game = self.rooms[self.room_group_name]["game"]
+			pOneId = self.rooms[self.room_group_name]["player1Id"]
+			pTwoId = self.rooms[self.room_group_name]["player2Id"]
+			self.game.pOne.playerId = pOneId
+			self.game.pTwo.playerId = pTwoId
 			ready = game_info_json["gameReady"]
 			await self.channel_layer.group_send(
 				self.room_group_name, {
@@ -110,11 +117,12 @@ class RemoteConsumer(AsyncWebsocketConsumer):
 		
 		if ("firstConnection" in game_info_json.keys()):
 			self.rooms[self.room_group_name]["player1Jwt"] = game_info_json["userJwt"]
+			self.rooms[self.room_group_name]["player1Id"] = game_info_json["userId"]
 			return
 
 		if ("disconnection" in game_info_json.keys()):
 			if (hasattr(self, "game") and self.game != None):
-				self.game.disconnection()
+				self.game.disconnectionFlag = True
 				return
 
 
@@ -455,8 +463,3 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 		flag.set()
 	
-
-
-
-
-

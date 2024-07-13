@@ -1,5 +1,5 @@
-import { navigateTo } from "./navigateto";
-import { changeUserName } from "./utils";
+import { navigateTo } from "./navigateto.js";
+import { changeUserName } from "./utils.js";
 
 function getBase64Image(img)
 {

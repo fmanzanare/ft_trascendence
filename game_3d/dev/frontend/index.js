@@ -1,7 +1,7 @@
 import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
 
-window.apiUrl = 'https://api.localhost/api/';
+window.apiUrl = 'https://localhost/api/';
 
 export const sockets = {};
 
