@@ -23,12 +23,14 @@ export function acceptNav()
 	if (sockets.gameSocket != null) {
 		sockets.gameSocket.send(JSON.stringify({
 			"disconnection": true,
+			"userId": sessionStorage.getItem("userId")
 		}))
 		sockets.gameSocket.close();
 	}
 	if (sockets.tournamentSocket != null) {
 		sockets.tournamentSocket.send(JSON.stringify({
 			"disconnection": true,
+			"userId": sessionStorage.getItem("userId")
 		}))
 		sockets.tournamentSocket.close();
 	}

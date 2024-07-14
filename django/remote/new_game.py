@@ -124,12 +124,7 @@ class Game:
         gameStart = time.time()
         self.calculateRandomBallDir()
 
-        while (
-            self.score.pOne < 11 and 
-            self.score.pTwo < 11 and 
-            not self.disFlags["player1"] and
-            not self.disFlags["player2"]
-            ):
+        while (self.score.pOne < 11 and self.score.pTwo < 11 and not self.disFlags["player1"] and not self.disFlags["player2"]):
             gamePositions = {
                 "type": "game.info",
                 "gameData": True,
@@ -143,8 +138,8 @@ class Game:
                 "pTwoY": self.pTwo.yPos,
                 "matchId": self.matchId
             }
-            self.sockets["player1"].send(text_data=json.dumps(gamePositions))
-            self.sockets["player2"].send(text_data=json.dumps(gamePositions))
+            await self.sockets["player1"].send(text_data=json.dumps(gamePositions))
+            await self.sockets["player2"].send(text_data=json.dumps(gamePositions))
 
             self.checkGameLimitsCollisions()
             self.checkBallAndPlayerCollision(self.pOne)

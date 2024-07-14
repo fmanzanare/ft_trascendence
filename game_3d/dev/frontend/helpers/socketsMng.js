@@ -14,8 +14,8 @@ export function openNewSocket(data) {
 
 	const remoteSocket = new WebSocket(
 		'wss://'
-		+ 'api.localhost'
-		+ '/ws/remote/'
+		+ 'localhost'
+		+ '/api/ws/remote/'
 		+ id
 		+ '/'
 	)
@@ -24,26 +24,17 @@ export function openNewSocket(data) {
 
 	remoteSocket.onopen = function(e) {
 		console.log("connection stablished")
-		if (!data.fullGame) {
-			$loading.classList.remove('d-none');
-			remoteSocket.send(JSON.stringify({
-				"firstConnection": true,
-				"hostId": id,
-				"userId": userId,
-				"userJwt": sessionStorage.getItem('pongToken')
-			}))
-		}
-		else {
-            remoteSocket.send(JSON.stringify({
-                'gameReady': true,
-				'hostId': id,
-				'userId': userId,
-				'userJwt': sessionStorage.getItem('pongToken')
-            }));
-		}
+		$loading.classList.remove('d-none');
+		remoteSocket.send(JSON.stringify({
+			"register": true,
+			"hostId": id,
+			"userId": userId,
+			"userJwt": sessionStorage.getItem('pongToken')
+		}))
 	}
 
 	remoteSocket.onmessage = function(e) {
+		console.log(e.data)
 		const data = JSON.parse(e.data)
 
 		if (data.gameReady) {
@@ -60,86 +51,31 @@ export function openNewSocket(data) {
 			changeState('Online');
 			navigateTo("home")
 			remoteSocket.close();
-			// const $token = sessionStorage.getItem('pongToken')
-			// const $resultData = new URLSearchParams();
-			// $resultData.append('player_1', id);
-			// $resultData.append('player_2', userId);
-			// $resultData.append('player_1_score', 11);
-			// $resultData.append('player_2_score', 0);
-			// $resultData.append('created_at', data.disconnection.gameStart);
-			// $resultData.append('updated_at', data.disconnection.finishTime);
-			// fetch(`${apiUrl}remote/register-result`, {
-			// 	method: "POST",
-			// 	headers: {
-			// 		"Authorization": $token
-			// 	},
-			// 	body: $resultData
-			// })
-			// .then(response => {
-			// 	if (!response.ok) {
-			// 		throw new Error('Hubo un problema al realizar la solicitud.');
-			// 	}
-			// 	return response.json();
-			// })
-			// .then(data => {
-			// 	console.log(data)
-			// })
 		}
 		if (data.gameEnd) {
-			let container = document.getElementById('gameDiv').parentElement;
-			let gameDiv = document.querySelector('canvas');
-			let winnerDiv = document.createElement('p');
 			if (
 				(data.gameEnd.winner == 1 && host) ||
 				(data.gameEnd.winner == 2 && !host)
 			) {
 				sessionStorage.setItem('winner', "You");
-				changeState('Online');
-				navigateTo("home")
-				remoteSocket.close();
-				const $token = sessionStorage.getItem('pongToken')
-				fetch(`${apiUrl}online-status/`, {
-					method: "POST",
-					headers: {
-						"Authorization": $token
-					}
-				})
-				.then(response => {
-					if (!response.ok) {
-						throw new Error('Hubo un problema al realizar la solicitud.');
-					}
-				})
 			} else {
 				sessionStorage.setItem('winner', "YOUAREALOSSERMAN");
-				changeState('Online');
-				navigateTo("home")
-				remoteSocket.close();
-				// const $token = sessionStorage.getItem('pongToken')
-				// const $resultData = new URLSearchParams();
-				// $resultData.append('player_1', id);
-				// $resultData.append('player_2', userId);
-				// $resultData.append('player_1_score', data.gameEnd.pOneScore);
-				// $resultData.append('player_2_score', data.gameEnd.pTwoScore);
-				// $resultData.append('created_at', data.gameEnd.gameStart);
-				// $resultData.append('updated_at', data.gameEnd.finishTime);
-				// fetch(`${apiUrl}remote/register-result`, {
-				// 	method: "POST",
-				// 	headers: {
-				// 		"Authorization": $token
-				// 	},
-				// 	body: $resultData
-				// })
-				// .then(response => {
-				// 	if (!response.ok) {
-				// 		throw new Error('Hubo un problema al realizar la solicitud.');
-				// 	}
-				// 	return response.json();
-				// })
-				// .then(data => {
-				// 	console.log(data)
-				// })
-
 			}
+			changeState('Online');
+			navigateTo("home")
+			remoteSocket.close();
+			const $token = sessionStorage.getItem('pongToken')
+			fetch(`${apiUrl}online-status/`, {
+				method: "POST",
+				headers: {
+					"Authorization": $token
+				}
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Hubo un problema al realizar la solicitud.');
+				}
+			})
 		}
 	}
 
@@ -172,8 +108,8 @@ export function openNewSocketTournament(data) {
 
 	const remoteSocket = new WebSocket(
 		'wss://'
-		+ 'api.localhost'
-		+ '/ws/tournament/'
+		+ 'localhost'
+		+ '/api/ws/tournament/'
 		+ id
 		+ '/'
 	)

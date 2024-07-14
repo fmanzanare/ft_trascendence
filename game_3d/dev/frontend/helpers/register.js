@@ -26,8 +26,10 @@ export function loginPushButton()
 		return response.json()
 	})
 	.then(data => {
+		console.log(data)
 		if (data.success) {
 			sessionStorage.setItem('user', $name.value);
+			sessionStorage.setItem('userId', data.userId);
 			if (data.redirect_url == "pass2fa")
 			{
 				navigateTo("/twofactor");

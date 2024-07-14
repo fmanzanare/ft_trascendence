@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 import requests
 import os
-from .models import GameResults, PongueUser, RankingUserDTO
+from .models import GameResults, PongueUser, RankingUserDTO, UserHistoryDTO
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
@@ -181,6 +181,7 @@ def pass2fa(request, user_obj):
 		return JsonResponse({
 			"success": True,
 			"message": "Login completed",
+			"userId": user_obj.id,
 			"redirect": True,
 			"redirect_url": "home",
 			"context": {
@@ -394,6 +395,7 @@ def auth(request):
 				return JsonResponse({
 					"success": True,
 					"message": "Login completed",
+					"userId": user.id,
 					"redirect": True,
 					"redirect_url": "index",
 					"context": {
@@ -594,4 +596,22 @@ def change_status_to_online(request):
 	return JsonResponse({
 		"userId": user.id,
 		"status": user.status
+	})
+
+@jwt_required
+def user_history(request):
+	user: PongueUser = get_user_from_jwt(request)
+	gameResults: list[GameResults] = GameResults.objects.filter(player_1=user).values() | GameResults.objects.filter(player_2=user).values()
+	historyDtos = []
+	for gameResult in gameResults:
+		historyDto: UserHistoryDTO = UserHistoryDTO.toUserHistoryDTO(user, gameResult)
+		historyDtos.append({
+			"id": historyDto.id,
+			"rival": historyDto.rival,
+			"isWin": historyDto.isWin,
+			"myScore": historyDto.myScore,
+			"myRivalScore": historyDto.myRivalScore
+		})
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"history": historyDtos
 	})
