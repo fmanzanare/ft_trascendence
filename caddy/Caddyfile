@@ -15,8 +15,9 @@ localhost {
 		reverse_proxy backend:8000
 	}
 
-	handle_path /* {
+	handle /* {
 		root * /usr/src/game_3d
+		try_files {path} /index.html
 		file_server browse
 	}
 }
