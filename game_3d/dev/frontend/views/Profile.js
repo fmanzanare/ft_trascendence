@@ -10,6 +10,7 @@ export default class extends AbstractView {
 		const $token = sessionStorage.getItem('pongToken');
 		const $twoFactorUrl = apiUrl + 'get2fa/';
 		let twoFactor;
+
 		fetch($twoFactorUrl, {
 			method: "GET",
 			headers: {
@@ -28,6 +29,31 @@ export default class extends AbstractView {
 		.catch(error => {
 			console.error('Error:', error);
 		});
+		
+		const $historyUrl = apiUrl + 'user_history/';
+		let history;
+
+		fetch($historyUrl, {
+			method: "GET",
+			headers: {
+				"Authorization": $token
+			},
+		})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Hubo un problema al realizar la solicitud.');
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log("historial: " + data.history);
+    		history = data.history;
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+
+
 		const $profileUrl = apiUrl + 'profile/';
 		return fetch($profileUrl, {
 			method: "GET",
@@ -42,7 +68,6 @@ export default class extends AbstractView {
 			return response.json();
 		})
 		.then(data => {
-			console.log(data);
 			let page =
 			`
 				<div class="container-fluid py-10 h-100">
