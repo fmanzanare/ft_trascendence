@@ -413,33 +413,42 @@ def auth(request):
 @jwt_required
 def friends(request):
 	if request.method == "POST":
-		body = json.loads(request.body)
-		username = body.get("username")
-		action = body.get("action")
-		user = get_object_or_404(PongueUser, username=get_user_from_jwt(request))
-		friend = get_object_or_404(PongueUser, username=username)
-		if action == "add":
-			PlayerFriend.search_or_create(get_user_from_jwt(request), username)
-		elif action == "remove":
-			user.friends.remove(friend)
-		elif action == "accept":
-			friendship = (PlayerFriend.objects.filter(myUser__username=get_user_from_jwt(request).username, myFriend__username=username) |
-			PlayerFriend.objects.filter(myUser__username=username, myFriend__username=get_user_from_jwt(request).username)).first()
-			friendship.status = PlayerFriend.Status.ACCEPTED
-			friendship.save()
-		elif action == "reject":
-			friendship = (PlayerFriend.objects.filter(myUser__username=get_user_from_jwt(request).username, myFriend__username=username) |
-			PlayerFriend.objects.filter(myUser__username=username, myFriend__username=get_user_from_jwt(request).username)).first()
-			friendship.status = PlayerFriend.Status.REJECTED
-			friendship.save()
-		user.save()
-		return JsonResponse({
-			"success": True,
-			"message": "",
-			"redirect": True,
-			"redirect_url": "index",
-			"context": {},
-		})
+		try:
+			body = json.loads(request.body)
+			username = body.get("username")
+			action = body.get("action")
+
+			if not username or not action:
+				return JsonResponse({"success": False, "message": "Missing username or action"}, status=400)
+
+			user = PongueUser.objects.filter(username=get_user_from_jwt(request)).first()
+			friend = PongueUser.objects.filter(username=username).first()
+
+			if not user or not friend:
+				return JsonResponse({"success": False, "message": "User or friend not found"}, status=404)
+
+			if action == "add":
+				PlayerFriend.search_or_create(get_user_from_jwt(request), username)
+			elif action == "remove":
+				user.friends.remove(friend)
+			elif action in ["accept", "reject"]:
+				friendship = (PlayerFriend.objects.filter(myUser=user, myFriend=friend) |
+							PlayerFriend.objects.filter(myUser=friend, myFriend=user)).first()
+				if not friendship:
+					return JsonResponse({"success": False, "message": "Friendship not found"}, status=404)
+				friendship.status = PlayerFriend.Status.ACCEPTED if action == "accept" else PlayerFriend.Status.REJECTED
+				friendship.save()
+			else:
+				return JsonResponse({"success": False, "message": "Invalid action"}, status=400)
+
+			user.save()
+			return JsonResponse({"success": True, "message": "Action completed successfully"})
+
+		except json.JSONDecodeError:
+			return JsonResponse({"success": False, "message": "Invalid JSON"}, status=400)
+		except Exception as e:
+			# En un entorno de producción, sería mejor no devolver el mensaje de error interno directamente al cliente
+			return JsonResponse({"success": False, "message": "An unexpected error occurred"}, status=500)
 	elif request.method == "GET":
 		try:
 			# Asumiendo que get_user_from_jwt(request) devuelve un objeto de usuario válido

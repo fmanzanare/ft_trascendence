@@ -1,6 +1,9 @@
 import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
 
+// Global variables
+window.openChatWebSockets = new Map();
+
 window.apiUrl = 'http://localhost:8000/api/';
 
 window.addEventListener("popstate", navigateTo("/home"));

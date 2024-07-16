@@ -16,7 +16,7 @@ class PongueUser(AbstractUser):
 	games_played = models.IntegerField(default=0)
 	has_2fa = models.BooleanField(default=False)
 	from_42 = models.BooleanField(default=False)
-	friends = models.ManyToManyField('self', blank=True, null=True, through="PlayerFriend")
+	friends = models.ManyToManyField('self', blank=True, through="PlayerFriend")
 
 	def __str__(self):
 		return self.username

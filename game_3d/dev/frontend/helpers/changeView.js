@@ -143,21 +143,18 @@ function printFriends(friendList) {
 	for (let i = 0; i < friendList.length; i++) {
 		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {
 			continue;
-		} else if((friendList[i].status === 'PENDING' && friendList[i].friendUsername !== friendList[i].username)
+		} else if((friendList[i].status === 'PENDING'
+			&& friendList[i].friendUsername !== friendList[i].username)
 			|| friendList[i].status === 'ACCEPTED') {
 			newFriendCont = document.createElement('div');
 			newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
-
-			console.log(friendList[i].username);
-			console.log(friendList[i].status);
 
 			nameNode = document.createElement('p');
 			nameNode.innerText = friendList[i].username;
 			nameNode.setAttribute("id", "friendName");
 			nameNode.setAttribute("data-username", friendList[i].username);
-			nameNode.setAttribute("data-friendship-id", friendList[i].friendshipId);
 			if (friendList[i].status === 'ACCEPTED') {
-				nameNode.onclick = () => handleChatInput(friendList[i].friendshipId);
+				nameNode.onclick = () => handleChatInput(friendList[i], friendList[i].username);
 				nameNode.style.cursor = "pointer";
 			}
 			newFriendCont.appendChild(nameNode);
