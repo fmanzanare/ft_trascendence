@@ -92,18 +92,21 @@ class UserHistoryDTO:
 	myRivalScore = 0
 
 	def toUserHistoryDTO(user: PongueUser, gameResult: GameResults):
-		gameResultPlayer = gameResult.player_1 if gameResult.player_1.id == user.id else gameResult.player_2
+		print(gameResult)
+		gameResultPlayer1 = PongueUser.objects.get(id=gameResult["player_1_id"])
+		gameResultPlayer2 = PongueUser.objects.get(id=gameResult["player_2_id"])
+		gameResultPlayer = gameResultPlayer1 if gameResultPlayer1.id == user.id else gameResultPlayer2
 		historyDTO = UserHistoryDTO()
 		historyDTO.id = gameResultPlayer.id
 		historyDTO.rival = gameResultPlayer.username
-		if (gameResultPlayer == gameResult.player_1):
-			historyDTO.isWin = True if gameResult.player_1_score > gameResult.player_2_score else False
-			historyDTO.myScore = gameResult.player_1_score
-			historyDTO.myRivalScore = gameResult.player_2_score
+		if (gameResultPlayer.id == gameResult["player_1_id"]):
+			historyDTO.isWin = True if gameResult["player_1_score"] > gameResult["player_2_score"] else False
+			historyDTO.myScore = gameResult["player_1_score"]
+			historyDTO.myRivalScore = gameResult["player_2_score"]
 		else:
-			historyDTO.isWin = True if gameResult.player_2_score > gameResult.player_1_score else False
-			historyDTO.myScore = gameResult.player_2_score
-			historyDTO.myRivalScore = gameResult.player_1_score
+			historyDTO.isWin = True if gameResult["player_2_score"] > gameResult["player_1_score"] else False
+			historyDTO.myScore = gameResult["player_2_score"]
+			historyDTO.myRivalScore = gameResult["player_1_score"]
 		return historyDTO
 		
 

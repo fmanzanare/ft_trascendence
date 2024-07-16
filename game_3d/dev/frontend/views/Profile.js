@@ -46,7 +46,7 @@ export default class extends AbstractView {
 			return response.json();
 		})
 		.then(data => {
-			console.log("historial: " + data.history);
+			console.log("historial: " + JSON.stringify(data.history));
     		history = data.history;
 		})
 		.catch(error => {
