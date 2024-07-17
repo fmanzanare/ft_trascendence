@@ -52,7 +52,7 @@ class PlayerFriend(models.Model):
 
 
 	@classmethod
-	def search_or_create(cls, player_a, player_b):
+	def searchOrCreate(cls, player_a, player_b):
 
 		player1 = PongueUser.objects.filter(username__exact=player_a).first()
 		player2 = PongueUser.objects.filter(username__exact=player_b).first()

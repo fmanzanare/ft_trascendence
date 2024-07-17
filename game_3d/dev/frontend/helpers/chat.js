@@ -1,6 +1,8 @@
-
-
-export function handleChatInput(friendship, friendName) {
+/**
+ * Shows the current chat friend's name in the upper chat bar and clears the chat log.
+ * @function showCurrentChatFriendName
+ */
+function showCurrentChatFriendName(friendName) {
 	// Remove the previous chat log
 	let chatLog = document.getElementById('chat-log');
 	chatLog.value = '';
@@ -9,7 +11,7 @@ export function handleChatInput(friendship, friendName) {
 	if (upperChatBar.querySelector('p[data-username]')) {
 		upperChatBar.querySelector('p[data-username]').remove();
 	}
-	let	friendBox = document.createElement('div');
+	let friendBox = document.createElement('div');
 	friendBox.setAttribute("style", "display: flex; justify-content: space-between;");
 	upperChatBar.appendChild(friendBox);
 
@@ -18,9 +20,23 @@ export function handleChatInput(friendship, friendName) {
 	currentChatFriend.setAttribute("id", "friendName");
 	currentChatFriend.setAttribute("data-username", friendName);
 	friendBox.appendChild(currentChatFriend);
+}
+
+/**
+ * Handles the chat input functionality.
+ * It shows the current chat friend's name in the upper chat bar and clears the chat log.
+ * It creates a new WebSocket connection if it doesn't exist or if the existing connection is not open.
+ * It sends the chat message when the Enter key is pressed.
+ * @param {Object} friendship - The friendship object.
+ * @param {string} friendName - The name of the chat friend.
+ */
+export function handleChatInput(friendship, friendName) {
+
+	showCurrentChatFriendName(friendName);
 
 	// Create new WebSocket and set its name
-	if (!window.openChatWebSockets.has(friendship.friendshipId) || window.openChatWebSockets.get(friendship.friendshipId).readyState !== WebSocket.OPEN) {
+	if (!window.openChatWebSockets.has(friendship.friendshipId)
+		|| window.openChatWebSockets.get(friendship.friendshipId).readyState !== WebSocket.OPEN) {
 		console.log(sessionStorage.getItem('userName'), 'Creating new WebSocket: ', friendship.friendshipId);
 		const chatSocket = new WebSocket(
 			'ws://' + 'localhost:8000' + '/ws/chat/' + friendship.friendshipId + '/'
@@ -54,7 +70,7 @@ export function handleChatInput(friendship, friendName) {
 				chatSocket.send(JSON.stringify({
 					message: message
 				}));
-				messageInputDom.value = ''; // Limpiar el input después de enviar
+				messageInputDom.value = ''; // Clean input before send
 			}
 		}
 	};

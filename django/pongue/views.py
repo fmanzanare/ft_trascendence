@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 import requests
 import os
 from django.db.models import Q
-from .models import GameResults, PongueUser ,PlayerFriend
+from .models import GameResults, PongueUser, PlayerFriend
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
@@ -428,7 +428,7 @@ def friends(request):
 				return JsonResponse({"success": False, "message": "User or friend not found"}, status=404)
 
 			if action == "add":
-				PlayerFriend.search_or_create(get_user_from_jwt(request), username)
+				PlayerFriend.searchOrCreate(get_user_from_jwt(request), username)
 			elif action == "remove":
 				user.friends.remove(friend)
 			elif action in ["accept", "reject"]:
