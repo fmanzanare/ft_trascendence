@@ -435,20 +435,38 @@ def friends(request):
 				friendship = (PlayerFriend.objects.filter(myUser=user, myFriend=friend) |
 							PlayerFriend.objects.filter(myUser=friend, myFriend=user)).first()
 				if not friendship:
-					return JsonResponse({"success": False, "message": "Friendship not found"}, status=404)
+					return JsonResponse({
+						"success": False,
+						"message": "Friendship not found"
+						}, status=404)
 				friendship.status = PlayerFriend.Status.ACCEPTED if action == "accept" else PlayerFriend.Status.REJECTED
 				friendship.save()
 			else:
-				return JsonResponse({"success": False, "message": "Invalid action"}, status=400)
+				return JsonResponse({
+					"success": False,
+					"message": "Invalid action"
+				}, status=400)
 
 			user.save()
-			return JsonResponse({"success": True, "message": "Action completed successfully"})
+			return JsonResponse({
+				"success": True,
+				"message": "Action completed successfully",
+				"redirect": False,
+				"redirect_url": "",
+				"context": {}
+			})
 
 		except json.JSONDecodeError:
-			return JsonResponse({"success": False, "message": "Invalid JSON"}, status=400)
+			return JsonResponse({
+				"success": False,
+				"message": "Invalid JSON",
+			}, status=400)
 		except Exception as e:
 			# En un entorno de producción, sería mejor no devolver el mensaje de error interno directamente al cliente
-			return JsonResponse({"success": False, "message": "An unexpected error occurred"}, status=500)
+			return JsonResponse({
+				"success": False,
+				"message": "An unexpected error occurred"
+			}, status=500)
 	elif request.method == "GET":
 		try:
 			# Asumiendo que get_user_from_jwt(request) devuelve un objeto de usuario válido
@@ -463,10 +481,12 @@ def friends(request):
 				{
 					"username": friendship.myFriend.username if friendship.myUser == current_user else friendship.myUser.username,
 					"friendUsername": friendship.myFriend.username,
+					"friendUserId": friendship.myFriend.id,
 					"friendshipId": friendship.id,
 					"status": friendship.status
 				} for friendship in friendships
 			]
+			print(friends_list)
 			return JsonResponse({
 				"success": True,
 				"message": "Friends list fetched successfully.",

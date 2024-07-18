@@ -49,8 +49,6 @@ class PlayerFriend(models.Model):
 	status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
 	registerDate = models.DateField(auto_now_add = True)
 
-
-
 	@classmethod
 	def searchOrCreate(cls, player_a, player_b):
 

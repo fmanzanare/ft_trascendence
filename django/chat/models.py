@@ -43,7 +43,7 @@ class Chat(models.Model):
 
 class ChatMessage(models.Model):
 	id = models.AutoField(primary_key=True)
-	chat = models.ForeignKey('Chat', on_delete=models.CASCADE)
+	chat = models.ForeignKey(PlayerFriend, on_delete=models.CASCADE)
 	senderId = models.ForeignKey(PongueUser, on_delete=models.CASCADE)
 	isRead = models.BooleanField(default=False)
 	message = models.TextField()
@@ -53,8 +53,8 @@ class ChatMessage(models.Model):
 		return cls.objects.filter(chat_id=chat_id).order_by("-id")[:30]
 
 	@classmethod
-	def createMessage(cls, chat_id, sender, message):
-		return cls.objects.create(chat_id=chat_id, sender=sender, message=message)
+	def createMessage(cls, chat_id, senderId, message):
+		return cls.objects.create(chat_id=chat_id, senderId=senderId, message=message)
 
 	@classmethod
 	def markRead(cls, chat_id):

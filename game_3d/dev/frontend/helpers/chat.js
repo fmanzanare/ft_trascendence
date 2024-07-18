@@ -64,11 +64,14 @@ export function handleChatInput(friendship, friendName) {
 			const messageInputDom = document.querySelector('#chatInput');
 			const message = userName + ': ' + messageInputDom.value;
 
+			console.log(friendship.friendUserId)
 			// Recuperar el WebSocket correcto del mapa antes de enviar el mensaje
 			const chatSocket = window.openChatWebSockets.get(friendship.friendshipId);
 			if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 				chatSocket.send(JSON.stringify({
-					message: message
+					message: message,
+					chatId: friendship.friendshipId,
+					senderId: friendship.friendUserId,
 				}));
 				messageInputDom.value = ''; // Clean input before send
 			}

@@ -11,12 +11,6 @@ export function displayChat()
 		$chat.classList.remove('d-none');
 		document.querySelector("#addFriend").onclick = requestFriendship;
 		getFriends();
-		/**
-		 * implementar un manejador de eventos que escuche cuando el boton asociado a un amigo sea
-		 * pulsado. Este boton deberia tener un campo oculto que lo relacione con el id de la amistad
-		 * o con el id de usuario del amigo. Este manejador, deberia entonces llamar a handleChatInput()
-		 * y cree una sala de chat.
-		 */
 		console.log("Abre chat");
 	}
 	else
@@ -80,6 +74,12 @@ function requestFriendship(e){
 			"action": "add"
 		})
 	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`Error en la solicitud: ${response.status}`);
+		}
+		return response.json()
+	})
 }
 
 // Retrieves the list of friends from the server and prints them.
@@ -102,8 +102,9 @@ function getFriends() {
 	})
 	.then(data => {
 		const friendList = data.context.friends;
-		printFriends(friendList);
+		console.log("muestro friendlist")
 		console.log(friendList);
+		printFriends(friendList);
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
