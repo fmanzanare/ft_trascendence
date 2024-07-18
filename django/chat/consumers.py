@@ -24,7 +24,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	# Receive message from WebSocket
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
-		print(text_data)
 		if "message" in text_data_json.keys() and \
 			"chatId" in text_data_json.keys() and \
 			"senderId" in text_data_json.keys():
@@ -32,7 +31,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			message = text_data_json["message"]
 			chatId = await sync_to_async(PlayerFriend.objects.get)(id=text_data_json["chatId"])
 			senderId = await sync_to_async(PongueUser.objects.get)(id=text_data_json["senderId"])
-			print(f"chatId: {chatId}", f"senderId: {senderId}", f"message: {message}")
 
 			# Save message to database
 			await sync_to_async(ChatMessage.createMessage)(chatId.id, senderId, message)

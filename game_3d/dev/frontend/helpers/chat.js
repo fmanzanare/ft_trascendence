@@ -59,7 +59,8 @@ export function handleChatInput(friendship, friendName) {
 	document.querySelector('#chatInput').focus();
 	document.querySelector('#chatInput').onkeyup = function (e) {
 		if (e.key === 'Enter') {
-			let userName = sessionStorage.getItem('userName');
+			const userName = sessionStorage.getItem('userName');
+			const userId = sessionStorage.getItem('userId');
 			console.log(userName);
 			const messageInputDom = document.querySelector('#chatInput');
 			const message = userName + ': ' + messageInputDom.value;
@@ -71,7 +72,7 @@ export function handleChatInput(friendship, friendName) {
 				chatSocket.send(JSON.stringify({
 					message: message,
 					chatId: friendship.friendshipId,
-					senderId: friendship.friendUserId,
+					senderId: userId,
 				}));
 				messageInputDom.value = ''; // Clean input before send
 			}

@@ -486,7 +486,6 @@ def friends(request):
 					"status": friendship.status
 				} for friendship in friendships
 			]
-			print(friends_list)
 			return JsonResponse({
 				"success": True,
 				"message": "Friends list fetched successfully.",
