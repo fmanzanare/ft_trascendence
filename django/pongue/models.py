@@ -96,9 +96,10 @@ class UserHistoryDTO:
 		gameResultPlayer1 = PongueUser.objects.get(id=gameResult["player_1_id"])
 		gameResultPlayer2 = PongueUser.objects.get(id=gameResult["player_2_id"])
 		gameResultPlayer = gameResultPlayer1 if gameResultPlayer1.id == user.id else gameResultPlayer2
+		gameResultRival = gameResultPlayer2 if gameResultPlayer1.id == user.id else gameResultPlayer1
 		historyDTO = UserHistoryDTO()
 		historyDTO.id = gameResultPlayer.id
-		historyDTO.rival = gameResultPlayer.username
+		historyDTO.rival = gameResultRival.username
 		if (gameResultPlayer.id == gameResult["player_1_id"]):
 			historyDTO.isWin = True if gameResult["player_1_score"] > gameResult["player_2_score"] else False
 			historyDTO.myScore = gameResult["player_1_score"]
