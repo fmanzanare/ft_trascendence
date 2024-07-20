@@ -120,10 +120,6 @@ class Tournament(models.Model):
 	player_2 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_2")
 	player_3 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_3")
 	player_4 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_4")
-	player_1_position = 0 
-	player_2_position = 0 
-	player_3_position = 0 
-	player_4_position = 0 
 	winner = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="winner")
 	created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
 	updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated at")
