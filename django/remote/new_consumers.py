@@ -55,7 +55,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
             
         if ("playerMovement" in data.keys()):
-            if (data["userId"] == self.game.hostId):
+            if (data["userId"] == self.game.pOne.playerId):
                 if (data["movementDir"] == 1):
                     self.game.pOne.setUpMovement(data["playerMovement"])
                 else:
@@ -68,9 +68,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
         
         if ("disconnection" in data.keys()):
-            if (data["userId"] == self.game.pOne.playerId):
+            if (data["userId"] == str(self.game.pOne.playerId)):
                 self.game.disFlags["player1"] = True
-            elif (data["userId"] == self.game.pTwo.playerId):
+            elif (data["userId"] == str(self.game.pTwo.playerId)):
                 self.game.disFlags["player2"] = True
             return
     

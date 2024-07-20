@@ -18,6 +18,6 @@ localhost {
 	handle /* {
 		root * /usr/src/game_3d
 		try_files {path} /index.html
-		file_server browse
+		file_server
 	}
 }

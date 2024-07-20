@@ -111,31 +111,32 @@ class Game:
             self.restartPositions()
             scoreData = {
                 "type": "add.point",
+                "scoreData": True,
                 "pOneId": self.pOne.playerId,
                 "pTwoId": self.pTwo.playerId,
                 "pOneScore": self.score.pOne,
                 "pTwoScore": self.score.pTwo,
                 "matchId": self.matchId
             }
-            self.sockets["player1"].send(text_data=json.dumps(scoreData))
-            self.sockets["player2"].send(text_data=json.dumps(scoreData))
+            await self.sockets["player1"].send(text_data=json.dumps(scoreData))
+            await self.sockets["player2"].send(text_data=json.dumps(scoreData))
 
     async def runGame(self):
         gameStart = time.time()
         self.calculateRandomBallDir()
 
-        while (self.score.pOne < 11 and self.score.pTwo < 11 and not self.disFlags["player1"] and not self.disFlags["player2"]):
+        while (self.score.pOne < 11 and self.score.pTwo < 11 and self.disFlags["player1"] == False and self.disFlags["player2"] == False):
             gamePositions = {
                 "type": "game.info",
                 "gameData": True,
                 "pOneId": self.pOne.playerId,
                 "pTwoId": self.pTwo.playerId,
-                "ballX": self.ball.xPos,
-                "ballY": self.ball.yPos,
-                "pOneX": self.pOne.xPos,
-                "pOneY": self.pOne.yPos,
-                "pTwoX": self.pTwo.xPos,
-                "pTwoY": self.pTwo.yPos,
+                "ballPosX": self.ball.xPos,
+                "ballPosY": self.ball.yPos,
+                "pOnePosX": self.pOne.xPos,
+                "pOnePosY": self.pOne.yPos,
+                "pTwoPosX": self.pTwo.xPos,
+                "pTwoPosY": self.pTwo.yPos,
                 "matchId": self.matchId
             }
             await self.sockets["player1"].send(text_data=json.dumps(gamePositions))
@@ -153,10 +154,10 @@ class Game:
             await asyncio.sleep(0.033)
 
         finishTime = time.time()
-        userPlayerOne = await sync_to_async(PongueUser.objects.get)(id=self.pOne.playerId)
-        userPlayerTwo = await sync_to_async(PongueUser.objects.get)(id=self.pTwo.playerId)
+        userPlayerOne: PongueUser = await sync_to_async(PongueUser.objects.get)(id=self.pOne.playerId)
+        userPlayerTwo: PongueUser = await sync_to_async(PongueUser.objects.get)(id=self.pTwo.playerId)
 
-        if (not self.disFlags["player1"] and not self.disFlags["player2"]):
+        if (self.disFlags["player1"] == False and self.disFlags["player2"] == False):
             self.winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
             await sync_to_async(GameResults.objects.create)(
                 player_1=userPlayerOne,
@@ -166,25 +167,29 @@ class Game:
                 created_at=gameStart,
                 updated_at=finishTime
             )
+            await self.registerUserStatistics(userPlayerOne, userPlayerTwo, self.winner)
 
             finishedGame = {
-                    "type": "game.end",
-                    "pOneId": self.pOne.playerId,
-                    "pTwoId": self.pTwo.playerId,
-                    "pOneScore": self.score.pOne,
-                    "pTwoScore": self.score.pTwo,
-                    "winner": self.winner,
-                    "startTime": gameStart,
-                    "finishTime": finishTime,
-                    "duration": finishTime - gameStart, 
-                    "matchId": self.matchId
+                "type": "game.end",
+                "gameEnd": True,
+                "pOneId": self.pOne.playerId,
+                "pTwoId": self.pTwo.playerId,
+                "pOneScore": self.score.pOne,
+                "pTwoScore": self.score.pTwo,
+                "winner": self.winner,
+                "startTime": gameStart,
+                "finishTime": finishTime,
+                "duration": finishTime - gameStart, 
+                "matchId": self.matchId
             }
 
-            self.sockets["player1"].send(text_data=json.dumps(finishedGame))
-            self.sockets["player2"].send(text_data=json.dumps(finishedGame))
+            await self.sockets["player1"].send(text_data=json.dumps(finishedGame))
+            await self.sockets["player2"].send(text_data=json.dumps(finishedGame))
         else:
             playerOneScore = 0 if self.disFlags["player1"] else 11
             playerTwoScore = 0 if self.disFlags["player2"] else 11
+            self.winner = self.pOne.playerId if self.disFlags["player2"] == True else self.pTwo.playerId
+            await self.registerUserStatistics(userPlayerOne, userPlayerTwo, self.winner)
 
             await sync_to_async(GameResults.objects.create)(
                 player_1=userPlayerOne,
@@ -194,14 +199,27 @@ class Game:
                 created_at=gameStart,
                 updated_at=finishTime
             )
-            await self.disconnection(gameStart)
+            await self.disconnection()
 
-    async def disconnection(self, gameStart):
+    async def disconnection(self):
         data = { "disconnection": "you win" }
 
-        if self.disFlags["player1"]:
-            self.sockets["player2"].send(text_data=json.dumps(data))
-        elif self.disFlags["player2"]:
-            self.sockets["player1"].send(text_data=json.dumps(data))
-
+        if self.disFlags["player1"] == True:
+            await self.sockets["player2"].send(text_data=json.dumps(data))
+        elif self.disFlags["player2"] == True:
+            await self.sockets["player1"].send(text_data=json.dumps(data))
+    
+    async def registerUserStatistics(self, userPlayerOne, userPlayerTwo, winner):
+        userPlayerOne.games_played += 1
+        userPlayerTwo.games_played += 1
+        if (winner == userPlayerOne.id):
+            userPlayerOne.games_won += 1
+            userPlayerOne.points += 3
+            userPlayerTwo.games_lost += 1
+        else:
+            userPlayerOne.games_lost += 1
+            userPlayerTwo.games_won += 1
+            userPlayerTwo.points += 3
+        await sync_to_async(userPlayerOne.save)()
+        await sync_to_async(userPlayerTwo.save)()
 

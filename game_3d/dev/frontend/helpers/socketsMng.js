@@ -34,7 +34,6 @@ export function openNewSocket(data) {
 	}
 
 	remoteSocket.onmessage = function(e) {
-		console.log(e.data)
 		const data = JSON.parse(e.data)
 
 		if (data.gameReady) {
@@ -53,10 +52,7 @@ export function openNewSocket(data) {
 			remoteSocket.close();
 		}
 		if (data.gameEnd) {
-			if (
-				(data.gameEnd.winner == 1 && host) ||
-				(data.gameEnd.winner == 2 && !host)
-			) {
+			if (data.winner == userId) {
 				sessionStorage.setItem('winner', "You");
 			} else {
 				sessionStorage.setItem('winner', "YOUAREALOSSERMAN");
@@ -80,7 +76,6 @@ export function openNewSocket(data) {
 	}
 
 	remoteSocket.onclose = function (e) {
-		console.log("Connection closed")
 		const $token = sessionStorage.getItem('pongToken')
 		fetch(`${apiUrl}online-status/`, {
 			method: "POST",
@@ -94,7 +89,6 @@ export function openNewSocket(data) {
 			}
 		})
 	}
-
 }
 
 export function openNewSocketTournament(data) {

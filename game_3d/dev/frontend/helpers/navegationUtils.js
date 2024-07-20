@@ -19,8 +19,8 @@ export function acceptNav()
     $modal.style.display = 'none';
 	changeState("Online");
 	navigateTo($url);
-	console.log(sockets.gameSocket);
 	if (sockets.gameSocket != null) {
+		console.log("closing game socket");
 		sockets.gameSocket.send(JSON.stringify({
 			"disconnection": true,
 			"userId": sessionStorage.getItem("userId")
