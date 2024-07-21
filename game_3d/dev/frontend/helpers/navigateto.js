@@ -1,8 +1,28 @@
 import { router } from "./router.js";
 import { checkJwt, changeUserName, changeState, getAlertMessage } from "./utils.js";
 
+function showLoading() {
+    const $loadingElement = document.getElementById("loadingApp");
+	const $appElement = document.getElementById("app");
+    if ($loadingElement) {
+        $loadingElement.classList.remove("d-none");
+		$appElement.style.display = "none"
+    }
+}
+
+function hideLoading() {
+    const $loadingElement = document.getElementById("loadingApp");
+	const $appElement = document.getElementById("app");
+    if ($loadingElement) {
+        $loadingElement.classList.add("d-none");
+		$appElement.style.display = "block"
+    }
+}
+
 async function tokenTrue(url)
 {
+	showLoading();
+	console.log("hola");
 	const $appElement = document.getElementById("app");
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
@@ -23,18 +43,20 @@ async function tokenTrue(url)
 		$modal.setAttribute('aria-modal', 'true');
         $modal.setAttribute('aria-hidden', 'false');
         $modal.setAttribute('role', 'dialog');
-
+		hideLoading()
         return;
 	}
 	history.pushState(null, null, url);
 	$appElement.innerHTML = "";
 	changeState("Online");
 	changeUserName();
-	router();
+	await router();
+	hideLoading();
 }
 
 function  tokenFalse(url)
 {
+	showLoading();
 	const $appElement = document.getElementById("app");
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
@@ -49,6 +71,7 @@ function  tokenFalse(url)
 		history.pushState(null, null, url);
 	$appElement.innerHTML = "";
 	router();
+	hideLoading();
 }
 
 export function navigateTo(url) {
@@ -83,5 +106,6 @@ window.onpopstate = function(event) {
 
 		return;
 	}
-    router();
+	showLoading();
+    router().finally(hideLoading);
 }
