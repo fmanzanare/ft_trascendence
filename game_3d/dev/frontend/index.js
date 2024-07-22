@@ -2,7 +2,7 @@ import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
 
 // Global variables
-window.openChatWebSockets = new Map();
+window.openChatWebSockets = {};
 
 window.apiUrl = 'http://localhost:8000/api/';
 
