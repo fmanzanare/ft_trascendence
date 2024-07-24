@@ -5,7 +5,7 @@ window.apiUrl = 'https://localhost/api/';
 
 export const sockets = {};
 
-window.addEventListener("popstate", navigateTo("/home"));
+window.addEventListener("popstate", navigateTo(window.location.pathname));
 
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
