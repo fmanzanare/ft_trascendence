@@ -75,7 +75,6 @@ function  tokenFalse(url)
 
 export function navigateTo(url) {
 	const $token = sessionStorage.getItem('pongToken');
-	console.log("URL: ", url);
 	if ($token)
 	{
 		checkJwt().then(result => {
