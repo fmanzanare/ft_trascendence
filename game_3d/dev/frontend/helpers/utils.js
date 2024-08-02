@@ -1,4 +1,5 @@
-import { loginPushButton, singPushButton} from "./register.js";
+import { singPushButton} from "./register.js";
+import { loginPushButton } from "./login.js";
 import { twoFactorPushButton } from "./twoFactor.js"
 import { navigateTo } from "./navigateto.js";
 
