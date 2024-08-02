@@ -41,7 +41,6 @@ export default class extends AbstractView {
 		try {
 			const data = await fetchProfileUser(this.userId);
 			const historyData = await fetchHistory(this.userId);
-			console.log("data: ", data);
 			let page =
 			`
 			<div class="container-fluid py-10 h-100">
@@ -65,7 +64,7 @@ export default class extends AbstractView {
 										<div class="col-md-6">
 											`
 											if (data.context.user.avatar_base64 == "")
-												page += ` <img src="./dev/frontend/assets/homerSimpson.webp" class="max-width-75" alt="profile picture">`
+												page += ` <img src="../dev/frontend/assets/homerSimpson.webp" class="max-width-75" alt="profile picture">`
 											else
 												page += ` <img src="${data.context.user.avatar_base64}" class="max-width-75" alt="profile picture">`
 											page +=

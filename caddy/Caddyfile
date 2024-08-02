@@ -5,8 +5,14 @@ localhost {
 
 	handle /* {
 		root * /usr/src/game_3d
+
+		@rootPath {
+            path /
+        }
+        redir @rootPath /home
+		
 		try_files {path} /index.html
-		file_server
+		file_server browse
 	}
 
 	handle_errors {
