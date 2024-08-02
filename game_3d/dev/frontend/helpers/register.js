@@ -66,7 +66,6 @@ export async function singPushButton() {
         }
 
         const data = await response.json();
-        console.log('Registro exitoso:', data);
 
         if (data.success) {
             navigateTo("/home");
