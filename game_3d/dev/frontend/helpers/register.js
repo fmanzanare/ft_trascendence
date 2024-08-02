@@ -1,7 +1,6 @@
 import { navigateTo } from "./navigateto.js";
 
 export async function singPushButton() {
-    // Obtener elementos del DOM
     const $name = document.getElementById("Name");
     const $username = document.getElementById("UserName");
     const $pass = document.getElementById("PassWord");
@@ -9,13 +8,11 @@ export async function singPushButton() {
     const $errorMessage = document.getElementById("errorMessage");
     const $elements = [$name, $username, $pass, $passTwo];
 
-    // Limpiar mensajes de error y estilos antes de la validación
     $elements.forEach(element => {
         element.classList.remove("border-danger");
     });
     $errorMessage.textContent = "";
 
-    // Validar campos obligatorios
     let hasError = false;
     $elements.forEach(element => {
         if (element.value.trim() === "") {
@@ -26,10 +23,9 @@ export async function singPushButton() {
 
     if (hasError) {
         $errorMessage.textContent = "Mandatory fields";
-        return; // Detener el proceso si hay campos vacíos
+        return;
     }
 
-    // Validar que las contraseñas coincidan
     if ($pass.value !== $passTwo.value) {
         $pass.classList.add("border-danger");
         $passTwo.classList.add("border-danger");
@@ -37,7 +33,6 @@ export async function singPushButton() {
         return;
     }
 
-    // Construir URL y datos para la solicitud de registro
     const $singUpUrl = apiUrl + 'register/';
     const $singUpData = new URLSearchParams();
     $singUpData.append('display_name', $name.value);
@@ -45,11 +40,10 @@ export async function singPushButton() {
     $singUpData.append('password1', $pass.value);
     $singUpData.append('password2', $passTwo.value);
 
-    // Obtener el botón de registro y comprobar que existe
     const $registerButton = document.getElementById("singUpButton");
     if ($registerButton) {
-        $registerButton.disabled = true; // Deshabilitar botón
-        $registerButton.textContent = "Registrando..."; // Cambiar texto
+        $registerButton.disabled = true;
+        $registerButton.textContent = "Registrando...";
     }
 
     try {
@@ -114,30 +108,4 @@ function handleRegistrationError($username, $pass, $dataError, $errorMessage) {
         }
     }
     $errorMessage.textContent = "Unknown error occurred.";
-}
-
-export function logOut()
-{
-	const $token = sessionStorage.getItem('pongToken');
-	const $logoutUrl = apiUrl + 'logout/';
-	fetch($logoutUrl, {
-		method: 'GET',
-		headers: {
-			"Authorization": $token
-		}
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
-	.then(data => {
-		console.log(data);
-		sessionStorage.clear();
-		window.location.reload()
-	})
-	.catch(error => {
-		console.error('Error en la solicitud:', error);
-	});
 }

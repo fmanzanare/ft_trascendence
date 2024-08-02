@@ -1,5 +1,6 @@
 import { playLocal, playOnline } from "./gameMode.js";
-import { singPushButton, logOut } from "./register.js";
+import { singPushButton } from "./register.js";
+import { logOut } from "./profile.js";
 import { loginPushButton, twoFactorPushButton } from "./login.js";
 import { changeDataUser } from "./changeDataUser.js";
 import { addKeyPressListener, closeWinnerMsg } from "./utils.js";
