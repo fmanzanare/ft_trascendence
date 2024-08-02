@@ -1,10 +1,9 @@
 import { playLocal, playOnline } from "./gameMode.js";
 import { singPushButton } from "./register.js";
-import { logOut } from "./profile.js";
+import { logOut, generateQr } from "./profile.js";
 import { loginPushButton, twoFactorPushButton } from "./login.js";
 import { changeDataUser } from "./changeDataUser.js";
 import { addKeyPressListener, closeWinnerMsg } from "./utils.js";
-import { generateQr } from "./twoFactor.js";
 import { changeViewProfile, changeViewData, displayChat } from "./changeView.js";
 import { cancelNav, acceptNav } from "./navegationUtils.js";
 import { navigateTo } from "./navigateto.js";
