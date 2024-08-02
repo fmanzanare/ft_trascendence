@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 import requests
 import os
-from .models import GameResults, PongueUser, RankingUserDTO, UserHistoryDTO
+from .models import GameResults, PongueUser, RankingUserDTO, UserHistoryDTO, UserProfile
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
@@ -540,6 +540,22 @@ def profile(request):
 		})
 
 @jwt_required
+def profile_id(request):
+    user_id = request.GET.get("userId")
+    user = PongueUser.objects.get(id=user_id)
+    userProfile = UserProfile.toUseUserProfile(user)
+    return JsonResponse({
+        "success": True,
+        "context": {
+            "user": {
+                "display_name": userProfile.nick,
+                "puntos": userProfile.points,
+                "avatar_base64": userProfile.avatar
+            }
+        }
+    })
+
+@jwt_required
 def user_status(request):
 	user = get_user_from_jwt(request)
 	return JsonResponse(status=HTTPStatus.OK, data={
@@ -600,13 +616,15 @@ def change_status_to_online(request):
 
 @jwt_required
 def user_history(request):
-	user: PongueUser = get_user_from_jwt(request)
+	user_id = request.GET.get("userId")
+	user = PongueUser.objects.get(id=user_id)
 	gameResults: list[GameResults] = GameResults.objects.filter(player_1=user).values() | GameResults.objects.filter(player_2=user).values()
 	historyDtos = []
 	for gameResult in gameResults:
 		historyDto: UserHistoryDTO = UserHistoryDTO.toUserHistoryDTO(user, gameResult)
 		historyDtos.append({
 			"id": historyDto.id,
+			"idRival": historyDto.idRival,
 			"rival": historyDto.rival,
 			"isWin": historyDto.isWin,
 			"myScore": historyDto.myScore,

@@ -5,6 +5,7 @@ import { addKeyPressListener, closeWinnerMsg } from "./utils.js";
 import { twoFactorPushButton, generateQr } from "./twoFactor.js";
 import { changeViewProfile, changeViewData, displayChat } from "./changeView.js";
 import { cancelNav, acceptNav } from "./navegationUtils.js";
+import { navigateTo } from "./navigateto.js";
 
 export async function routerFunctions(){
 	const buttons = [
@@ -48,4 +49,13 @@ export async function routerFunctions(){
 	if (document.getElementById("qrCode"))
 		generateQr();
 	addKeyPressListener();
+
+	window.goToUserProfile = (userId) => {
+		const $localId = sessionStorage.getItem("userId")
+		history.replaceState(null, '', '/');
+		if ($localId == userId){
+			navigateTo("profile")
+		} else
+			navigateTo("profile/" + userId)
+	};
 }

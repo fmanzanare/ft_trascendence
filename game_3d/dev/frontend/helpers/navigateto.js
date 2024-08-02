@@ -22,7 +22,6 @@ function hideLoading() {
 async function tokenTrue(url)
 {
 	showLoading();
-	console.log("hola");
 	const $appElement = document.getElementById("app");
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
@@ -76,6 +75,7 @@ function  tokenFalse(url)
 
 export function navigateTo(url) {
 	const $token = sessionStorage.getItem('pongToken');
+	console.log("URL: ", url);
 	if ($token)
 	{
 		checkJwt().then(result => {

@@ -40,7 +40,7 @@ export default class extends AbstractView {
                             </li>
                             ${rankig.slice(0, 5).map(item => `
                                 <li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-                                    <div class="col p-2 text-center">${item.username}</div>
+                                    <div class="col p-2 text-center"onClick="goToUserProfile(${item.id})" style="cursor: pointer">${item.username}</div>
                                     <div class="col p-2 text-center">${item.games_won}</div>
                                     <div class="col p-2 text-center">${item.games_played - item.games_won}</div>
                                     <div class="col p-2 text-center">${item.tournaments}</div>
