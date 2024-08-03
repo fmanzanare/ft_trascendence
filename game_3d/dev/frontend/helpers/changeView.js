@@ -48,7 +48,8 @@ function handleButtonClick(event) {
 		return response.json();
 	})
 	.then((data) => {
-		console.log(data);
+		console.log("amistad aceptada o rechazada: ", data);
+		getFriends();
 		// handle the response data
 	})
 	.catch((error) => {
@@ -111,6 +112,31 @@ function getFriends() {
 	});
 }
 
+function deleteFriendshipRequestButtons(friendList) {
+	const chatPeople = document.getElementById('left-bar-chat');
+	if (!chatPeople) {
+		return;
+	}
+	const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
+	existingNames.forEach(name => {
+		const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
+		if (nodeToRemove && !friendList.some(friend => friend.username === name && friend.status === "PENDING")) {
+			console.log("Removing node: ", nodeToRemove);
+			nodeToRemove.remove();
+		}
+		const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
+		if (plusBtnToRemove && !friendList.some(friend => friend.username === name && friend.status === "PENDING")) {
+			console.log("Removing plus button: ", plusBtnToRemove);
+			plusBtnToRemove.remove();
+		}
+		const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
+		if (lessBtnToRemove && !friendList.some(friend => friend.username === name && friend.status === "PENDING")) {
+			console.log("Removing less button: ", lessBtnToRemove);
+			lessBtnToRemove.remove();
+		}
+	});
+}
+
 // Prints the list of friends in the chat
 function printFriends(friendList) {
 	let chatPeople = document.getElementById('left-bar-chat');
@@ -123,30 +149,31 @@ function printFriends(friendList) {
 	let plusBtnNode;
 	let lessBtnNode;
 	
-	const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
-	existingNames.forEach(name => {
-		const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
-		if (nodeToRemove) {
-			console.log("Removing node: ", nodeToRemove);
-			nodeToRemove.remove();
-		}
-		const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
-		if (plusBtnToRemove) {
-			console.log("Removing plus button: ", plusBtnToRemove);
-			plusBtnToRemove.remove();
-		}
-		const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
-		if (lessBtnToRemove) {
-			console.log("Removing less button: ", lessBtnToRemove);
-			lessBtnToRemove.remove();
-		}
-	});
+	// const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
+	// existingNames.forEach(name => {
+	// 	const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
+	// 	if (nodeToRemove) {
+	// 		console.log("Removing node: ", nodeToRemove);
+	// 		nodeToRemove.remove();
+	// 	}
+	// 	const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
+	// 	if (plusBtnToRemove) {
+	// 		console.log("Removing plus button: ", plusBtnToRemove);
+	// 		plusBtnToRemove.remove();
+	// 	}
+	// 	const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
+	// 	if (lessBtnToRemove) {
+	// 		console.log("Removing less button: ", lessBtnToRemove);
+	// 		lessBtnToRemove.remove();
+	// 	}
+	// });
+	deleteFriendshipRequestButtons(friendList);
 	for (let i = 0; i < friendList.length; i++) {
 		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {
 			continue;
 		} else if((friendList[i].status === 'PENDING'
 			&& friendList[i].friendUsername !== friendList[i].username)
-			|| friendList[i].status === 'ACCEPTED') {
+			|| friendList[i].status === 'ACCEPTED' || friendList[i].status === 'REJECTED') {
 			newFriendCont = document.createElement('div');
 			newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
 
@@ -160,7 +187,7 @@ function printFriends(friendList) {
 			}
 			newFriendCont.appendChild(nameNode);
 
-			if (friendList[i].status === 'PENDING') {
+			if (friendList[i].status === 'PENDING' || friendList[i].status === 'REJECTED') {
 				plusBtnNode = document.createElement('button');
 				plusBtnNode.setAttribute("id", "plusBtn");
 				plusBtnNode.setAttribute("data-username", friendList[i].username);

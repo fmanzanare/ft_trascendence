@@ -39,7 +39,7 @@ export function handleChatInput(friendship, friendName) {
 		console.log(element.message)
 	});
 	// Create new WebSocket and set its name
-	if (window.openChatWebSockets[friendship.friendshipId]?.chatSocket?.readyState !== WebSocket.OPEN) {
+	if (!window.openChatWebSockets[friendship.friendshipId]?.chatSocket) {
 		console.log(sessionStorage.getItem('userName'), 'Creating new WebSocket: ', friendship.friendshipId);
 		const chatSocket = new WebSocket(
 			'ws://' + 'localhost:8000' + '/ws/chat/' + friendship.friendshipId + '/'

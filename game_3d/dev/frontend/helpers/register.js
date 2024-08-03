@@ -30,6 +30,7 @@ export function loginPushButton()
 			sessionStorage.setItem('pongToken', data.context.jwt);
 			sessionStorage.setItem('userId', data.context.userId);
 			changeUserName();
+			// cargar desde el modelo los mensajes para llenar la variable global
 			navigateTo("/home");
 		}
 		else
