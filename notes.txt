@@ -20,3 +20,17 @@ Login con token de 42 Intra.
 
 # Pendiente según tiempo:
 Juego contra IA.
+
+
+
+
+
+# Pendientes fmanzana:
+- Desconexión por cierre de navegador en 1v1
+- Cerrar socket y redirigir cuando en torneo clica en el botón de "Cancel"
+
+# Pendientes:
+- Gestión de interfaz para desconexiones (Popup cancelación torneo, ) - socketMng.js - openNewSocketTournament()
+- Popup de desconexión al cancelar la búsqueda de un torneo
+
+- Verificar Makefile
