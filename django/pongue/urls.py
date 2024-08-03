@@ -14,4 +14,9 @@ urlpatterns = [
 	path("api/add_game_result/", views.add_game_result, name="add_game_result"),
 	path("api/check_jwt/", views.check_jwt, name="check_jwt"),
 	path("api/profile/", views.profile, name="profile"),
+	path("api/get2fa/", views.get2fa, name="get2fa"),
+	path("api/user_status/", views.user_status, name="user_status"),
+	path("api/ranking/", views.ranking, name="ranking"),
+	path("api/nickname/", views.nickname, name="nickname"),
+	path("api/online-status/", views.change_status_to_online, name="online_status"),
 ]

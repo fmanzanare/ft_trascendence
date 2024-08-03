@@ -1,5 +1,7 @@
 import { RED_RGTC1_Format } from "three";
-import { loginPushButton, singPushButton, twoFactorPushButton } from "./register.js";
+import { loginPushButton, singPushButton} from "./register.js";
+import { twoFactorPushButton } from "./twoFactor.js"
+import { navigateTo } from "./navigateto.js";
 
 function LogInEnterKeyPress(event)
 {
@@ -23,6 +25,55 @@ function twoFactorEnterKeyPress(event)
 		event.preventDefault();
 		twoFactorPushButton();
 	}
+}
+
+export function getAlertMessage(state) {
+	let message;
+	switch (state) {
+		case "Searching game":
+			message = "Are you sure you want to stop searching for a game?";
+			break;
+		case "Searching tournament":
+			message = "Are you sure you want to stop searching for a tournament?";
+			break;
+		case "In game":
+			message = "Are you sure you want to leave the game?";
+			break;
+		case "In tournament":
+			message = "Are you sure you want to leave the tournament?";
+			break;
+	};
+	return(message);
+}
+
+export function changeState(status){
+	const $userStatus = document.getElementById("userStatus");
+	$userStatus.style.color = "blue"
+	switch (status) {
+        case "Searching game":
+            $userStatus.textContent = "Searching game"
+            break;
+        case "Searching tournament":
+            $userStatus.textContent = "Searching tournament"
+            break;
+        case "In game":
+            $userStatus.textContent = "In game"
+			$userStatus.style.color = "#ff5252"
+            break;
+        case "In tournament":
+            $userStatus.textContent = "In tournament"
+			$userStatus.style.color = "#ff5252"
+            break;
+        default:
+            $userStatus.textContent = "Online"
+			$userStatus.style.color = "#56ba6f"
+            break;
+    }
+}
+
+export function closeWinnerMsg(){
+	sessionStorage.removeItem('winner');
+	navigateTo("/home")
 }
 
 export function addKeyPressListener() {
@@ -77,15 +128,9 @@ export function checkJwt()
 		}
 	})
 	.then(response => {
-		if (!response.ok) {
-			throw new Error('Hubo un problema al realizar la solicitud.');
-		}
-		return response.json();
+		if (!response.ok)
+			return (false);
+		else
+			return (true);
 	})
-	.then(data => {
-		return (data.success);
-	})
-	.catch(error => {
-		return (false);
-	});
 }

@@ -21,6 +21,8 @@ function getParams(match) {
 }
 
 export async function router() {
+	const $navLinks = document.querySelectorAll(".nav-link");
+    
 	const $routes = [
 		{ path: "/home", view: Home },
 		{ path: "/login", view: Login },
@@ -30,6 +32,13 @@ export async function router() {
 		{ path: "/ranking", view: Ranking },
 		{ path: "/profile", view: Profile }
 	];
+
+	$navLinks.forEach(link => {
+        link.classList.remove("active");
+		link.addEventListener("focus", () => {
+            link.blur();
+        });
+    });
 
 	const $potentialMatches = $routes.map(route => {
 		return {
@@ -50,6 +59,12 @@ export async function router() {
 	const $view = new match.route.view(getParams(match));
 
 	document.querySelector("#app").innerHTML = await $view.getHtml();
+
+	$navLinks.forEach(link => {
+        if (link.getAttribute("href") === match.route.path) {
+            link.classList.add("active");
+        }
+    });
 	
 	routerFunctions();
 }

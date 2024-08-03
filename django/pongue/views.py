@@ -9,10 +9,11 @@ from django.contrib.auth.decorators import login_required
 import requests
 import os
 from django.db.models import Q
-from .models import GameResults, PongueUser, PlayerFriend
+from .models import GameResults, PongueUser, PlayerFriend, RankingUserDTO
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
+from http import HTTPStatus
 from .jwt import generate_jwt, decode_jwt
 from datetime import datetime
 from django.core import serializers
@@ -148,9 +149,8 @@ def login(request):
 		else:
 			# WAS: messages.info(request, "Username or password is incorrect")
 			message = "Username or password is incorrect"
-
 	# WAS: return render(request, "login.html")
-	return JsonResponse({
+	return JsonResponse(status=HTTPStatus.BAD_REQUEST, data={
 		"success": False,
 		"message": message,
 		"redirect": False,
@@ -178,7 +178,8 @@ def pass2fa(request, user_obj):
 		})
 	else:
 		# auth_login(request, user_obj)
-		user_obj.status = "online"
+		user_obj.status = PongueUser.Status.ONLINE
+		# user_obj.status = "online"
 		user_obj.save()
 		# WAS: return redirect("index")
 		return JsonResponse({
@@ -203,7 +204,8 @@ def submit2fa(request):
 		encoded_secret = base64.b32encode(hashed_secret)
 		if totp(encoded_secret) == request.POST.get("code"):
 			# auth_login(request, user)
-			user.status = "online"
+			user.status = PongueUser.Status.ONLINE
+			# user.status = "online"
 			user.save()
 			# WAS: return redirect("index")
 			return JsonResponse({
@@ -306,15 +308,36 @@ def enable2fa(request):
 		"logged_in": request.user.is_authenticated,
 	})
 
+# /get2fa
+# GET: Returns the 2FA key for the logged-in user
+@jwt_required
+def get2fa(request):
+	user = PongueUser.objects.get(username=get_user_from_jwt(request))
+	hashed_secret = hashlib.sha512((user.username + os.environ.get("OTP_SECRET")).encode("utf-8")).digest()
+	encoded_secret = base64.b32encode(hashed_secret).decode("utf-8")
+	# WAS: return render(request, "get2fa.html", {"key": encoded_secret})
+	return JsonResponse({
+		"success": True,
+		"message": "",
+		"redirect": False,
+		"redirect_url": "",
+		"context": {
+			"key": encoded_secret
+		},
+		"logged_in": request.user.is_authenticated,
+	})
+
 # /logout
 # GET: Logs out the logged-in user
 @jwt_required
 def logout(request):
-	# auth_logout(request)
-	user = PongueUser.objects.get(username=get_user_from_jwt(request))
-	user.status = "offline"
-	user.save()
+	# user = PongueUser.objects.get(username=get_user_from_jwt(request))
+	# user.status = "offline"
+	# user.save()
 	# WAS: return redirect("login")
+	user = PongueUser.objects.get(username=get_user_from_jwt(request))
+	user.status = PongueUser.Status.OFFLINE
+	user.save()
 	return JsonResponse({
 		"success": True,
 		"message": "Logged out successfully",
@@ -530,6 +553,8 @@ def add_game_result(request):
 		elif player_1_score < player_2_score:
 			player_1.games_lost += 1
 			player_2.games_won += 1
+		player_1.status = PongueUser.Status.ONLINE
+		player_2.status = PongueUser.Status.ONLINE
 		player_1.save()
 		player_2.save()
 		return JsonResponse({
@@ -578,3 +603,62 @@ def profile(request):
 			"redirect_url": "",
 			"context": {},
 		})
+
+@jwt_required
+def user_status(request):
+	user = get_user_from_jwt(request)
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"userId": user.id,
+		"userStatus": user.status
+	})
+
+@jwt_required
+def ranking(request):
+	users = PongueUser.objects.all().order_by("-points")
+	userDtos = []
+	for user in users:
+		userDto: RankingUserDTO = RankingUserDTO.toRankingUserDTO(user)
+		userDtos.append({
+			"id": userDto.id,
+			"username": userDto.username,
+			"games_won": userDto.games_won,
+			"games_lost": userDto.games_lost,
+			"games_played": userDto.games_played,
+			"tournaments": userDto.tournaments,
+			"points": userDto.points
+		})
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"users": userDtos
+	})
+
+@jwt_required
+def nickname(request):
+	if request.method == "GET":
+		user = get_user_from_jwt(request)
+		return JsonResponse({
+			"userId": user.id,
+			"nickname": user.nickname
+		})
+	elif request.method == "POST":
+		user = get_user_from_jwt(request)
+		if (request.POST.get("nickname") != ""):
+			user.nickname = request.POST.get("nickname")
+		else:
+			return JsonResponse(HTTPStatus.BAD_REQUEST, {
+				"error": "Nickname field must be filled"
+			})
+		user.save()
+		return JsonResponse({
+			"userId": user.id,
+			"nickname": user.nickname
+		})
+
+@jwt_required
+def change_status_to_online(request):
+	user = get_user_from_jwt(request)
+	user.status = PongueUser.Status.ONLINE
+	user.save()
+	return JsonResponse({
+		"userId": user.id,
+		"status": user.status
+	})

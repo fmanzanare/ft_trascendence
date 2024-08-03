@@ -1,7 +1,10 @@
 import { playLocal, playOnline } from "./gameMode.js";
-import { loginPushButton, singPushButton, twoFactorPushButton, changeDataUser, logOut } from "./register.js";
-import { addKeyPressListener } from "./utils.js";
+import { loginPushButton, singPushButton, logOut } from "./register.js";
+import { changeDataUser } from "./changeDataUser.js";
+import { addKeyPressListener, closeWinnerMsg } from "./utils.js";
+import { twoFactorPushButton, generateQr } from "./twoFactor.js";
 import { changeViewProfile, changeViewData, displayChat } from "./changeView.js";
+import { cancelNav, acceptNav } from "./navegationUtils.js";
 
 export async function routerFunctions(){
 	const buttons = [
@@ -13,10 +16,13 @@ export async function routerFunctions(){
 		{ id: "hideChat", event: 'click', handler: displayChat },
 		{ id: "playOnline", event: 'click', handler: playOnline },
 		{ id: "playLocal", event: 'click', handler: playLocal },
+		{ id: "btnCloseWinner", event: 'click', handler: closeWinnerMsg },
 		{ id: "historyTab", event: 'click', handler: changeViewProfile },
 		{ id: "infoTab", event: 'click', handler: changeViewProfile },
 		{ id: "changeDataView", event: 'click', handler: changeViewData },
-		{ id: "changeDataUser", event: 'click', handler: changeDataUser }
+		{ id: "changeDataUser", event: 'click', handler: changeDataUser },
+		{ id: "cancelNav", event: 'click', handler: cancelNav },
+		{ id: "confirmNav", event: 'click', handler: acceptNav }
 	];
 	
 	buttons.forEach(button => {
@@ -25,5 +31,21 @@ export async function routerFunctions(){
 			element.addEventListener(button.event, button.handler);
 		}
 	});
+
+	const $winner = sessionStorage.getItem('winner');
+	if ($winner)
+	{
+		const $divSelect = document.getElementById("blackDiv");
+		const $divWinner = document.getElementById("winnerDiv");
+		const $playerWinner = document.getElementById("playerWinner");
+		if ($winner == "YOUAREALOSSERMAN")
+			$playerWinner.textContent = "You loss"
+		else
+			$playerWinner.textContent = $winner + " win"
+		$divSelect.classList.add('d-none');
+		$divWinner.classList.remove('d-none');
+	}
+	if (document.getElementById("qrCode"))
+		generateQr();
 	addKeyPressListener();
 }

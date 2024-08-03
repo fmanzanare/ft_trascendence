@@ -12,8 +12,7 @@ services:
       - 8080:8080
   backend:
     build: ./django
-    command: python manage.py runserver 0.0.0.0:8000
-    # command: python manage.py runserver_plus 0.0.0.0:8000 --cert-file https/cert.pem --key-file https/key.pem
+    command: python manage.py runserver_plus 0.0.0.0:8000 --cert-file https/cert.pem --key-file https/key.pem
     volumes:
       - django:/usr/src/django/
     ports:

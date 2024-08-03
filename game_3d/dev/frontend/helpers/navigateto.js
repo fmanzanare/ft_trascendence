@@ -1,18 +1,34 @@
 import { router } from "./router.js";
-import { checkJwt, changeUserName } from "./utils.js";
+import { checkJwt, changeUserName, changeState, getAlertMessage } from "./utils.js";
 
-function tokenTrue(url)
+async function tokenTrue(url)
 {
 	const $appElement = document.getElementById("app");
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
+	const $currentState = document.getElementById("userStatus").textContent;
 	if ($navElement.classList.contains('d-none'))
 	{
 		$navElement.classList.remove('d-none');
 		$chatButton.classList.remove('d-none');
 	}
+	if ($currentState != "Online")
+	{
+		const $modal = document.getElementById('myModal');
+		const $textModalMessage = document.getElementById('textModal');
+		sessionStorage.setItem('urlAlert', url);
+		$textModalMessage.textContent = getAlertMessage($currentState);
+		$modal.classList.add('show');
+        $modal.style.display = 'block';
+		$modal.setAttribute('aria-modal', 'true');
+        $modal.setAttribute('aria-hidden', 'false');
+        $modal.setAttribute('role', 'dialog');
+
+        return;
+	}
 	history.pushState(null, null, url);
 	$appElement.innerHTML = "";
+	changeState("Online");
 	changeUserName();
 	router();
 }
@@ -29,8 +45,6 @@ function  tokenFalse(url)
 	}
 	if (url.substring(url.lastIndexOf("/")) != "/signup" && url.substring(url.lastIndexOf("/")) != "/twofactor")
 		history.pushState(null, null, "/login");
-	else if (url.substring(url.lastIndexOf("/")) == "/signup")
-		history.pushState(null, null, url);
 	else
 		history.pushState(null, null, url);
 	$appElement.innerHTML = "";
@@ -50,4 +64,24 @@ export function navigateTo(url) {
 	}
 	else
 		tokenFalse(url);
+}
+
+window.onpopstate = function(event) {
+	const $url = event.target.location.href
+	const $currentState = document.getElementById("userStatus").textContent;
+	if ($currentState != "Online")
+	{
+		const $modal = document.getElementById('myModal');
+		const $textModalMessage = document.getElementById('textModal');
+		sessionStorage.setItem('urlAlert', $url);
+		$textModalMessage.textContent = getAlertMessage($currentState);
+		$modal.classList.add('show');
+		$modal.style.display = 'block';
+		$modal.setAttribute('aria-modal', 'true');
+		$modal.setAttribute('aria-hidden', 'false');
+		$modal.setAttribute('role', 'dialog');
+
+		return;
+	}
+    router();
 }

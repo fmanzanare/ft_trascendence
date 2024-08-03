@@ -8,6 +8,26 @@ export default class extends AbstractView {
 
     async getHtml() {
 		const $token = sessionStorage.getItem('pongToken');
+		const $twoFactorUrl = apiUrl + 'get2fa/';
+		let twoFactor;
+		fetch($twoFactorUrl, {
+			method: "GET",
+			headers: {
+				"Authorization": $token
+			}
+		})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Hubo un problema al realizar la solicitud.');
+			}
+			return response.json();
+		})
+		.then(data => {
+			twoFactor = data.context.key;
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
 		const $profileUrl = apiUrl + 'profile/';
 		return fetch($profileUrl, {
 			method: "GET",
@@ -52,20 +72,25 @@ export default class extends AbstractView {
 											page +=
 											`
 											</div>
-										<div class="col-md-6" id="dataUserShow">
+										<div class="col-md-6 d-flex flex-column" id="dataUserShow">
 											<h2>${data.context.user.display_name}</h2>
 											<p>puntos</p>
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
-				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked disabled >`
+			{
+				page += ` 	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked disabled >
+							<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
+							</div>
+							<canvas id="qrCode" style="max-width: 200px"></canvas>`
+			}
 			else
-				page += ` <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" disabled >`
+				page += ` 	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" disabled >
+							<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
+							</div>`
 			page +=
 			`
-												<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>
-											</div>
-											<button class="btn btn-primary" id="changeDataView">Change data</button>
+											<button class="btn btn-primary mt-2" style="max-width: 200px" id="changeDataView">Change data</button>
 										</div>
 										<div class="d-none col-md-6" id="dataUserChange">
 											<div class="form-outline form-white mb-4">
@@ -79,13 +104,13 @@ export default class extends AbstractView {
 			`
 			if (data.context.user.has_2fa)
 			{
-				page += `	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
-							<label class="form-check-label" for="flexSwitchCheckChecked">two-factor authentication</label>`
+				page += `	<input class="form-check-input" type="checkbox" role="switch" id="checkChecked" checked>
+							<label class="form-check-label" for="checkChecked">two-factor authentication</label>`
 			}
 			else
 			{
-				page += `	<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckUnchecked">
-							<label class="form-check-label" for="flexSwitchCheckUnchecked">two-factor authentication</label>`
+				page += `	<input class="form-check-input" type="checkbox" role="switch" id="checkUnchecked">
+							<label class="form-check-label" for="checkUnchecked">two-factor authentication</label>`
 			}
 			page +=
 			`

@@ -27,11 +27,19 @@ export function loginPushButton()
 	})
 	.then(data => {
 		if (data.success) {
-			sessionStorage.setItem('pongToken', data.context.jwt);
-			sessionStorage.setItem('userId', data.context.userId);
+			sessionStorage.setItem('user', $name.value);
+			if (data.redirect_url == "pass2fa")
+			{
+				navigateTo("/twofactor");
+			}
+			else
+			{
+				sessionStorage.setItem('pongToken', data.context.jwt);
+				sessionStorage.setItem('userId', data.context.userId);
 			changeUserName();
-			// cargar desde el modelo los mensajes para llenar la variable global
+				// cargar desde el modelo los mensajes para llenar la variable global
 			navigateTo("/home");
+			}
 		}
 		else
 		{
@@ -42,8 +50,6 @@ export function loginPushButton()
 					$errorMessage.textContent = "Username or password is incorrect";
 				});
 			}
-			else
-				navigateTo("/twofactor");
 		}
 	})
 	.catch(error => {
@@ -112,7 +118,7 @@ export function singPushButton()
 				$username.classList.add("border-danger");
 				$errorMessage.textContent = "Username in use";
 			}
-			else if ($error == "password_too_common")
+			else if ($error == "password_too_common" || $error == "password_too_similar")
 			{
 				$pass.classList.add("border-danger");
 				$errorMessage.textContent = "Insecure password";
@@ -122,101 +128,6 @@ export function singPushButton()
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});
-}
-
-export function twoFactorPushButton()
-{
-	const $key = document.getElementById("doubleFK");
-	/*const $doubleFactorUrl = apiUrl + 'doublefactor/';
-	const $doubleFactorData = new URLSearchParams();
-	$doubleFactorData.append('doubleFK', $key.value);
-	fetch($doubleFactorUrl, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-		body: $doubleFactorData
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
-	.then(data => {
-		console.log(data)
-		console.log('Inicio de sesión exitoso:', data.success);
-		if (data.logged_in) {
-			sessionStorage.setItem('pongToken', 'hola');
-		}
-	})
-	.catch(error => {
-		console.error('Error en la solicitud:', error);
-	});*/
-	sessionStorage.setItem('pongToken', 'hola');
-	navigateTo("/home");
-}
-
-function getBase64Image(img)
-{
-	var canvas = document.createElement("canvas");
-	canvas.width = img.width;
-	canvas.height = img.height;
-	var ctx = canvas.getContext("2d");
-	ctx.drawImage(img, 0, 0);
-	var dataURL = canvas.toDataURL();
-	return dataURL;
-}
-
-function conectServerChange(img)
-{
-	const $username = document.getElementById("UserNameChange");
-	const $token = sessionStorage.getItem('pongToken');
-	const $profileUrl = apiUrl + 'profile/';
-	const $profileData = new URLSearchParams();
-	$profileData.append('avatar_base64', img);
-	$profileData.append('display_name', $username.value);
-	fetch($profileUrl, {
-		method: 'POST',
-		headers: {
-			"Authorization": $token
-		},
-		body: $profileData
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
-	.then(data => {
-		if (data.success) {
-			changeUserName();
-			navigateTo("/profile");
-		}
-	})
-	.catch(error => {
-		console.error('Error en la solicitud:', error);
-	});
-}
-
-export function changeDataUser()
-{
-	const $picture = document.getElementById("profilePictureChange").files[0];
-	let base64;
-	if ($picture !== undefined) {
-		const $img = new Image();
-		$img.onload = function() {
-			base64 = getBase64Image($img);
-			conectServerChange(base64);
-		};
-		$img.src = URL.createObjectURL($picture);
-	}
-	else
-	{
-		base64 = "";
-		conectServerChange(base64);
-	}
 }
 
 export function logOut()
@@ -237,8 +148,8 @@ export function logOut()
 	})
 	.then(data => {
 		console.log(data);
-		sessionStorage.removeItem('pongToken');
-		navigateTo("/home");
+		sessionStorage.clear();
+		window.location.reload()
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);

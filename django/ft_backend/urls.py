@@ -21,4 +21,5 @@ urlpatterns = [
 	path("chat/", include("chat.urls")),
     path("admin/", admin.site.urls),
     path("", include("pongue.urls")),
+    path("api/remote/", include("remote.urls")),
 ]

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
 	"daphne",
 	'pongue',
 	'chat',
+	'remote',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
