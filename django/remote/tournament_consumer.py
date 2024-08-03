@@ -76,6 +76,30 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             await self.makePlayerMove(data)
             return
 
+    async def disconnect(self, close_code):
+        print(len(self.rooms[self.room_group_name]["players"]))
+        if (self.room_group_name in self.rooms):
+            if (len(self.rooms[self.room_group_name]["players"]) == 1):
+                self.rooms.pop(self.room_group_name)
+                await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+            elif (
+                await self.findPlayerSocket() == "player1" and
+                len(self.rooms[self.room_group_name]["players"]) < 4 and
+                "onProgress" not in self.rooms[self.room_group_name]
+                ): 
+                await self.channel_layer.group_send(
+					self.room_group_name, {
+						"type": "cancel.tournament"
+					}
+                )
+                self.rooms[self.room_group_name]["players"].pop(await self.findPlayerSocket())
+            else:
+                if ("onProgress" in self.rooms[self.room_group_name]):
+                    await self.manageSocketDisconnectionFromGame()
+                self.rooms[self.room_group_name]["players"].pop(await self.findPlayerSocket())
+        return
+        
+
     # Received from Group and sending back to client methods
     async def matchmaking_bracket(self, event):
         await self.send(text_data=json.dumps({
@@ -87,9 +111,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             "ids": event
         }))
     
-    async def semifinal_winner(self, event):
+    async def semifinal_winners(self, event):
         await self.send(text_data=json.dumps({
-            "semifinalWinner": True,
+            "semifinalWinners": True,
             "pOneId": event["pOneId"],
             "pTwoId": event["pTwoId"],
             "matchId": event["matchId"]
@@ -102,6 +126,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             "matchId": event["matchId"]
         }))
     
+    async def cancel_tournament(self, event):
+        await self.send(text_data=json.dumps({
+            "cancelTournament": True
+        }))
+    
     # Auxiliar methods
     async def changeUsersStatusToInTournament(self, userNum: str):
         user: PongueUser = self.rooms[self.room_group_name]["players"][userNum]
@@ -109,13 +138,59 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await sync_to_async(user.save)()
 
     async def getPlayerFromRoom(self, userNum: str):
-        return self.rooms[self.room_group_name]["players"][userNum]
+        if (userNum in self.rooms[self.room_group_name]["players"].keys()):
+            return self.rooms[self.room_group_name]["players"][userNum]
+        else:
+            return ""
     
     async def getSocketFromRoom(self, userNum: str):
-        return self.rooms[self.room_group_name]["sockets"][userNum]
+        if (userNum in self.rooms[self.room_group_name]["sockets"].keys()):
+            return self.rooms[self.room_group_name]["sockets"][userNum]
+        else:
+            return ""
     
     async def getGameFromRoom(self, gameNum: str):
         return self.rooms[self.room_group_name]["games"][gameNum]
+    
+    async def findSocketInGames(self):
+        game1: Game = await self.getGameFromRoom("match1")
+        game2: Game = await self.getGameFromRoom("match2")
+        game3: Game = await self.getGameFromRoom("match3")
+
+        if (game3 == False):
+            if (game1.sockets["player1"] == self):
+                return {"match": "match1", "player": "player1"}
+            elif (game1.sockets["player2"] == self):
+                return {"match": "match1", "player": "player2"}
+            elif (game2.sockets["player1"] == self):
+                return {"match": "match2", "player": "player1"}
+            elif (game2.sockets["player2"] == self):
+                return {"match": "match2", "player": "player2"}
+        else:
+            if (game3.sockets["player1"] == self):
+                return {"match": "match3", "player": "player1"}
+            elif (game3.sockets["player2"] == self):
+                return {"match": "match3", "player": "player2"}
+    
+    async def findPlayerSocket(self):
+        player1: TournamentConsumer = await self.getSocketFromRoom("player1")
+        player2: TournamentConsumer = await self.getSocketFromRoom("player2")
+        player3: TournamentConsumer = await self.getSocketFromRoom("player3")
+        player4: TournamentConsumer = await self.getSocketFromRoom("player4")
+
+        if (self == player1):
+            return "player1"
+        elif (self == player2):
+            return "player2"
+        elif (self == player3):
+            return "player3"
+        elif (self == player4):
+            return "player4"
+
+    async def manageSocketDisconnectionFromGame(self):
+        disc = await self.findSocketInGames()
+        game: Game = await self.getGameFromRoom(disc["match"])
+        game.disFlags[disc["player"]] = True
 
     async def makePlayerMove(self, data):
         target = data["userId"]
@@ -159,6 +234,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     
     # Tournament logic/loop method
     async def build_tournament(self):
+        self.rooms[self.room_group_name]["onProgress"] = True
         self.rooms[self.room_group_name]["games"] = {"match1": False, "match2": False, "match3": False}
 
         # Getting players and sockets form the room
@@ -221,8 +297,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_send(
             self.room_group_name, {
-                "type": "semifinal.winner",
-                "semifinalWinner": True,
+                "type": "semifinal.winners",
+                "semifinalWinners": True,
                 "pOneId": game1.winner,
                 "pTwoId": game2.winner,
                 "matchId": game3.matchId
@@ -253,8 +329,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             player_4=player4,
             winner=tournamentWinner
         )
-        tournamentWinner.points += 100
-        await sync_to_async(tournamentWinner.save)()
         player1.tournaments += 1
         await sync_to_async(player1.save)()
         player2.tournaments += 1
@@ -263,6 +337,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await sync_to_async(player3.save)()
         player4.tournaments += 1
         await sync_to_async(player4.save)()
+        tournamentWinner.points += 100
+        await sync_to_async(tournamentWinner.save)()
 
     async def getSemifinalWinners(self, game1: Game, game2: Game, flag):
         game1Task = asyncio.create_task(game1.runGame())
@@ -283,12 +359,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         player1 = await self.getPlayerFromRoom("player1")
         player3 = await self.getPlayerFromRoom("player3")
 
-        if winner1 == player1.id:
+        if player1 != "" and winner1 == player1.id:
             sockets["winner1"] = await self.getSocketFromRoom("player1")
         else:
             sockets["winner1"] = await self.getSocketFromRoom("player2")
         
-        if winner2 == player3.id:
+        if player3 != "" and winner2 == player3.id:
             sockets["winner2"] = await self.getSocketFromRoom("player3")
         else:
             sockets["winner2"] = await self.getSocketFromRoom("player4")

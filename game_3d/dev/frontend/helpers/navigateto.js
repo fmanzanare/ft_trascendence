@@ -22,7 +22,6 @@ function hideLoading() {
 async function tokenTrue(url)
 {
 	showLoading();
-	console.log("hola");
 	const $appElement = document.getElementById("app");
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");

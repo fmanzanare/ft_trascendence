@@ -124,6 +124,7 @@ export function openNewSocketTournament(data) {
 		const data = JSON.parse(e.data)
 
 		if (data.bracket) {
+			console.log(data);
 			if (data.bracket.match1Ids.split(',')[0] == userId || data.bracket.match1Ids.split(',')[1] == userId ) {
 				matchId = 1
 			} else {
@@ -165,28 +166,25 @@ export function openNewSocketTournament(data) {
 
 		if (data.finalWinner) {
 			if (userId == data.tournamentWinner) {
+				// TODO - Show a message on the screen.
 				console.log("Congratulations! You won the tournament");
-				// const $token = sessionStorage.getItem('pongToken')
-				// fetch(`${apiUrl}remote/register-tournament-win`, {
-				// 	method: "POST",
-				// 	headers: {
-				// 		"Authorization": $token
-				// 	}
-				// })
-				// .then(response => {
-				// 	if (!response.ok) {
-				// 		throw new Error('Hubo un problema al realizar la solicitud.');
-				// 	}
-				// 	return response.json();
-				// })
-				// .then(data => {
-				// 	console.log(data)
-				// })
 				remoteSocket.close()
 			} else {
+				// TODO - Show a message on the screen.
 				console.log("Ups! You lost the tournamnet");
 				remoteSocket.close()
 			}
+		}
+
+		if (data.disconnection) {
+			// TODO - Show a message on the screen.
+			console.log("the other player has disconnected");
+		}
+
+		if (data.cancelTournament) {
+			remoteSocket.close();
+			changeState('Online');
+			navigateTo("home")
 		}
 	}
 
