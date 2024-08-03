@@ -92,8 +92,10 @@ export function twoFactorPushButton()
 		return response.json()
 	})
 	.then(data => {
+        console.log(data)
 		if (data.success) {
 			sessionStorage.setItem('pongToken', data.context.jwt);
+			sessionStorage.setItem('userId', data.userId);
 			changeUserName();
 			navigateTo("/home");
 		}

@@ -214,6 +214,7 @@ def submit2fa(request):
 				"success": True,
 				"message": "2FA passed successfully",
 				"redirect": True,
+				"userId": user.id,
 				"redirect_url": "index",
 				"context": {
 					"jwt": generate_jwt(user)
