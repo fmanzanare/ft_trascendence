@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
-from django.core import serializers
 from dataclasses import dataclass
 
 
@@ -26,7 +25,6 @@ class PongueUser(AbstractUser):
 	updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated at")
 	avatar_base64 = models.TextField(default="", blank=True, verbose_name="Avatar")
 	status = models.CharField(max_length=25, choices=Status.choices, default=Status.OFFLINE, verbose_name="Status")
-	# status = models.CharField(max_length=50, default="offline", verbose_name="Status")
 	games_won = models.IntegerField(default=0, verbose_name="Wins")
 	games_lost = models.IntegerField(default=0, verbose_name="Losses")
 	games_played = models.IntegerField(default=0, verbose_name="Games played")
@@ -46,23 +44,6 @@ class PongueUser(AbstractUser):
 		return self.username
 
 	REQUIRED_FIELDS = ["display_name"]
-
-class GameResults(models.Model):
-	id = models.AutoField(primary_key=True)
-	player_1 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="player_1")
-	player_2 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="player_2")
-	player_1_score = models.IntegerField(verbose_name="Player 1 Score")
-	player_2_score = models.IntegerField(verbose_name="Player 2 Score")
-	created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
-	updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated at")
-
-	class Meta:
-		db_table = "Results"
-		verbose_name = "Result"
-		verbose_name_plural = "Results"
-
-	def __str__(self):
-		return f"{self.player_1} vs {self.player_2} - {self.player_1_score} - {self.player_2_score}"
 
 @dataclass
 class RankingUserDTO:
@@ -85,16 +66,60 @@ class RankingUserDTO:
 		userDto.points = user.points
 		return userDto
 
+class GameResults(models.Model):
+	id = models.AutoField(primary_key=True)
+	player_1 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="player_1")
+	player_2 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="player_2")
+	player_1_score = models.IntegerField(verbose_name="Player 1 Score")
+	player_2_score = models.IntegerField(verbose_name="Player 2 Score")
+	created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
+	updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated at")
+
+	class Meta:
+		db_table = "Results"
+		verbose_name = "Result"
+		verbose_name_plural = "Results"
+
+	def __str__(self):
+		return f"{self.player_1} vs {self.player_2} - {self.player_1_score} - {self.player_2_score}"
+
+@dataclass
+class UserHistoryDTO:
+	id = 0
+	rival = ""
+	isWin = False
+	myScore = 0
+	myRivalScore = 0
+
+	def toUserHistoryDTO(user: PongueUser, gameResult: GameResults):
+		print(gameResult)
+		gameResultPlayer1 = PongueUser.objects.get(id=gameResult["player_1_id"])
+		gameResultPlayer2 = PongueUser.objects.get(id=gameResult["player_2_id"])
+		gameResultPlayer = gameResultPlayer1 if gameResultPlayer1.id == user.id else gameResultPlayer2
+		gameResultRival = gameResultPlayer2 if gameResultPlayer1.id == user.id else gameResultPlayer1
+		historyDTO = UserHistoryDTO()
+		historyDTO.id = gameResultPlayer.id
+		historyDTO.rival = gameResultRival.username
+		if (gameResultPlayer.id == gameResult["player_1_id"]):
+			historyDTO.isWin = True if gameResult["player_1_score"] > gameResult["player_2_score"] else False
+			historyDTO.myScore = gameResult["player_1_score"]
+			historyDTO.myRivalScore = gameResult["player_2_score"]
+		else:
+			historyDTO.isWin = True if gameResult["player_2_score"] > gameResult["player_1_score"] else False
+			historyDTO.myScore = gameResult["player_2_score"]
+			historyDTO.myRivalScore = gameResult["player_1_score"]
+		return historyDTO
+		
+
+
+
+
 class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
 	player_1 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_1")
 	player_2 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_2")
 	player_3 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_3")
 	player_4 = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="tournament_player_4")
-	player_1_position = 0 
-	player_2_position = 0 
-	player_3_position = 0 
-	player_4_position = 0 
 	winner = models.ForeignKey(PongueUser, on_delete=models.CASCADE, related_name="winner")
 	created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created at")
 	updated_at = models.DateTimeField(auto_now=True, verbose_name="Updated at")

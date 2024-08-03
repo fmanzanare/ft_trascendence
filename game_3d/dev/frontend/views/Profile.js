@@ -6,43 +6,56 @@ export default class extends AbstractView {
         this.setTitle("Profile");
     }
 
-    async getHtml() {
-		const $token = sessionStorage.getItem('pongToken');
-		const $twoFactorUrl = apiUrl + 'get2fa/';
-		let twoFactor;
-		fetch($twoFactorUrl, {
-			method: "GET",
-			headers: {
-				"Authorization": $token
-			}
-		})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Hubo un problema al realizar la solicitud.');
-			}
-			return response.json();
-		})
-		.then(data => {
-			twoFactor = data.context.key;
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
-		const $profileUrl = apiUrl + 'profile/';
-		return fetch($profileUrl, {
-			method: "GET",
-			headers: {
-				"Authorization": $token
-			}
-		})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Hubo un problema al realizar la solicitud.');
-			}
-			return response.json();
-		})
-		.then(data => {
-			console.log(data);
+	async getHtml() {
+        const $token = sessionStorage.getItem('pongToken');
+
+        const fetchTwoFactor = async () => {
+            const $twoFactorUrl = apiUrl + 'get2fa/';
+            const response = await fetch($twoFactorUrl, {
+                method: "GET",
+                headers: { "Authorization": $token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Hubo un problema al realizar la solicitud.');
+            }
+            const data = await response.json();
+            return data.context.key;
+        };
+
+        const fetchHistory = async () => {
+            const $historyUrl = apiUrl + 'user_history/';
+            const response = await fetch($historyUrl, {
+                method: "GET",
+                headers: { "Authorization": $token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Hubo un problema al realizar la solicitud.');
+            }
+            const data = await response.json();
+            return data.history;
+        };
+
+        const fetchProfile = async () => {
+            const $profileUrl = apiUrl + 'profile/';
+            const response = await fetch($profileUrl, {
+                method: "GET",
+                headers: { "Authorization": $token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Hubo un problema al realizar la solicitud.');
+            }
+            const data = await response.json();
+            return data;
+        };
+
+        try {
+            const twoFactor = await fetchTwoFactor();
+            const historyData = await fetchHistory();
+            const data = await fetchProfile();
+
 			let page =
 			`
 				<div class="container-fluid py-10 h-100">
@@ -127,35 +140,17 @@ export default class extends AbstractView {
 									<div class="col-12">
 										<ol class="list-group">
 											<li class="list-group-item d-flex justify-content-around" style="background-color: #5272c1;">
-												<div class="p-2">Name</div>
-												<div class="p-2">Win/loss</div>
-												<div class="p-2">Result</div>
+												<div class="col p-2 text-center">Name</div>
+												<div class="col p-2 text-center">Win/loss</div>
+												<div class="col p-2 text-center">Result</div>
 											</li>
-											<li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-												<div class="p-2">Name</div>
-												<div class="p-2">Win/loss</div>
-												<div class="p-2">Result</div>
-											</li>
-											<li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-												<div class="p-2">Name</div>
-												<div class="p-2">Win/loss</div>
-												<div class="p-2">Result</div>
-											</li>
-											<li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-												<div class="p-2">Name</div>
-												<div class="p-2">Win/loss</div>
-												<div class="p-2">Result</div>
-											</li>
-											<li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-												<div class="p-2">Name</div>
-												<div class="p-2">Win/loss</div>
-												<div class="p-2">Result</div>
-											</li>
-											<li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-												<div class="p-2">Name</div>
-												<div class="p-2">Win/loss</div>
-												<div class="p-2">Result</div>
-											</li>
+											${historyData.slice(-5).reverse().map(item => `
+												<li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
+													<div class="col p-2 text-center">${item.rival}</div>
+													<div class="col p-2 text-center">${item.isWin ? 'Win' : 'Loss'}</div>
+													<div class="col p-2 text-center">${item.myScore} - ${item.myRivalScore}</div>
+												</li>
+											`).join('')}
 										</ol>
 									</div>
 								</div>
@@ -164,10 +159,10 @@ export default class extends AbstractView {
     				</div>
 				</div>
 			`;
+
 			return page;
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
 }

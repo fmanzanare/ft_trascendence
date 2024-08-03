@@ -1,5 +1,5 @@
-import { navigateTo } from "./navigateto";
-import { changeUserName } from "./utils";
+import { navigateTo } from "./navigateto.js";
+import { changeUserName } from "./utils.js";
 
 export function loginPushButton()
 {
@@ -26,8 +26,10 @@ export function loginPushButton()
 		return response.json()
 	})
 	.then(data => {
+		console.log(data)
 		if (data.success) {
 			sessionStorage.setItem('user', $name.value);
+			sessionStorage.setItem('userId', data.userId);
 			if (data.redirect_url == "pass2fa")
 			{
 				navigateTo("/twofactor");

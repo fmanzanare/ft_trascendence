@@ -1,7 +1,7 @@
-import * as THREE from 'three';
+import * as THREE from '../three/build/three.module.js';
 import Conf from "./constans.js";
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from '../three/examples/jsm/geometries/TextGeometry.js';
+import { FontLoader } from '../three/examples/jsm/loaders/FontLoader.js';
 import { Table } from '../class/Table.js';
 import { Spotlight } from '../class/Spotlight.js';
 import { Camera } from '../class/Camera.js';

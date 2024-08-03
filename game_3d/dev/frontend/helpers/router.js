@@ -5,6 +5,7 @@ import Login from "../views/LogIn.js";
 import Signup from "../views/SignUp.js";
 import Profile from "../views/Profile.js";
 import TwoFactor from "../views/TwoFactor.js";
+import Page404 from "../views/page404.js";
 import { routerFunctions } from "./routerFunctions.js";
 
 function pathToRegex(path) {
@@ -50,10 +51,11 @@ export async function router() {
 	let match = $potentialMatches.find(potentialMatch => potentialMatch.result !== null);
 
 	if (!match) {
+		console.log(`Ruta no encontrada: ${location.pathname}`);
 		match = {
-			route: routes[0],
-			result: [location.pathname]
-		};
+            route: { path: "/404", view: Page404 },
+            result: [location.pathname]
+        };
 	}
 
 	const $view = new match.route.view(getParams(match));

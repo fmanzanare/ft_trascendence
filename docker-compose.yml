@@ -1,34 +1,46 @@
-# docker-compose build
-# docker-compose up
-
-version: '3'
+version: '3.8'
 
 services:
-  frontend:
-    build: ./game_3d
-    volumes:
-      - game_3d:/usr/src/game_3d/dev/
-    ports:
-      - 8080:8080
   backend:
-    build: ./django
-    command: python manage.py runserver_plus 0.0.0.0:8000 --cert-file https/cert.pem --key-file https/key.pem
+    build:
+      context: ./django
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - django:/usr/src/django/
     ports:
-      - 8000:8000
+      - "8000:8000"
     env_file:
       - ./.env
     depends_on:
       - db
+
   db:
     image: postgres:15
     volumes:
-      - db_data:/var/lib/postgresql/data/
+      - db_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+
+  caddy:
+    image: caddy:alpine
+    container_name: caddy
+    depends_on:
+      - backend
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "8081:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/data:/data
+      - ./caddy/conf:/config
+      - ./caddy/https:/https
+      - game_3d:/usr/src/game_3d
+      - django:/usr/src/django
+
 volumes:
   django:
     driver: local
@@ -41,5 +53,5 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${PWD}/game_3d/dev/'
+      device: '${PWD}/game_3d/'
   db_data:
