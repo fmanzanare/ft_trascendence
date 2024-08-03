@@ -28,9 +28,29 @@ Juego contra IA.
 # Pendientes fmanzana:
 - Desconexión por cierre de navegador en 1v1
 - Cerrar socket y redirigir cuando en torneo clica en el botón de "Cancel"
+- Cerrar socket y redirigir cuando en 1v1 clica en el botón de "Cancel"
+- Comprobar cómo queda el estado del jugador tras cerrar el navegador - En principio NO PASA NADA!!!!
+- Comprobar límites / bordes de impacto de la pelota en palas.
 
 # Pendientes:
-- Gestión de interfaz para desconexiones (Popup cancelación torneo, ) - socketMng.js - openNewSocketTournament()
+- Gestión de interfaz para desconexiones (Popup cancelación torneo) - socketMng.js - openNewSocketTournament()
 - Popup de desconexión al cancelar la búsqueda de un torneo
 
+# Interfaz:
+- Profile - Poner el texto en color blanco
+- Profile - Cambiar "puntos" por los puntos de la DB
+- Verificar los textos de los botones para que estén en Inglés
+- Ranking - No aparece el puntero cuando pasas por encima del nombre del usuario.
+- Profile - Cuando consultas el perfil de otro jugador, no puedes ir atrás en la navegación.
+- Solo verificar - El puntero funciona correctamente cuando estás encima de botones / clicables.
+- Tournaments - Notificación usuario cuando gana una partida del torneo.
+- 1v1 - Instrucciones desaparecen en el juego remoto 1v1.
+
+# Pendintes general:
 - Verificar Makefile
+- IA - O eliminar el botón o programar IA.
+- VERIFICAR PUNTOS SEGÚN MÓDULOS DEL SUBJECT !!!
+
+# Pruebas:
+- Header grande por CURL.
+- Bombing PNG.
