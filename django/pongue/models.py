@@ -86,6 +86,7 @@ class GameResults(models.Model):
 @dataclass
 class UserHistoryDTO:
 	id = 0
+	idRival = 0
 	rival = ""
 	isWin = False
 	myScore = 0
@@ -99,6 +100,7 @@ class UserHistoryDTO:
 		gameResultRival = gameResultPlayer2 if gameResultPlayer1.id == user.id else gameResultPlayer1
 		historyDTO = UserHistoryDTO()
 		historyDTO.id = gameResultPlayer.id
+		historyDTO.idRival = gameResultRival.id
 		historyDTO.rival = gameResultRival.username
 		if (gameResultPlayer.id == gameResult["player_1_id"]):
 			historyDTO.isWin = True if gameResult["player_1_score"] > gameResult["player_2_score"] else False
@@ -109,8 +111,20 @@ class UserHistoryDTO:
 			historyDTO.myScore = gameResult["player_2_score"]
 			historyDTO.myRivalScore = gameResult["player_1_score"]
 		return historyDTO
-		
 
+@dataclass
+class UserProfile:
+    nick: str = ""
+    points: int = 0
+    avatar: str = ""
+
+    @staticmethod
+    def toUseUserProfile(user: PongueUser):
+	    userProfile = UserProfile()
+	    userProfile.nick = user.display_name
+	    userProfile.points = user.points
+	    userProfile.avatar = user.avatar_base64
+	    return userProfile
 
 
 

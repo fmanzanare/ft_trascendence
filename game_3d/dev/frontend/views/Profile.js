@@ -24,7 +24,8 @@ export default class extends AbstractView {
         };
 
         const fetchHistory = async () => {
-            const $historyUrl = apiUrl + 'user_history/';
+			const $userId = sessionStorage.getItem("userId")
+			const $historyUrl = `${apiUrl}user_history/?userId=${encodeURIComponent($userId)}`
             const response = await fetch($historyUrl, {
                 method: "GET",
                 headers: { "Authorization": $token }
@@ -146,7 +147,7 @@ export default class extends AbstractView {
 											</li>
 											${historyData.slice(-5).reverse().map(item => `
 												<li class="list-group-item d-flex justify-content-around" style="background-color: #8da3d9;">
-													<div class="col p-2 text-center">${item.rival}</div>
+													<div class="col p-2 text-center" onClick="goToUserProfile(${item.idRival})" style="cursor: pointer;">${item.rival}</div>
 													<div class="col p-2 text-center">${item.isWin ? 'Win' : 'Loss'}</div>
 													<div class="col p-2 text-center">${item.myScore} - ${item.myRivalScore}</div>
 												</li>
