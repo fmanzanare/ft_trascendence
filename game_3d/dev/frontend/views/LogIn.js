@@ -33,7 +33,7 @@ export default class extends AbstractView {
 											<p class="mb-0">Don't have an account?<a href="/signup" class="text-white-50 fw-bold" data-link>Sign Up</a></p>
 										</div>
 										<div>
-											<p class="mb-0">Do you have an account in 42?<a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-289395e5c4fa000b25e85fd81bb7e0f29838211c851c9d07f4a99fe0f010e38e&redirect_uri=https%3A%2F%2Flocalhost%3A8080%2Fhome&response_type=code" class="text-white-50 fw-bold">Sing In</a></p>
+											<p class="mb-0">Do you have an account in 42?<a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-bc0560f1cfd8004427e4a9f9762692079fe9c21cdb304a775117968b4e7b4f60&redirect_uri=https%3A%2F%2Flocalhost%3A4000%2Fapi%2Fauth&response_type=code" class="text-white-50 fw-bold">Sing In</a></p>
 										</div>
 									</div>    
 								</div>
