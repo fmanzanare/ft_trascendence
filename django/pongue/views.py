@@ -521,6 +521,7 @@ def add_game_result(request):
 @jwt_required
 def profile(request):
 	if request.method == "GET":
+		user = get_user_from_jwt(request)
 		jsonUser = serializers.serialize("json", [PongueUser.objects.get(username=get_user_from_jwt(request))])
 		return JsonResponse({
 			"success": True,
@@ -529,6 +530,7 @@ def profile(request):
 			"redirect_url": "",
 			"context": {
 				"user": json.loads(jsonUser)[0]["fields"],
+				"points": user.points
 			},
 		})
 	elif request.method == "POST":

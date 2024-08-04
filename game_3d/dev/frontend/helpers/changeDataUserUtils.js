@@ -12,7 +12,7 @@ function getBase64Image(img)
 	return dataURL;
 }
 
-function conectServerChange(img)
+export function conectServerChange(img)
 {
 	const $username = document.getElementById("UserNameChange");
 	const $token = sessionStorage.getItem('pongToken');

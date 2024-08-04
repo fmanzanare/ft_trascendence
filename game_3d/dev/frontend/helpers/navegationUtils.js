@@ -1,6 +1,6 @@
 import { navigateTo } from "./navigateto.js";
-import { changeState } from "./utils.js";
-import { sockets } from "../index.js"
+import { changeState, getAlertMessage } from "./utils.js";
+import { sockets } from "../index.js";
 
 export function cancelNav()
 {
@@ -34,4 +34,17 @@ export function acceptNav()
 		}))
 		sockets.tournamentSocket.close();
 	}
+}
+
+export function showModal()
+{
+	const $modal = document.getElementById("myModal");
+    const $textModalMessage = document.getElementById("textModal");
+    const $currentState = document.getElementById("userStatus").textContent;
+    $textModalMessage.textContent = getAlertMessage($currentState);
+    $modal.classList.add("show");
+    $modal.style.display = "block";
+    $modal.setAttribute("aria-modal", "true");
+    $modal.setAttribute("aria-hidden", "false");
+    $modal.setAttribute("role", "dialog");
 }

@@ -21,19 +21,18 @@ export default class extends AbstractView {
                                     <div class="fs-3 p-2 h-50 bd-highlight" id="playOnline" role="button" style="width:25%;">
                                         <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                             <h1>1 vs 1</h1>
-                                            <p>Play an online 1 vs 1 game</p>
+                                            <p>Online</p>
                                         </div>
                                     </div>
                                     <div class="fs-3 p-2 h-50 bd-highlight" role="button" style="width:25%;">
                                         <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
-                                            <h1>1 vs AI</h1>
-                                            <p>Play a game  against the AI</p>
+                                            <h1>AI</h1>
                                         </div>
                                     </div>
                                     <div class="fs-3 p-2 h-50 bd-highlight" id="playLocal" role="button" style="width:25%;">
                                         <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                             <h1>Local</h1>
-                                            <p>Play a one vs one game on the same pc</p>
+                                            <p>One vs one</p>
                                         </div>
                                     </div>
                                 </div>
@@ -42,7 +41,7 @@ export default class extends AbstractView {
                                         <span class="visually-hidden">Looking for a rival</span>
                                     </div>
                                     <div style="margin-top:20px">
-                                        <button id="cancelGame" class="mt-1 btn btn-secondary btn-lg">Cancelar</button>
+                                        <button id="cancelGame" class="mt-1 btn btn-secondary btn-lg">Cancel</button>
                                     </div>
                                 </div>
                             </div>

@@ -38,7 +38,7 @@ export default class extends AbstractView {
 									<span class="visually-hidden">Looking for a rival</span>
 								</div>
 								<div style="margin-top:20px">
-									<button id="cancelTournament" class="mt-1 btn btn-secondary btn-lg">Cancelar</button>
+									<button id="cancelTournament" class="mt-1 btn btn-secondary btn-lg">Cancel</button>
 								</div>
 							</div>
 						</div>
