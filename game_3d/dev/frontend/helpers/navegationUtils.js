@@ -1,6 +1,7 @@
 import { navigateTo } from "./navigateto.js";
 import { changeState, getAlertMessage } from "./utils.js";
 import { sockets } from "../index.js";
+import { localGame } from "./gameMode.js";
 
 export function cancelNav()
 {
@@ -21,18 +22,23 @@ export function acceptNav()
 	navigateTo($url);
 	if (sockets.gameSocket != null) {
 		console.log("closing game socket");
-		sockets.gameSocket.send(JSON.stringify({
-			"disconnection": true,
-			"userId": sessionStorage.getItem("userId")
-		}))
+		// sockets.gameSocket.send(JSON.stringify({
+		// 	"disconnection": true,
+		// 	"userId": sessionStorage.getItem("userId")
+		// }))
 		sockets.gameSocket.close();
 	}
 	if (sockets.tournamentSocket != null) {
-		sockets.tournamentSocket.send(JSON.stringify({
-			"disconnection": true,
-			"userId": sessionStorage.getItem("userId")
-		}))
+		console.log("closing tournament socket");
+		// sockets.tournamentSocket.send(JSON.stringify({
+		// 	"disconnection": true,
+		// 	"userId": sessionStorage.getItem("userId")
+		// }))
 		sockets.tournamentSocket.close();
+	}
+	if (localGame.local != null) {
+		localGame.local.stopGame();
+		localGame.local = null;
 	}
 }
 

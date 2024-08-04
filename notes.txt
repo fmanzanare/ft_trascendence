@@ -26,12 +26,14 @@ Juego contra IA.
 
 
 # Pendientes fmanzana:
-- Desconexión por cierre de navegador en 1v1
+- Comprobar cómo queda el estado del jugador tras cerrar el navegador - En principio NO PASA NADA!!!!
+- Desconexión por cierre de navegador en 1v1 - DONE
 - Cerrar socket y redirigir cuando en torneo clica en el botón de "Cancel"
 - Cerrar socket y redirigir cuando en 1v1 clica en el botón de "Cancel"
-- Comprobar cómo queda el estado del jugador tras cerrar el navegador - En principio NO PASA NADA!!!!
 - Comprobar límites / bordes de impacto de la pelota en palas.
-...
+- Cerrar ventana si el jugador está buscando partida y otro se pone a buscar (se une a partida fantasma??) - DONE
+- Cerrar ventana si el jugador está buscando/hosteando torneo y otro se pone a buscar (se une a torneo fantasma??) - DONE
+- Juego local corriendo en background...
 
 # Pendientes:
 - Gestión de interfaz para desconexiones (Popup cancelación torneo) - socketMng.js - openNewSocketTournament()
