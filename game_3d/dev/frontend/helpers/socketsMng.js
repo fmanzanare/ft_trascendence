@@ -50,6 +50,7 @@ export function openNewSocket(data) {
 			changeState('Online');
 			navigateTo("home")
 			remoteSocket.close();
+			sockets.gameSocket = null;
 		}
 		if (data.gameEnd) {
 			if (data.winner == userId) {
@@ -60,6 +61,7 @@ export function openNewSocket(data) {
 			changeState('Online');
 			navigateTo("home")
 			remoteSocket.close();
+			sockets.gameSocket = null;
 			const $token = sessionStorage.getItem('pongToken')
 			fetch(`${apiUrl}online-status/`, {
 				method: "POST",
@@ -161,6 +163,7 @@ export function openNewSocketTournament(data) {
 			} else {
 				console.log("Sorry, you lost");
 				remoteSocket.close();
+				sockets.tournamentSocket = null;
 			}
 		}
 
@@ -169,10 +172,12 @@ export function openNewSocketTournament(data) {
 				// TODO - Show a message on the screen.
 				console.log("Congratulations! You won the tournament");
 				remoteSocket.close()
+				sockets.tournamentSocket = null;
 			} else {
 				// TODO - Show a message on the screen.
 				console.log("Ups! You lost the tournamnet");
 				remoteSocket.close()
+				sockets.tournamentSocket = null;
 			}
 		}
 
@@ -183,6 +188,7 @@ export function openNewSocketTournament(data) {
 
 		if (data.cancelTournament) {
 			remoteSocket.close();
+			sockets.tournamentSocket = null;
 			changeState('Online');
 			navigateTo("home")
 		}

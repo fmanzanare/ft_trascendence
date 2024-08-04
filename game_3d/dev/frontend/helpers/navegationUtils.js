@@ -27,6 +27,7 @@ export function acceptNav()
 		// 	"userId": sessionStorage.getItem("userId")
 		// }))
 		sockets.gameSocket.close();
+		sockets.gameSocket = null;
 	}
 	if (sockets.tournamentSocket != null) {
 		console.log("closing tournament socket");
@@ -35,6 +36,7 @@ export function acceptNav()
 		// 	"userId": sessionStorage.getItem("userId")
 		// }))
 		sockets.tournamentSocket.close();
+		sockets.tournamentSocket = null;
 	}
 	if (localGame.local != null) {
 		localGame.local.stopGame();

@@ -79,7 +79,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         print(len(self.rooms[self.room_group_name]["players"]))
         if (self.room_group_name in self.rooms):
-            player: PongueUser = self.rooms[self.room_group_name]["players"][await self.findPlayerSocket()]
+            player: PongueUser = self.rooms[self.room_group_name]["players"][await self.findSocketInGameSockets()]
             player.status = PongueUser.Status.ONLINE
             await sync_to_async(player.save)()
             if (len(self.rooms[self.room_group_name]["players"]) == 1):
@@ -96,10 +96,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 					}
                 )
                 self.rooms[self.room_group_name]["players"].pop(await self.findPlayerSocket())
+                self.rooms[self.room_group_name]["sockets"].pop(await self.findPlayerSocket())
             else:
                 if ("onProgress" in self.rooms[self.room_group_name]):
                     await self.manageSocketDisconnectionFromGame()
                 self.rooms[self.room_group_name]["players"].pop(await self.findPlayerSocket())
+                self.rooms[self.room_group_name]["sockets"].pop(await self.findPlayerSocket())
         return
         
 
@@ -125,8 +127,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     async def final_winner(self, event):
         await self.send(text_data=json.dumps({
             "finalWinner": True,
-            "tournamentWinner": event["tournamentWinner"],
-            "matchId": event["matchId"]
+            "tournamentWinner": event["tournamentWinner"]
         }))
     
     async def cancel_tournament(self, event):
@@ -188,6 +189,16 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         elif (self == player3):
             return "player3"
         elif (self == player4):
+            return "player4"
+        
+    async def findSocketInGameSockets(self):
+        if ("player1" in self.rooms[self.room_group_name]["sockets"] and self.rooms[self.room_group_name]["sockets"]["player1"] == self):
+            return "player1"
+        elif ("player2" in self.rooms[self.room_group_name]["sockets"] and self.rooms[self.room_group_name]["sockets"]["player2"] == self):
+            return "player2"
+        elif ("player3" in self.rooms[self.room_group_name]["sockets"] and self.rooms[self.room_group_name]["sockets"]["player3"] == self):
+            return "player3"
+        elif ("player4" in self.rooms[self.room_group_name]["sockets"] and self.rooms[self.room_group_name]["sockets"]["player4"] == self):
             return "player4"
 
     async def manageSocketDisconnectionFromGame(self):
@@ -290,6 +301,16 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         semifinalTask = asyncio.create_task(self.getSemifinalWinners(game1, game2, flag))
         await flag.wait()
         semifinalTask.cancel()
+
+        if (len(self.rooms[self.room_group_name]["players"]) == 1):
+            await self.channel_layer.group_send(
+                self.room_group_name, {
+                    "type": "final.winner",
+                    "finalWinner": True,
+                    "tournamentWinner": self.rooms[self.room_group_name]["players"][list(self.rooms[self.room_group_name]["players"].keys())[-1]].id
+                }
+            )
+            return
 
         game3: Game = Game(game1.winner, game2.winner)
         semifinalSockets = await self.getSemifinalWinnerSockets(game1.winner, game2.winner)
