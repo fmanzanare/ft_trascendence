@@ -1,6 +1,5 @@
 from django.urls import re_path
 
-from . import consumers
 from . import tournament_consumer
 from . import game_consumer
 

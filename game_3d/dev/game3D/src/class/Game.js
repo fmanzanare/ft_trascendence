@@ -24,6 +24,7 @@ export class Game {
 	ball = new Ball(this.scene, this.sizes);
 	score = new Score(this.scene);
 	animation = null;
+	cancelled = false;
 
 	speed = 4;
 
@@ -81,9 +82,16 @@ export class Game {
 		}
 	}
 
+	stopGame() {
+		this.cancelled = true;
+	}
+
 	startGame() {
 		this.addGameToDOM();
 		this.renderer.getRenderer().setAnimationLoop( () => {
+			if (this.cancelled) {
+				return ;
+			}
 			let winner = this.animation.animate();
 			if (winner == 1) {
 				sessionStorage.setItem('winner', "Player one");
