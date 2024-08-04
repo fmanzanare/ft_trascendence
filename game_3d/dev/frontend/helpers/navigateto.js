@@ -67,13 +67,10 @@ async function  tokenFalse(url)
 		$chatButton.classList.add('d-none');
 	}
 
-	if (!["/signup", "/twofactor"].includes(url)) {
-        url = "/login";
-    }
-
-	if (window.location.pathname !== url) {
-        history.pushState(null, '', url);
-    }
+	if (url.substring(url.lastIndexOf("/")) != "/signup" && url.substring(url.lastIndexOf("/")) != "/twofactor")
+		history.pushState(null, null, "/login");
+	else
+		history.pushState(null, null, url);
 
 	$appElement.innerHTML = "";
 	await router();
