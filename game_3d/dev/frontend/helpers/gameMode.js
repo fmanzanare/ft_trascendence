@@ -7,6 +7,8 @@ function isEmptyOrSpaces(str) {
     return str === null || str.match(/^ *$/) !== null;
 }
 
+export const localGame = {"local": null};
+
 export function playOnline()
 {
 	if (document.getElementById("selectMode"))
@@ -111,6 +113,6 @@ export function playLocal()
 	const $instructionsTwo = document.getElementById("instructionsTwoPlayer");
 	$instructionsTwo.classList.remove('d-none');
 
-	let game = new Game()
-	game.startGame()
+	localGame.local = new Game()
+	localGame.local.startGame()
 }
