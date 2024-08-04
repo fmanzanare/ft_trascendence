@@ -79,6 +79,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         print(len(self.rooms[self.room_group_name]["players"]))
         if (self.room_group_name in self.rooms):
+            player: PongueUser = self.rooms[self.room_group_name]["players"][await self.findSocketInGameSockets()]
+            player.status = PongueUser.Status.ONLINE
+            await sync_to_async(player.save)()
             if (len(self.rooms[self.room_group_name]["players"]) == 1):
                 self.rooms.pop(self.room_group_name)
                 await self.channel_layer.group_discard(self.room_group_name, self.channel_name)

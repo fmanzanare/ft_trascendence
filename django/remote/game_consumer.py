@@ -67,13 +67,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     self.game.pTwo.setDownMovement(data["playerMovement"])
             return
         
-        if ("disconnection" in data.keys()):
-            if (data["userId"] == str(self.game.pOne.playerId)):
-                self.game.disFlags["player1"] = True
-            elif (data["userId"] == str(self.game.pTwo.playerId)):
-                self.game.disFlags["player2"] = True
-            return
-    
     async def game_ready(self, event):
         await self.send(text_data=json.dumps({
             "gameReady": True,
@@ -86,15 +79,23 @@ class GameConsumer(AsyncWebsocketConsumer):
             "pTwoPosY": self.game.pTwo.yPos,
         }))
 
-
     async def disconnect(self, close_code):
         if (self.room_group_name in self.rooms):
+            player: PongueUser = self.rooms[self.room_group_name]["players"][await self.findSocketInGameSockets()]
+            player.status = PongueUser.Status.ONLINE
+            await sync_to_async(player.save)()
             if (len(self.rooms[self.room_group_name]["players"]) == 1):
                 self.rooms.pop(self.room_group_name)
                 if (hasattr(self, "game_task") and self.game_task != None):
                     self.game_task.cancel()
                 await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
             else:
-                self.rooms[self.room_group_name]["players"].popitem()
+                self.rooms[self.room_group_name]["players"].pop(await self.findSocketInGameSockets())
+                self.game.disFlags[await self.findSocketInGameSockets()] = True
 
+    async def findSocketInGameSockets(self):
+        if (self.game.sockets["player1"] == self):
+            return "player1"
+        elif (self.game.sockets["player2"] == self):
+            return "player2"
                     
