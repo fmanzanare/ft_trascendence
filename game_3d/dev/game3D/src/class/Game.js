@@ -1,14 +1,14 @@
-import * as THREE from 'three';
-import { AnimationLoop } from "./Animation";
-import { Table } from './Table';
-import { Ball } from "./Ball";
-import { Player } from "./Player";
-import { Renderer } from "./Renderer";
-import { Score } from "./Score";
-import { Spotlight } from "./Spotlight"
-import { navigateTo } from "../../../frontend/helpers/navigateto";
-import { Camera } from './Camera';
-import { GameSizes } from './Sizes';
+import * as THREE from '../three/build/three.module.js';
+import { AnimationLoop } from "./Animation.js";
+import { Table } from './Table.js';
+import { Ball } from "./Ball.js";
+import { Player } from "./Player.js";
+import { Renderer } from "./Renderer.js";
+import { Score } from "./Score.js";
+import { Spotlight } from "./Spotlight.js"
+import { navigateTo } from "../../../frontend/helpers/navigateto.js";
+import { Camera } from './Camera.js';
+import { GameSizes } from './Sizes.js';
 
 export class Game {
 

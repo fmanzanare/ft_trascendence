@@ -6,10 +6,11 @@ from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 import requests
 import os
 from django.db.models import Q
-from .models import GameResults, PongueUser, PlayerFriend, RankingUserDTO
+from .models import GameResults, PongueUser, PlayerFriend, RankingUserDTO, UserHistoryDTO, UserProfile
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
@@ -78,51 +79,56 @@ def index(request):
 # POST: Creates a new user if the form is valid, otherwise returns the errors
 # Parameters: "display_name", "username", "password1", "password2"
 # Format: application/x-www-form-urlencoded
+@csrf_exempt
 def register(request):
-	if get_user_from_jwt(request):
-		# WAS: return redirect("index")
-		return JsonResponse({
-			"success": True,
-			"message": "User already logged in",
-			"redirect": True,
-			"redirect_url": "index",
-			"context": {},
-		})
-	form = CreateUserForm()
+    # Comprobar si el usuario ya está autenticado
+    if get_user_from_jwt(request):
+        return JsonResponse({
+            "success": True,
+            "message": "User already logged in",
+            "redirect": True,
+            "redirect_url": "index",
+            "context": {},
+        })
 
-	if request.method == "POST":
-		form = CreateUserForm(request.POST)
-		if form.is_valid():
-			form.save()
-			messages.success(request, "Account created successfully!")
-			# WAS: return redirect("login")
-			return JsonResponse({
-				"success": True,
-				"message": "Account created successfully!",
-				"redirect": True,
-				"redirect_url": "login",
-				"context": {},
-				})
-		else:
-			return JsonResponse({
-				"success": False,
-				"message": "Invalid form",
-				"redirect": True,
-				"redirect_url": "register",
-				"context": {"errors": form.errors.as_json()},
-				})
+    if request.method == "POST":
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Account created successfully!")
+            return JsonResponse({
+                "success": True,
+                "message": "Account created successfully!",
+                "redirect": True,
+                "redirect_url": "login",
+                "context": {},
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid form",
+                "redirect": True,
+                "redirect_url": "register",
+                "context": {"errors": form.errors.as_json()},
+            })
 
-	context = {"form": form}
-	# WAS: return render(request, "register.html", context)
-	# TODO: WARNING: Modify the hard-coded form if any change is make to the CreateUserForm part
-	return JsonResponse({
-		"success": True,
-		"message": "",
-		"redirect": False,
-		"redirect_url": "",
-		"context": {"form": '<form method="POST" action class="row row-cols-1"><div class="col">Display name <input type="text" name="display_name" maxlength="50" required id="id_display_name"></div><div class="col">Username <input type="text" name="username" maxlength="50" autofocus required id="id_username"></div><div class="col">Password <input type="password" name="password1" autocomplete="new-password" required id="id_password1"></div><div class="col">Password confirmation <input type="password" name="password2" autocomplete="new-password" required id="id_password2"></div><button type="submit" class="col btn btn-primary">Submit</button></form>'},
-		"logged_in": request.user.is_authenticated,
-	})
+    # Para solicitudes GET, se envía el formulario inicial
+    form = CreateUserForm()
+    form_html = '<form method="POST" action="" class="row row-cols-1">' \
+                '<div class="col">Display name <input type="text" name="display_name" maxlength="50" required id="id_display_name"></div>' \
+                '<div class="col">Username <input type="text" name="username" maxlength="50" autofocus required id="id_username"></div>' \
+                '<div class="col">Password <input type="password" name="password1" autocomplete="new-password" required id="id_password1"></div>' \
+                '<div class="col">Password confirmation <input type="password" name="password2" autocomplete="new-password" required id="id_password2"></div>' \
+                '<button type="submit" class="col btn btn-primary">Submit</button></form>'
+
+    return JsonResponse({
+        "success": True,
+        "message": "",
+        "redirect": False,
+        "redirect_url": "",
+        "context": {"form": form_html},
+        "logged_in": request.user.is_authenticated,
+    })
 
 # /login
 # POST: Logs in the user
@@ -185,6 +191,7 @@ def pass2fa(request, user_obj):
 		return JsonResponse({
 			"success": True,
 			"message": "Login completed",
+			"userId": user_obj.id,
 			"redirect": True,
 			"redirect_url": "home",
 			"context": {
@@ -212,6 +219,7 @@ def submit2fa(request):
 				"success": True,
 				"message": "2FA passed successfully",
 				"redirect": True,
+				"userId": user.id,
 				"redirect_url": "index",
 				"context": {
 					"jwt": generate_jwt(user)
@@ -399,6 +407,7 @@ def auth(request):
 				return JsonResponse({
 					"success": True,
 					"message": "Login completed",
+					"userId": user.id,
 					"redirect": True,
 					"redirect_url": "index",
 					"context": {
@@ -605,6 +614,22 @@ def profile(request):
 		})
 
 @jwt_required
+def profile_id(request):
+    user_id = request.GET.get("userId")
+    user = PongueUser.objects.get(id=user_id)
+    userProfile = UserProfile.toUseUserProfile(user)
+    return JsonResponse({
+        "success": True,
+        "context": {
+            "user": {
+                "display_name": userProfile.nick,
+                "puntos": userProfile.points,
+                "avatar_base64": userProfile.avatar
+            }
+        }
+    })
+
+@jwt_required
 def user_status(request):
 	user = get_user_from_jwt(request)
 	return JsonResponse(status=HTTPStatus.OK, data={
@@ -661,4 +686,24 @@ def change_status_to_online(request):
 	return JsonResponse({
 		"userId": user.id,
 		"status": user.status
+	})
+
+@jwt_required
+def user_history(request):
+	user_id = request.GET.get("userId")
+	user = PongueUser.objects.get(id=user_id)
+	gameResults: list[GameResults] = GameResults.objects.filter(player_1=user).values() | GameResults.objects.filter(player_2=user).values()
+	historyDtos = []
+	for gameResult in gameResults:
+		historyDto: UserHistoryDTO = UserHistoryDTO.toUserHistoryDTO(user, gameResult)
+		historyDtos.append({
+			"id": historyDto.id,
+			"idRival": historyDto.idRival,
+			"rival": historyDto.rival,
+			"isWin": historyDto.isWin,
+			"myScore": historyDto.myScore,
+			"myRivalScore": historyDto.myRivalScore
+		})
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"history": historyDtos
 	})

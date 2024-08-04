@@ -10,7 +10,7 @@ class Ball:
         self.totalRadius = 1.5
         self.yPos = self.__defaultYPos
         self.xPos = 0
-        self.speed = 1.2
+        self.speed = 2
         self.xDir = 0
         self.yDir = 0
         self.topCollision = False
@@ -19,7 +19,7 @@ class Ball:
     def resetPositions(self):
         self.yPos = self.__defaultYPos
         self.xPos = 0
-        self.speed = 1.2
+        self.speed = 2
         self.topCollision = False
         self.bottomCollision = False
 
@@ -35,7 +35,7 @@ class Player:
         self.xPos = self.__defaultXPos if not self.leftPlayer else self.__defaultXPos * -1
         self.impact = False
         self.playerId = playerId
-        self.SPEED = 0.7
+        self.SPEED = 1
         self.upMovement = False
         self.downMovement = False
     

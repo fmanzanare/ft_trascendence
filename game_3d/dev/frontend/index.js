@@ -4,9 +4,11 @@ import { navigateTo } from "./helpers/navigateto.js";
 // Global variables
 window.openChatWebSockets = {};
 
-window.apiUrl = 'http://localhost:8000/api/';
+window.apiUrl = 'https://localhost/api/';
 
-window.addEventListener("popstate", navigateTo("/home"));
+export const sockets = {};
+
+window.addEventListener("popstate", navigateTo(window.location.pathname));
 
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {

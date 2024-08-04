@@ -1,5 +1,5 @@
-import { navigateTo } from "./navigateto";
-import { changeUserName } from "./utils";
+import { navigateTo } from "./navigateto.js";
+import { changeUserName } from "./utils.js";
 
 function getBase64Image(img)
 {
@@ -44,7 +44,7 @@ function conectServerChange(img)
 	});
 }
 
-function twoFactorChecked()
+export function twoFactorChecked()
 {
 	const $token = sessionStorage.getItem('pongToken');
 	const $twoFactorUrl = apiUrl + 'enable2fa/';
@@ -81,7 +81,7 @@ function twoFactorChecked()
 	});
 }
 
-function twoFactorUnchecked()
+export function twoFactorUnchecked()
 {
 	const $token = sessionStorage.getItem('pongToken');
 	const $twoFactorUrl = apiUrl + 'disable2fa/';
@@ -116,42 +116,4 @@ function twoFactorUnchecked()
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});
-}
-
-export function changeDataUser()
-{
-	const $picture = document.getElementById("profilePictureChange").files[0];
-	let twoFactorControl;
-	let twoFactorCheck;
-	if (document.getElementById("checkChecked"))
-	{
-		twoFactorCheck = document.getElementById("checkChecked");
-		twoFactorControl = true;
-	}
-	else
-	{
-		twoFactorCheck = document.getElementById("checkUnchecked");
-		twoFactorControl = false;
-	}
-	if (twoFactorCheck.checked && !twoFactorControl)
-		twoFactorChecked();
-	else if (!twoFactorCheck.checked && twoFactorControl)
-		twoFactorUnchecked();
-	else
-	{
-		let base64;
-		if ($picture !== undefined) {
-			const $img = new Image();
-			$img.onload = function() {
-				base64 = getBase64Image($img);
-				conectServerChange(base64);
-			};
-			$img.src = URL.createObjectURL($picture);
-		}
-		else
-		{
-			base64 = "";
-			conectServerChange(base64);
-		}
-	}
 }

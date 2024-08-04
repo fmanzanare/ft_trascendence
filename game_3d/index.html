@@ -17,6 +17,13 @@
 </head>
 
 <body style="background-color: #44316d;">
+		<div class="position-absolute top-50 start-50 translate-middle">
+			<div id="loadingApp" class="d-none d-flex flex-column justify-content-center align-items-center h-100">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		</div>
 		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
@@ -52,7 +59,7 @@
 							<a class="nav-link dropdown-toggle small" role="button" data-bs-toggle="dropdown"
 							aria-expanded="false" id="userNameNavBar">User name</a>
 							<ul class="dropdown-menu" style="background-color: #5272c1;">
-								<li><a class="dropdown-item small fs-3" role="button" id="Profile" href="/profile" data-link
+								<li><a class="dropdown-item small fs-3" href="/profile" data-link
 									style="background-color: #5272c1;">Profile</a></li>
 								<li><a class="dropdown-item small fs-3" role="button" id="logOut"
 									style="background-color: #5272c1;">Logout</a></li>
@@ -100,6 +107,6 @@
 				class="visually-hidden">unread messages</span></span>
 	</button>
 	<div id="app" class="h-80"></div>
-	<script type="module" src="./dev/frontend/index.js"></script>
+	<script type="module" src="dev/frontend/index.js"></script>
 </body>
 
