@@ -370,12 +370,12 @@ def auth(request):
 				"client_id": os.environ.get("FT_CLIENT_ID"),
 				"client_secret": os.environ.get("FT_CLIENT_SECRET"),
 				"code": code,
-				"redirect_uri": "https://localhost:4000/api/auth",
+				"redirect_uri": "https://localhost:4000/home",
 			}
 			auth_response = requests.post("https://api.intra.42.fr/oauth/token", data=data)
 			print(f"API RESPONSE!!!! - {auth_response.json()}")
 			access_token = auth_response.json()["access_token"]
-			user_response = requests.get("https://api.intra.2.fr/v2/me", headers={"Authorization": f"Bearer {access_token}"})
+			user_response = requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": f"Bearer {access_token}"})
 			username = user_response.json()["login"]
 			display_name = user_response.json()["displayname"]
 

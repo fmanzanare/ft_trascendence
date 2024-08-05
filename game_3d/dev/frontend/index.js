@@ -14,7 +14,6 @@ window.onload = function() {
         sessionStorage.removeItem('winner')
         window.history.pushState(null, null, '/');
     }
-
 }
 
 document.addEventListener("DOMContentLoaded", () => {
