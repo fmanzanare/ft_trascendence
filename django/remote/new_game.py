@@ -8,8 +8,8 @@ class Game:
         self.table = Table()
         self.ball = Ball()
         self.limits = Limits(x=self.table.width / 2 + self.ball.totalRadius, y=self.table.height + self.ball.totalRadius)
-        self.pOne = Player(leftPlayer=True, playerId=pOneId)
-        self.pTwo = Player(leftPlayer=False, playerId=pTwoId)
+        self.pOne = Player(leftPlayer=True, playerId=pOneId, playerName='')
+        self.pTwo = Player(leftPlayer=False, playerId=pTwoId, playerName='')
         self.score = Score()
         self.sockets = {"player1": -1, "player2": -1}
         self.disFlags = {"player1": False, "player2": False}

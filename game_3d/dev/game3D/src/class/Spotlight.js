@@ -19,7 +19,6 @@ export class Spotlight {
 		this.spotLigth.angle = this.angle;
 		this.spotLigth.penumbra = this.penumbra;
 		this.spotLigth.intensity = this.intensity;
-		this.scene.add(this.spotLigth);
 	}
 
 	getSpotLight() {
@@ -33,5 +32,15 @@ export class Spotlight {
 
 	getTarget() {
 		return this.target
+	}
+
+	addSpotLightToScene() {
+		this.scene.add(this.spotLigth);
+	}
+
+	setNewPos(xPos, yPos, zPos) {
+		this.spotLigth.position.set(xPos, yPos, zPos)
+		this.spotLigth.penumbra = 1
+		this.spotLigth.intensity = 10000
 	}
 }
