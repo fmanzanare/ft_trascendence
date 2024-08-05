@@ -203,8 +203,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def manageSocketDisconnectionFromGame(self):
         disc = await self.findSocketInGames()
-        game: Game = await self.getGameFromRoom(disc["match"])
-        game.disFlags[disc["player"]] = True
+        if (disc != None):
+            game: Game = await self.getGameFromRoom(disc["match"])
+            game.disFlags[disc["player"]] = True
 
     async def makePlayerMove(self, data):
         target = data["userId"]

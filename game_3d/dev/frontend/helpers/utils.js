@@ -95,6 +95,8 @@ export function changeUserName()
 	const $token = sessionStorage.getItem('pongToken');
 	const $userName = document.getElementById("userNameNavBar");
 	const $profileUrl = apiUrl + 'profile/';
+	console.log("Estoy con un token: ", );
+	
 	return fetch($profileUrl, {
 		method: "GET",
 		headers: {

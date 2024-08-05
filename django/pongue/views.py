@@ -370,9 +370,10 @@ def auth(request):
 				"client_id": os.environ.get("FT_CLIENT_ID"),
 				"client_secret": os.environ.get("FT_CLIENT_SECRET"),
 				"code": code,
-				"redirect_uri": "https://127.0.0.1:8000/auth",
+				"redirect_uri": "https://localhost:4000/home",
 			}
 			auth_response = requests.post("https://api.intra.42.fr/oauth/token", data=data)
+			print(f"API RESPONSE!!!! - {auth_response.json()}")
 			access_token = auth_response.json()["access_token"]
 			user_response = requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": f"Bearer {access_token}"})
 			username = user_response.json()["login"]
@@ -396,7 +397,7 @@ def auth(request):
 			except PongueUser.DoesNotExist:
 				user = PongueUser.objects.create_user(username=username, display_name=display_name, from_42=True)
 				# auth_login(request, user)
-				user.status = "online"
+				user.status = PongueUser.Status.ONLINE
 				user.save()
 				# WAS: return redirect("index")
 				return JsonResponse({

@@ -56,3 +56,9 @@ export function showModal()
     $modal.setAttribute("aria-hidden", "false");
     $modal.setAttribute("role", "dialog");
 }
+
+export function closeTournament()
+{
+	changeState("Online");
+	navigateTo("tournaments")
+}

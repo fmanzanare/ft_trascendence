@@ -1,4 +1,5 @@
 import { router } from "./router.js";
+import { login42 } from "./login.js";
 import { checkJwt, changeUserName, changeState, getAlertMessage } from "./utils.js";
 
 function showLoading() {
@@ -60,6 +61,15 @@ async function  tokenFalse(url)
 	const $appElement = document.getElementById("app");
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
+
+	let pippo = new URL(window.location.href);
+	console.log(pippo);
+	let code = pippo.searchParams.get("code")
+	if (code) {
+		console.log("hola42");
+		login42(code);
+		return;
+	}
 
 	if (!$navElement.classList.contains('d-none'))
 	{
