@@ -377,7 +377,8 @@ def auth(request):
 			access_token = auth_response.json()["access_token"]
 			user_response = requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": f"Bearer {access_token}"})
 			username = user_response.json()["login"]
-			display_name = user_response.json()["displayname"]
+			display_name_all = user_response.json()["displayname"].split(" ", 1)
+			display_name = display_name_all[0]
 
 			try:
 				user = PongueUser.objects.get(username=username)
