@@ -395,7 +395,7 @@ def auth(request):
 						"context": {}
 					})
 			except PongueUser.DoesNotExist:
-				user = PongueUser.objects.create_user(username=display_name, display_name=username, from_42=True)
+				user = PongueUser.objects.create_user(username=username, display_name=display_name, from_42=True)
 				# auth_login(request, user)
 				user.status = PongueUser.Status.ONLINE
 				user.save()

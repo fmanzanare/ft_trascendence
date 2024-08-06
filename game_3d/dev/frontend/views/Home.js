@@ -24,11 +24,6 @@ export default class extends AbstractView {
                                             <p>Online</p>
                                         </div>
                                     </div>
-                                    <div class="fs-3 p-2 h-50 bd-highlight" role="button" style="width:25%;">
-                                        <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
-                                            <h1>AI</h1>
-                                        </div>
-                                    </div>
                                     <div class="fs-3 p-2 h-50 bd-highlight" id="playLocal" role="button" style="width:25%;">
                                         <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                             <h1>Local</h1>

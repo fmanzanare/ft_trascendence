@@ -63,7 +63,6 @@ async function  tokenFalse(url)
 	const $navElement = document.getElementById("nav");
 
 	let pippo = new URL(window.location.href);
-	console.log(pippo);
 	let code = pippo.searchParams.get("code")
 	if (code) {
 		console.log("hola42");
