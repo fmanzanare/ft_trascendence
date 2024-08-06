@@ -27,8 +27,8 @@ async function tokenTrue(url)
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
 	const $currentState = document.getElementById("userStatus").textContent;
-
-	if ($currentState != "Online") {
+	const $winner = sessionStorage.getItem('winner');
+	if ($currentState != "Online" && !$winner) {
         handleOfflineState(url);
         return;
     }
@@ -63,7 +63,6 @@ async function  tokenFalse(url)
 	const $navElement = document.getElementById("nav");
 
 	let pippo = new URL(window.location.href);
-	console.log(pippo);
 	let code = pippo.searchParams.get("code")
 	if (code) {
 		console.log("hola42");

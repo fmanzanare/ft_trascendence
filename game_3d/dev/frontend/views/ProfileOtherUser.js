@@ -41,6 +41,23 @@ export default class extends AbstractView {
 		try {
 			const data = await fetchProfileUser(this.userId);
 			const historyData = await fetchHistory(this.userId);
+			let status;
+			let statusColor;
+			console.log(data);
+			switch (data.context.user.status){
+				case "ON":
+					status = "online";
+					statusColor = "green";
+					break;
+				case "OFF":
+					status = "offline";
+					statusColor = "gray";
+					break;
+				default:
+					status = "In game";
+					statusColor = "red";
+					break;
+			}
 			let page =
 			`
 			<div class="container-fluid py-10 h-100">
@@ -72,6 +89,7 @@ export default class extends AbstractView {
 										</div>
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
 											<h2>${data.context.user.display_name}</h2>
+											<h2 style="color:${statusColor}">${status}</h2>
 											<p>${data.context.user.puntos}</p>
 										</div>
 									</div>

@@ -548,7 +548,7 @@ def profile(request):
 			"redirect_url": "",
 			"context": {},
 		})
-
+#Profile other user
 @jwt_required
 def profile_id(request):
     user_id = request.GET.get("userId")
@@ -560,7 +560,8 @@ def profile_id(request):
             "user": {
                 "display_name": userProfile.nick,
                 "puntos": userProfile.points,
-                "avatar_base64": userProfile.avatar
+                "avatar_base64": userProfile.avatar,
+				"status": userProfile.status
             }
         }
     })

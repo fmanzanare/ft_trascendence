@@ -87,7 +87,7 @@ export default class extends AbstractView {
 											`
 											</div>
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
-											<h2>${data.context.user.display_name}</h2>
+											<h2>${data.context.user.username}</h2>
 											<p>${data.context.points}</p>
 											<div class="form-check form-switch">
 			`
@@ -106,11 +106,11 @@ export default class extends AbstractView {
 			`
 											<button class="btn btn-primary mt-2" style="max-width: 200px" id="changeDataView">Change data</button>
 										</div>
-										<div class="d-none col-md-6" id="dataUserChange">
+										<div class="d-none col-md-6" id="dataUserChange" style="color:white">
 											<div class="form-outline form-white mb-4">
 												<input type="text" id="UserNameChange" placeholder="Username" class="inputSingUp form-control form-control-lg"/>
 											</div>
-											<div class="form-outline form-white mb-4">
+											<div class="form-outline form-white mb-4" style="color:white">
 												<label for="profilePictureChange">New profile picture:</label>
 												<input type="file" class="form-control-file" id="profilePictureChange" name="profilePicture">
 											</div>

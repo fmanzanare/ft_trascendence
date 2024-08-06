@@ -114,17 +114,19 @@ class UserHistoryDTO:
 
 @dataclass
 class UserProfile:
-    nick: str = ""
-    points: int = 0
-    avatar: str = ""
+	nick: str = ""
+	points: int = 0
+	avatar: str = ""
+	status: str = ""
 
-    @staticmethod
-    def toUseUserProfile(user: PongueUser):
-	    userProfile = UserProfile()
-	    userProfile.nick = user.display_name
-	    userProfile.points = user.points
-	    userProfile.avatar = user.avatar_base64
-	    return userProfile
+	@staticmethod
+	def toUseUserProfile(user: PongueUser):
+		userProfile = UserProfile()
+		userProfile.nick = user.username
+		userProfile.points = user.points
+		userProfile.avatar = user.avatar_base64
+		userProfile.status = user.status
+		return userProfile
 
 
 

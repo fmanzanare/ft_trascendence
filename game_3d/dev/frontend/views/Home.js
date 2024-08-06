@@ -24,11 +24,6 @@ export default class extends AbstractView {
                                             <p>Online</p>
                                         </div>
                                     </div>
-                                    <div class="fs-3 p-2 h-50 bd-highlight" role="button" style="width:25%;">
-                                        <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
-                                            <h1>AI</h1>
-                                        </div>
-                                    </div>
                                     <div class="fs-3 p-2 h-50 bd-highlight" id="playLocal" role="button" style="width:25%;">
                                         <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                             <h1>Local</h1>
@@ -61,15 +56,15 @@ export default class extends AbstractView {
                             </div>   
                         </div>
                     </div>
-                    <div id="instructionsTwoPlayer" class="d-flex d-none justify-content-around">
+                    <div id="instructionsTwoPlayer" class="d-flex d-none justify-content-around" style="margin-top:10px">
                         <div class="p-3 text-center" style="background-color: #5272c1;">
-                            <h2>Instructions player one</h2>
+                            <h4>Instructions player one</h4>
                             <div id="instructionsImg">
                                 <img src="./dev/frontend/assets/ws.webp" alt="instructions">
                             </div>   
                         </div>
                         <div class="p-3 text-center" style="background-color: #5272c1;">
-                            <h2>Instructions player two</h2>
+                            <h4>Instructions player two</h4>
                             <div id="instructionsImg">
                                 <img src="./dev/frontend/assets/sb.webp" alt="instructions">
                             </div>   
