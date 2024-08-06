@@ -70,7 +70,7 @@ export default class extends AbstractView {
 											page +=
 											`
 										</div>
-										<div class="col-md-6 d-flex flex-column" id="dataUserShow">
+										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
 											<h2>${data.context.user.display_name}</h2>
 											<p>${data.context.user.puntos}</p>
 										</div>
@@ -103,7 +103,7 @@ export default class extends AbstractView {
 					</div>
 				</div>
 			</div>
-			`;
+			`
 			return page;
         } catch (error) {
             console.error('Error:', error);

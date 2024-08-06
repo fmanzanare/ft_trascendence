@@ -40,6 +40,8 @@ export function openNewSocket(data) {
 			$loading.classList.add('d-none');
 			$divSelect.classList.add('d-none');
 			$instructionsOne.classList.add('d-none');
+			game.names.pOneName = data["pOneName"];
+			game.names.pTwoName = data["pTwoName"];
 			game.startRemoteGame()
 		}
 		if (data.gameData || data.scoreData) {
@@ -50,6 +52,7 @@ export function openNewSocket(data) {
 			changeState('Online');
 			navigateTo("home")
 			remoteSocket.close();
+			sockets.gameSocket = null;
 		}
 		if (data.gameEnd) {
 			if (data.winner == userId) {
@@ -60,6 +63,7 @@ export function openNewSocket(data) {
 			changeState('Online');
 			navigateTo("home")
 			remoteSocket.close();
+			sockets.gameSocket = null;
 			const $token = sessionStorage.getItem('pongToken')
 			fetch(`${apiUrl}online-status/`, {
 				method: "POST",
@@ -122,6 +126,11 @@ export function openNewSocketTournament(data) {
 
 	remoteSocket.onmessage = function(e) {
 		const data = JSON.parse(e.data)
+		const $blackDiv = document.getElementById("blackDivTournament");
+		const $titleDiv = document.getElementById("playerWinnerTournament");
+		const $textDiv = document.getElementById("textWinnerTournamet");
+		const $btnDiv = document.getElementById("btnCloseWinnerTournament");
+		const gameCanva = document.querySelector('canvas');
 
 		if (data.bracket) {
 			console.log(data);
@@ -136,7 +145,8 @@ export function openNewSocketTournament(data) {
 			console.log(data)
 			if (data.ids.gameReady && (data.ids.pOneId == userId || data.ids.pTwoId == userId)) {
 				$loading.classList.add('d-none');
-				$loading.setAttribute("id", "gameDiv")
+				game.names.pOneName = data.ids.pOneName;
+				game.names.pTwoName = data.ids.pTwoName;
 				game.startRemoteGame()
 			}
 		}
@@ -148,41 +158,61 @@ export function openNewSocketTournament(data) {
 		}
 
 		if (data.semifinalWinners) {
-			let gameCanva = document.querySelector('canvas');
-			gameCanva.remove();
-			if (userId == data.pOneId) {
+			$blackDiv.classList.add("d-none")
+			if (gameCanva)
+				gameCanva.remove();
+			if (userId == data.pOneId || userId == data.pTwoId) {
 				game = new GameRemote(remoteSocket, userId, true);
-				game.startRemoteGame()
-				matchId = 3
-			} else if (userId == data.pTwoId) {
-				game = new GameRemote(remoteSocket, userId, false);
+				game.names.pOneName = data["pOneName"];
+				game.names.pTwoName = data["pTwoName"];
 				game.startRemoteGame()
 				matchId = 3
 			} else {
+				$blackDiv.classList.remove("d-none")
+				$btnDiv.classList.remove("d-none")
+				$titleDiv.textContent = "YOU LOST"
+				$textDiv.textContent = "You can now leave the tournament"
 				console.log("Sorry, you lost");
 				remoteSocket.close();
+				sockets.tournamentSocket = null;
 			}
 		}
 
 		if (data.finalWinner) {
+			$blackDiv.classList.remove("d-none")
+			if (gameCanva)
+				gameCanva.remove();
 			if (userId == data.tournamentWinner) {
 				// TODO - Show a message on the screen.
+				$btnDiv.classList.remove("d-none")
+				$titleDiv.textContent = "YOU WIN"
+				$textDiv.textContent = "Congratulation! You won the tournament!"
 				console.log("Congratulations! You won the tournament");
 				remoteSocket.close()
+				sockets.tournamentSocket = null;
 			} else {
 				// TODO - Show a message on the screen.
+				$btnDiv.classList.remove("d-none")
+				$titleDiv.textContent = "YOU LOST"
+				$textDiv.textContent = "Ups! You lost the tournamnet"
 				console.log("Ups! You lost the tournamnet");
 				remoteSocket.close()
+				sockets.tournamentSocket = null;
 			}
 		}
 
 		if (data.disconnection) {
 			// TODO - Show a message on the screen.
+			gameCanva.remove();
+			$blackDiv.classList.remove("d-none")
+			$titleDiv.textContent = "YOU WIN"
+			$textDiv.textContent = "The other player has disconnected! Please wait for the next match."
 			console.log("the other player has disconnected");
 		}
 
 		if (data.cancelTournament) {
 			remoteSocket.close();
+			sockets.tournamentSocket = null;
 			changeState('Online');
 			navigateTo("home")
 		}

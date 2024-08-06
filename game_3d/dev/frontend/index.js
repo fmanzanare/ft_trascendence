@@ -7,6 +7,15 @@ export const sockets = {};
 
 window.addEventListener("popstate", navigateTo(window.location.pathname));
 
+window.onload = function() {
+    const $winner = sessionStorage.getItem('winner');
+	if ($winner)
+	{
+        sessionStorage.removeItem('winner')
+        window.history.pushState(null, null, '/');
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {

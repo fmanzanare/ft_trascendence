@@ -104,3 +104,31 @@ export function twoFactorPushButton()
 		console.error('Error en la solicitud:', error);
 	});
 }
+
+export function login42(code){
+    const $login42URL = `${apiUrl}auth/?code=${encodeURIComponent(code)}`
+    fetch($login42URL, {
+        method: 'GET',
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        if(data.context.jwt) {
+            console.log('Login successful');
+            sessionStorage.setItem('pongToken', data.context.jwt);
+            sessionStorage.setItem('userId', data.userId);
+			changeUserName();
+			navigateTo("/home");
+        } else if(data.detail) {
+            console.error('Error:', data.detail);
+        } else {
+            console.error('Token not found in response');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}

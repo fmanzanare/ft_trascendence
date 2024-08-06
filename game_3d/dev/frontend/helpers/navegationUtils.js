@@ -1,6 +1,6 @@
 import { navigateTo } from "./navigateto.js";
-import { changeState } from "./utils.js";
-import { sockets } from "../index.js"
+import { changeState, getAlertMessage } from "./utils.js";
+import { sockets } from "../index.js";
 import { localGame } from "./gameMode.js";
 
 export function cancelNav()
@@ -27,6 +27,7 @@ export function acceptNav()
 		// 	"userId": sessionStorage.getItem("userId")
 		// }))
 		sockets.gameSocket.close();
+		sockets.gameSocket = null;
 	}
 	if (sockets.tournamentSocket != null) {
 		console.log("closing tournament socket");
@@ -35,9 +36,29 @@ export function acceptNav()
 		// 	"userId": sessionStorage.getItem("userId")
 		// }))
 		sockets.tournamentSocket.close();
+		sockets.tournamentSocket = null;
 	}
 	if (localGame.local != null) {
 		localGame.local.stopGame();
 		localGame.local = null;
 	}
+}
+
+export function showModal()
+{
+	const $modal = document.getElementById("myModal");
+    const $textModalMessage = document.getElementById("textModal");
+    const $currentState = document.getElementById("userStatus").textContent;
+    $textModalMessage.textContent = getAlertMessage($currentState);
+    $modal.classList.add("show");
+    $modal.style.display = "block";
+    $modal.setAttribute("aria-modal", "true");
+    $modal.setAttribute("aria-hidden", "false");
+    $modal.setAttribute("role", "dialog");
+}
+
+export function closeTournament()
+{
+	changeState("Online");
+	navigateTo("tournaments")
 }

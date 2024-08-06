@@ -30,6 +30,7 @@ export class Game {
 
 	constructor() {
 		this.scene.background = new THREE.Color(0x1e1e1e);
+		this.spotLight.addSpotLightToScene();
 		this.spotLight.addTargetToSpotLight(this.table.getTable());
 
 		this.animation = new AnimationLoop(

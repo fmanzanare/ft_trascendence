@@ -1,4 +1,4 @@
-import {twoFactorChecked, twoFactorUnchecked} from "./changeDataUserUtils.js"
+import {twoFactorChecked, twoFactorUnchecked, conectServerChange} from "./changeDataUserUtils.js"
 
 export function logOut()
 {
@@ -19,7 +19,8 @@ export function logOut()
 	.then(data => {
 		console.log(data);
 		sessionStorage.clear();
-		window.location.reload()
+		window.history.pushState(null, null, '/');
+		window.location.reload();
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);

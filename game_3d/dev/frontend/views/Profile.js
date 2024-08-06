@@ -86,9 +86,9 @@ export default class extends AbstractView {
 											page +=
 											`
 											</div>
-										<div class="col-md-6 d-flex flex-column" id="dataUserShow">
+										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
 											<h2>${data.context.user.display_name}</h2>
-											<p>puntos</p>
+											<p>${data.context.points}</p>
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)

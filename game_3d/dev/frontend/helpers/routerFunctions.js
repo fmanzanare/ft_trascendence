@@ -4,7 +4,7 @@ import { logOut, generateQr, changeDataUser } from "./profile.js";
 import { loginPushButton, twoFactorPushButton } from "./login.js";
 import { addKeyPressListener, closeWinnerMsg } from "./utils.js";
 import { changeViewProfile, changeViewData, displayChat } from "./changeView.js";
-import { cancelNav, acceptNav } from "./navegationUtils.js";
+import { cancelNav, acceptNav, showModal, closeTournament } from "./navegationUtils.js";
 import { navigateTo } from "./navigateto.js";
 
 export async function routerFunctions(){
@@ -23,7 +23,10 @@ export async function routerFunctions(){
 		{ id: "changeDataView", event: 'click', handler: changeViewData },
 		{ id: "changeDataUser", event: 'click', handler: changeDataUser },
 		{ id: "cancelNav", event: 'click', handler: cancelNav },
-		{ id: "confirmNav", event: 'click', handler: acceptNav }
+		{ id: "confirmNav", event: 'click', handler: acceptNav },
+		{ id: "cancelTournament", event: 'click', handler:showModal},
+		{ id: "cancelGame", event: 'click', handler:showModal},
+		{ id: "btnCloseWinnerTournament", event: 'click', handler:closeTournament}
 	];
 	
 	buttons.forEach(button => {
@@ -52,10 +55,10 @@ export async function routerFunctions(){
 
 	window.goToUserProfile = (userId) => {
 		const $localId = sessionStorage.getItem("userId")
-		history.replaceState(null, '', '/');
-		if ($localId == userId){
-			navigateTo("profile")
-		} else
-			navigateTo("profile/" + userId)
+		if ($localId == userId) {
+			navigateTo("/profile");
+		} else {
+			navigateTo("/profile/" + userId);
+		}
 	};
 }
