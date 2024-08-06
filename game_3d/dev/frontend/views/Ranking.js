@@ -9,7 +9,7 @@ export default class extends AbstractView {
     async getHtml() {
         let rankig;
 	    const $token = sessionStorage.getItem('pongToken');
-        return fetch("http://localhost:8000/api/ranking/", {
+        return fetch("https://localhost:4000/api/ranking/", {
             method: "GET",
             headers: {
                 "Authorization": $token

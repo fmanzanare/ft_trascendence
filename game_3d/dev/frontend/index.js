@@ -2,7 +2,7 @@ import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
 import { putOffline} from "./helpers/logOut.js";
 
-window.apiUrl = 'https://localhost/api/';
+window.apiUrl = 'https://localhost:4000/api/';
 
 export const sockets = {};
 
