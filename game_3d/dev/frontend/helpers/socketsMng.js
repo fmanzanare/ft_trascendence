@@ -14,7 +14,7 @@ export function openNewSocket(data) {
 
 	const remoteSocket = new WebSocket(
 		'wss://'
-		+ 'localhost'
+		+ 'localhost:4000'
 		+ '/api/ws/remote/'
 		+ id
 		+ '/'
@@ -106,7 +106,7 @@ export function openNewSocketTournament(data) {
 
 	const remoteSocket = new WebSocket(
 		'wss://'
-		+ 'localhost'
+		+ 'localhost:4000'
 		+ '/api/ws/tournament/'
 		+ id
 		+ '/'
