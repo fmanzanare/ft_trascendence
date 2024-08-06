@@ -7,6 +7,7 @@ import { Score } from "../Score.js";
 import { Spotlight } from "../Spotlight.js"
 import { Camera } from '../Camera.js';
 import { GameSizes } from '../Sizes.js';
+import { PlayersNames } from '../PlayersNames.js';
 
 export class GameRemote {
 
@@ -16,11 +17,14 @@ export class GameRemote {
 	renderer = new Renderer(this.sizes);
 	camera = new Camera(this.sizes);
 	spotLight = new Spotlight(this.scene, this.sizes);
+    pOneNameSpotLight = new Spotlight(this.scene, this.sizes);
+    pTwoNameSpotLight = new Spotlight(this.scene, this.sizes);
 	table = new Table(this.scene, this.sizes);
 	playerOne = new Player(true, this.scene, this.sizes);
 	playerTwo = new Player(false, this.scene, this.sizes);
 	ball = new Ball(this.scene, this.sizes);
 	score = new Score(this.scene);
+    names = new PlayersNames(this.scene, '', '');
 	animation = null;
 
 	limits = {
@@ -35,7 +39,14 @@ export class GameRemote {
 
     constructor(socket, userId, host) {
 		this.scene.background = new THREE.Color(0x1e1e1e);
+        this.spotLight.addSpotLightToScene();
 		this.spotLight.addTargetToSpotLight(this.table.getTable());
+        this.pOneNameSpotLight.setNewPos(-90, 100, 20)
+        this.pOneNameSpotLight.addSpotLightToScene()
+		this.pOneNameSpotLight.addTargetToSpotLight(this.table.getTable());
+        this.pTwoNameSpotLight.setNewPos(90, 100, 20)
+        this.pTwoNameSpotLight.addSpotLightToScene()
+		this.pTwoNameSpotLight.addTargetToSpotLight(this.table.getTable());
         this.socket = socket;
         this.userId = userId;
         this.host = host;
@@ -80,6 +91,8 @@ export class GameRemote {
     }
 
     startRemoteGame() {
+        this.names.redrawNames();
+
         this.socket.send(JSON.stringify({
             "buildGame": true,
             "userId": this.userId,

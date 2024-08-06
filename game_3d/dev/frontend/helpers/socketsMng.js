@@ -14,7 +14,7 @@ export function openNewSocket(data) {
 
 	const remoteSocket = new WebSocket(
 		'wss://'
-		+ 'localhost:4000'
+		+ 'localhost'
 		+ '/api/ws/remote/'
 		+ id
 		+ '/'
@@ -40,6 +40,8 @@ export function openNewSocket(data) {
 			$loading.classList.add('d-none');
 			$divSelect.classList.add('d-none');
 			$instructionsOne.classList.add('d-none');
+			game.names.pOneName = data["pOneName"];
+			game.names.pTwoName = data["pTwoName"];
 			game.startRemoteGame()
 		}
 		if (data.gameData || data.scoreData) {
@@ -104,7 +106,7 @@ export function openNewSocketTournament(data) {
 
 	const remoteSocket = new WebSocket(
 		'wss://'
-		+ 'localhost:4000'
+		+ 'localhost'
 		+ '/api/ws/tournament/'
 		+ id
 		+ '/'
@@ -143,6 +145,8 @@ export function openNewSocketTournament(data) {
 			console.log(data)
 			if (data.ids.gameReady && (data.ids.pOneId == userId || data.ids.pTwoId == userId)) {
 				$loading.classList.add('d-none');
+				game.names.pOneName = data.ids.pOneName;
+				game.names.pTwoName = data.ids.pTwoName;
 				game.startRemoteGame()
 			}
 		}
@@ -159,6 +163,8 @@ export function openNewSocketTournament(data) {
 				gameCanva.remove();
 			if (userId == data.pOneId || userId == data.pTwoId) {
 				game = new GameRemote(remoteSocket, userId, true);
+				game.names.pOneName = data["pOneName"];
+				game.names.pTwoName = data["pTwoName"];
 				game.startRemoteGame()
 				matchId = 3
 			} else {

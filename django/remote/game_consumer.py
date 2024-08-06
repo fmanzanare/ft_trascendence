@@ -39,16 +39,23 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
 
         if ("register" in data.keys()):
+            player: PongueUser = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
             if (self.rooms[self.room_group_name]["players"]["player1"] == -1):
-                self.rooms[self.room_group_name]["players"]["player1"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+                self.rooms[self.room_group_name]["players"]["player1"] = player
                 self.game.pOne.playerId = data["userId"]
+                self.game.pOne.playerName = player.display_name
             else:
-                self.rooms[self.room_group_name]["players"]["player2"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+                self.rooms[self.room_group_name]["players"]["player2"] = player 
                 self.game.pTwo.playerId = data["userId"]
+                self.game.pTwo.playerName = player.display_name
                 await self.channel_layer.group_send(
                     self.room_group_name, {
                         "type": "game.ready",
-                        "gameData": True
+                        "gameData": True,
+                        "pOneId": self.game.pOne.playerId,
+                        "pOneName": self.game.pOne.playerName,
+                        "pTwoId": self.game.pTwo.playerId,
+                        "pTwoName": self.game.pTwo.playerName
                     }
 			    )
             self.game_task = asyncio.create_task(self.game.runGame())
@@ -71,6 +78,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             "gameReady": True,
             "gameData": True,
+            "pOneId": event["pOneId"],
+            "pOneName": event["pOneName"],
+            "pTwoId": event["pTwoId"],
+            "pTwoName": event["pTwoName"],
             "ballPosX": self.game.ball.xPos,
             "ballPosY": self.game.ball.yPos,
             "pOnePosX": self.game.pOne.xPos,

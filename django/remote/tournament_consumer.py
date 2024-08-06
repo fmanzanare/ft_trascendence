@@ -46,14 +46,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
 
         if ("register" in data.keys()):
+            player: PongueUser = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
             if (self.rooms[self.room_group_name]["players"]["player1"] == -1):
-                self.rooms[self.room_group_name]["players"]["player1"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+                self.rooms[self.room_group_name]["players"]["player1"] = player
             elif (self.rooms[self.room_group_name]["players"]["player2"] == -1):
-                self.rooms[self.room_group_name]["players"]["player2"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+                self.rooms[self.room_group_name]["players"]["player2"] = player
             elif (self.rooms[self.room_group_name]["players"]["player3"] == -1):
-                self.rooms[self.room_group_name]["players"]["player3"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+                self.rooms[self.room_group_name]["players"]["player3"] = player
             else:
-                self.rooms[self.room_group_name]["players"]["player4"] = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+                self.rooms[self.room_group_name]["players"]["player4"] = player
                 await self.changeUsersStatusToInTournament("player1")
                 await self.changeUsersStatusToInTournament("player2")
                 await self.changeUsersStatusToInTournament("player3")
@@ -113,14 +114,16 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def game_ready(self, event):
         await self.send(text_data=json.dumps({
-            "ids": event
+            "ids": event,
         }))
     
     async def semifinal_winners(self, event):
         await self.send(text_data=json.dumps({
             "semifinalWinners": True,
             "pOneId": event["pOneId"],
+            "pOneName": event["pOneName"],
             "pTwoId": event["pTwoId"],
+            "pTwoName": event["pTwoName"],
             "matchId": event["matchId"]
         }))
     
@@ -201,6 +204,21 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         elif ("player4" in self.rooms[self.room_group_name]["sockets"] and self.rooms[self.room_group_name]["sockets"]["player4"] == self):
             return "player4"
 
+    async def getPlayerWithId(self, id):
+        player1: PongueUser = await self.getPlayerFromRoom("player1")
+        player2: PongueUser = await self.getPlayerFromRoom("player2")
+        player3: PongueUser = await self.getPlayerFromRoom("player3")
+        player4: PongueUser = await self.getPlayerFromRoom("player4")
+
+        if (player1 != "" and player1.id == id):
+            return player1
+        elif (player2 != "" and player2.id == id):
+            return player2
+        elif (player3 != "" and player3.id == id):
+            return player3
+        elif (player4 != "" and player4.id == id):
+            return player4
+
     async def manageSocketDisconnectionFromGame(self):
         disc = await self.findSocketInGames()
         if (disc != None):
@@ -267,11 +285,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
         # Building games 1 and 2
         game1: Game = Game(player1.id, player2.id)
+        game1.pOne.playerName = player1.nickname
+        game1.pTwo.playerName = player2.nickname
         game1.sockets = {"player1": player1Socket, "player2": player2Socket}
         game1.matchId = 1
         self.rooms[self.room_group_name]["games"]["match1"] = game1
 
         game2: Game = Game(player3.id, player4.id)
+        game2.pOne.playerName = player3.nickname
+        game2.pTwo.playerName = player4.nickname
         game2.sockets = {"player1": player3Socket, "player2": player4Socket}
         game2.matchId = 2
         self.rooms[self.room_group_name]["games"]["match2"] = game2
@@ -282,7 +304,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				"type": "game.ready",
 				"gameReady": True,
 				"pOneId": player1.id,
+				"pOneName": player1.nickname,
 				"pTwoId": player2.id,
+				"pTwoName": player2.nickname,
 				"matchId": game1.matchId
 			}
 		)
@@ -292,7 +316,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 				"type": "game.ready",
 				"gameReady": True,
 				"pOneId": player3.id,
+				"pOneName": player3.nickname,
 				"pTwoId": player4.id,
+				"pTwoName": player4.nickname,
 				"matchId": game2.matchId
 			}
 		)
@@ -315,6 +341,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
         game3: Game = Game(game1.winner, game2.winner)
         semifinalSockets = await self.getSemifinalWinnerSockets(game1.winner, game2.winner)
+        winner1: PongueUser = await self.getPlayerWithId(game1.winner)
+        winner2: PongueUser = await self.getPlayerWithId(game2.winner)
+        game3.pTwo.playerName = winner1.nickname
+        game3.pTwo.playerName = winner2.nickname
         game3.sockets["player1"] = semifinalSockets["winner1"]
         game3.sockets["player2"] = semifinalSockets["winner2"]
         game3.matchId = 3
@@ -325,7 +355,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 "type": "semifinal.winners",
                 "semifinalWinners": True,
                 "pOneId": game1.winner,
+                "pOneName": winner1.nickname,
                 "pTwoId": game2.winner,
+                "pTwoName": winner2.nickname,
                 "matchId": game3.matchId
             }
         )

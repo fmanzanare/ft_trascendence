@@ -27,7 +27,7 @@ class Player:
     __defaultYPos = ((Sizes.height / 2) * 0.12) / 2
     __defaultXPos = (((Sizes.width / 2) * 0.11) / 2) - 5
 
-    def __init__(self, leftPlayer, playerId):
+    def __init__(self, leftPlayer, playerId, playerName):
         self.radius = 1.2
         self.length = ((Sizes.height / 2) * 0.12) * 0.2
         self.leftPlayer = leftPlayer
@@ -38,6 +38,7 @@ class Player:
         self.SPEED = 1
         self.upMovement = False
         self.downMovement = False
+        self.playerName = playerName
     
     def resetPositions(self):
         self.yPos = self.__defaultYPos
