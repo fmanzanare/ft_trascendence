@@ -377,8 +377,7 @@ def auth(request):
 			access_token = auth_response.json()["access_token"]
 			user_response = requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": f"Bearer {access_token}"})
 			username = user_response.json()["login"]
-			display_name_all = user_response.json()["displayname"].split(" ", 1)
-			display_name = display_name_all[0]
+			display_name = user_response.json()["displayname"]
 
 			try:
 				user = PongueUser.objects.get(username=username)
@@ -396,7 +395,7 @@ def auth(request):
 						"context": {}
 					})
 			except PongueUser.DoesNotExist:
-				user = PongueUser.objects.create_user(username=username, display_name=display_name, from_42=True)
+				user = PongueUser.objects.create_user(username=display_name, display_name=username, from_42=True)
 				# auth_login(request, user)
 				user.status = PongueUser.Status.ONLINE
 				user.save()

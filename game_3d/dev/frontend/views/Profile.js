@@ -87,7 +87,7 @@ export default class extends AbstractView {
 											`
 											</div>
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
-											<h2>${data.context.user.display_name}</h2>
+											<h2>${data.context.user.username}</h2>
 											<p>${data.context.points}</p>
 											<div class="form-check form-switch">
 			`
