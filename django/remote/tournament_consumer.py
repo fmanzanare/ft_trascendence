@@ -121,7 +121,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             "semifinalWinners": True,
             "pOneId": event["pOneId"],
+            "pOneName": event["pOneName"],
             "pTwoId": event["pTwoId"],
+            "pTwoName": event["pTwoName"],
             "matchId": event["matchId"]
         }))
     
@@ -208,13 +210,13 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         player3: PongueUser = await self.getPlayerFromRoom("player3")
         player4: PongueUser = await self.getPlayerFromRoom("player4")
 
-        if (player1.id == id):
+        if (player1 != "" and player1.id == id):
             return player1
-        elif (player2.id == id):
+        elif (player2 != "" and player2.id == id):
             return player2
-        elif (player3.id == id):
+        elif (player3 != "" and player3.id == id):
             return player3
-        elif (player4.id == id):
+        elif (player4 != "" and player4.id == id):
             return player4
 
     async def manageSocketDisconnectionFromGame(self):

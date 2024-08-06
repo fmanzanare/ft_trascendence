@@ -592,27 +592,47 @@ def ranking(request):
 		"users": userDtos
 	})
 
+def check_available_nickname(nickname, target: PongueUser):
+	flag = True
+	users: list[PongueUser] = PongueUser.objects.all()
+	for user in users:
+		if (target.id == user.id):
+			continue
+		elif (nickname == user.nickname):
+			flag = False
+			break
+	
+	return flag
+
+
 @jwt_required
 def nickname(request):
+	user: PongueUser = get_user_from_jwt(request)
 	if request.method == "GET":
-		user = get_user_from_jwt(request)
 		return JsonResponse({
 			"userId": user.id,
 			"nickname": user.nickname
 		})
 	elif request.method == "POST":
-		user = get_user_from_jwt(request)
 		if (request.POST.get("nickname") != ""):
-			user.nickname = request.POST.get("nickname")
+			nickname = request.POST.get("nickname")
+			if (not check_available_nickname(nickname=nickname, target=user)):
+				return JsonResponse(status=HTTPStatus.CONFLICT, data={
+					"error": "Nickname is already in use"
+				})
+			else:
+				print(nickname)
+				print(user)
+				user.nickname = nickname
+				user.save()
+				return JsonResponse({
+					"userId": user.id,
+					"nickname": user.nickname
+				})
 		else:
-			return JsonResponse(HTTPStatus.BAD_REQUEST, {
+			return JsonResponse(status=HTTPStatus.CONFLICT, data={
 				"error": "Nickname field must be filled"
 			})
-		user.save()
-		return JsonResponse({
-			"userId": user.id,
-			"nickname": user.nickname
-		})
 
 @jwt_required
 def change_status_to_online(request):

@@ -59,3 +59,25 @@ Juego contra IA.
 # Pruebas:
 - Header grande por CURL.
 - Bombing PNG.
+
+
+# Modulos
+- framework backend - 1
+- front-end framework or toolkit 0.5
+- use database for backend - 0.5
+- Standard user management - 1 (not done completely)
+- Implementing a remote authentication (42API) - 1
+- Remote players - 1
+- Live chat - 1 (not done completely)
+- 2FA and JWT - 1
+- Use of advanced 3D Techniques - 1
+- Server-side PONG - 1 (not done completely)
+
+
+- AI (not done) - 1
+
+
+# Pendinetes:
+- Display name and Nickname < 10 caracteres.
+- Nickname diferentes.
+- Online status (Antonio).
