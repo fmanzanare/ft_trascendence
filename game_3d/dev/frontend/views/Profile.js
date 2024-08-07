@@ -56,6 +56,10 @@ export default class extends AbstractView {
             const twoFactor = await fetchTwoFactor();
             const historyData = await fetchHistory();
             const data = await fetchProfile();
+			if (!sessionStorage.getItem('user')){
+				console.log("cambiando el user de session storage");
+				sessionStorage.setItem('user', data.context.user.username);
+			}
 
 			let page =
 			`
