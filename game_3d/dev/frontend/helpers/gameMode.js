@@ -1,4 +1,3 @@
-import { runGame } from "../../game3D/src/old_version/scripts.js";
 import { Game } from "../../game3D/src/class/Game.js";
 import { openNewSocket, openNewSocketTournament } from "./socketsMng.js";
 import { changeState } from "./utils.js";
@@ -33,6 +32,8 @@ export function playOnline()
 		.then(data => {
 			openNewSocket(data)
 		})
+		const $loading = document.getElementById("loading");
+		$loading.classList.remove('d-none');
 	}
 	else
 	{
@@ -45,46 +46,59 @@ export function playOnline()
 			$errorMessage.textContent = "campo obligatorio";
 			return ;
 		}
-		changeState("Searching tournament")
 		const $token = sessionStorage.getItem('pongToken');
+		const $tournamentUrl = apiUrl + 'nickname/';
 		const $nickNameData = new URLSearchParams();
 		$nickNameData.append('nickname', $nickName.value);
-		fetch(`${apiUrl}nickname/`, {
+		fetch($tournamentUrl, {
 			method: "POST",
 			headers: {
 				"Authorization": $token
 			},
 			body: $nickNameData
 		})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Hubo un problema al realizar la solicitud.');
-			}
-			return response.json();
-		})
-		.then(data => {
-			console.log(data);
-		})
-
-		$joinTournament.classList.add('d-none');
-		fetch(`${apiUrl}remote/find-tournament`, {
-			method: "GET",
-			headers: {
-				"Authorization": $token
-			}
-		})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Hubo un problema al realizar la solicitud.');
-			}
-			return response.json();
-		})
-		.then(data => {
-			openNewSocketTournament(data)
-		})
+			.then((response) => {
+				if (!response.ok) {
+					if (response.status === 409) {
+						return response.json().then((errorData) => {
+							return Promise.reject(errorData.error);
+						});
+					} else {
+						throw new Error(`Error en la solicitud: ${response.status}`);
+					}
+				}
+				return response.json();
+			})
+			.then((data) => {
+				if (data) {
+					changeState("Searching tournament")
+					$joinTournament.classList.add('d-none');
+					return fetch(`${apiUrl}remote/find-tournament`, {
+						method: "GET",
+						headers: {
+							"Authorization": $token
+						}
+					});
+				} else {
+					return Promise.reject(errorData.error);
+				}
+			})
+			.then((tournamentResponse) => {
+				if (!tournamentResponse.ok) {
+					throw new Error('Hubo un problema al realizar la solicitud.');
+				}
+		
+				return tournamentResponse.json();
+			})
+			.then((tournamentData) => {
+				openNewSocketTournament(tournamentData);
+				const $loading = document.getElementById("loading");
+				$loading.classList.remove('d-none');
+			})
+			.catch((error) => {
+				$errorMessage.textContent = error || "unknow error.";
+			});
 	}
-	const $loading = document.getElementById("loading");
-	$loading.classList.remove('d-none');
 }
 
 export function playLocal()

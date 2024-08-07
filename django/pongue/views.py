@@ -619,6 +619,7 @@ def nickname(request):
 			nickname = request.POST.get("nickname")
 			if (not check_available_nickname(nickname=nickname, target=user)):
 				return JsonResponse(status=HTTPStatus.CONFLICT, data={
+					"success": False,
 					"error": "Nickname is already in use"
 				})
 			else:
@@ -632,6 +633,7 @@ def nickname(request):
 				})
 		else:
 			return JsonResponse(status=HTTPStatus.CONFLICT, data={
+				"success": False,
 				"error": "Nickname field must be filled"
 			})
 
