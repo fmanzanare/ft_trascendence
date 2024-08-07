@@ -1,4 +1,4 @@
-import { handleChatInput } from "./chat";
+import { handleChatInput } from "./chat.js";
 
 
 export function displayChat()

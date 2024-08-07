@@ -2,7 +2,7 @@ import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
 
 // Global variables
-window.openChatWebSockets = {};
+export const openChatWebSockets = {};
 
 window.apiUrl = 'https://localhost/api/';
 

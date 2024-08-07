@@ -29,14 +29,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			"senderId" in text_data_json.keys():
 
 			message = text_data_json["message"]
-			chatId = await sync_to_async(PlayerFriend.objects.get)(id=text_data_json["chatId"])
-			senderId = await sync_to_async(PongueUser.objects.get)(id=text_data_json["senderId"])
+			chatId: PlayerFriend = await sync_to_async(PlayerFriend.objects.get)(id=text_data_json["chatId"])
+			senderId: PongueUser = await sync_to_async(PongueUser.objects.get)(id=text_data_json["senderId"])
 
 			# Save message to database
 			await sync_to_async(ChatMessage.createMessage)(chatId.id, senderId, message)
 
 			await self.channel_layer.group_send(
-				self.room_group_name, {"type": "chat.message", "message": message}
+				self.room_group_name, {"type": "chat.message", "message": message, "senderUsername": senderId.username}
 			)
 			return 
 
@@ -46,4 +46,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			message = event["message"]
 
 			# Send message to WebSocket
-			await self.send(text_data=json.dumps({"message": message}))
+			await self.send(text_data=json.dumps({"message": message, "senderUsername": event["senderUsername"]}))

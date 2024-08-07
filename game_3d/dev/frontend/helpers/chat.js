@@ -1,3 +1,5 @@
+import { openChatWebSockets } from "../index.js";
+
 /**
  * Shows the current chat friend's name in the upper chat bar and clears the chat log.
  * @function showCurrentChatFriendName
@@ -17,7 +19,7 @@ function showCurrentChatFriendName(friendName) {
 
 	let currentChatFriend = document.createElement('p');
 	currentChatFriend.innerText = friendName;
-	currentChatFriend.setAttribute("id", "friendName");
+	currentChatFriend.setAttribute("id", "friendNameUpperBar");
 	currentChatFriend.setAttribute("data-username", friendName);
 	friendBox.appendChild(currentChatFriend);
 }
@@ -34,66 +36,65 @@ export function handleChatInput(friendship, friendName) {
 
 	showCurrentChatFriendName(friendName);
 
-	window.openChatWebSockets[friendship.friendshipId]?.chatMessages?.forEach(element => {
+	openChatWebSockets[friendship.friendshipId]?.chatMessages?.forEach(element => {
 		document.querySelector('#chat-log').value += (element.message);
 		console.log(element.message)
 	});
 	// Create new WebSocket and set its name
-	if (!window.openChatWebSockets[friendship.friendshipId]?.chatSocket) {
+	if (!openChatWebSockets[friendship.friendshipId]?.chatSocket) {
 		console.log(sessionStorage.getItem('userName'), 'Creating new WebSocket: ', friendship.friendshipId);
 		const chatSocket = new WebSocket(
-			'ws://' + 'localhost:8000' + '/ws/chat/' + friendship.friendshipId + '/'
+			'wss://' + 'localhost' + '/api/ws/chat/' + friendship.friendshipId + '/'
 		);
 
 		// Saving messages in global variable
-		window.openChatWebSockets[friendship.friendshipId] = {};
-		window.openChatWebSockets[friendship.friendshipId].chatSocket = chatSocket;
-		window.openChatWebSockets[friendship.friendshipId].chatMessages = [];
-
+		openChatWebSockets[friendship.friendshipId] = {};
+		openChatWebSockets[friendship.friendshipId].chatSocket = chatSocket;
+		openChatWebSockets[friendship.friendshipId].chatMessages = [];
+		
 		// Assign event handlers here to ensure they are applied to the new WebSocket
-		chatSocket.onmessage = function (e) {
+		openChatWebSockets[friendship.friendshipId].chatSocket.onmessage = function (e) {
 			const data = JSON.parse(e.data);
-			document.querySelector('#chat-log').value += (data.message);
-			window.openChatWebSockets[friendship.friendshipId].chatMessages.push({
+			console.log("senderUsername: ", data.senderUsername, "friendName: ", document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
+			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
+				document.querySelector('#chat-log').value += data.message;
+			}
+			openChatWebSockets[friendship.friendshipId].chatMessages.push({
 				senderId: sessionStorage.getItem('userId'),
 				isRead: false,
 				message: data.message
 				});
 		}
-
-		chatSocket.onclose = function (e) {
+		openChatWebSockets[friendship.friendshipId].chatSocket.onclose = function (e) {
 			console.error('chat socket closed unexpectedly');
+		};
+	
+		console.log(openChatWebSockets[friendship.friendshipId]);
+		// Focus on the chatInput
+		document.querySelector('#chatInput').focus();
+		document.querySelector('#chatInput').onkeyup = function (e) {
+			if (document.querySelector('#chatInput').value.length > 0 && e.key === 'Enter') {
+				const userName = sessionStorage.getItem('userName');
+				const userId = sessionStorage.getItem('userId');
+				console.log(userName);
+				const messageInputDom = document.querySelector('#chatInput');
+				console.log("messageInput length:", messageInputDom.value.length);
+				const message = userName + ': ' + messageInputDom.value + '\n';
+	
+				console.log(friendship.friendUserId)
+				// Recuperar el WebSocket correcto del mapa antes de enviar el mensaje
+				const chatSocket = openChatWebSockets[friendship.friendshipId].chatSocket;
+				if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+					chatSocket.send(JSON.stringify({
+						message: message,
+						chatId: friendship.friendshipId,
+						senderId: userId,
+					}));
+					messageInputDom.value = ''; // Clean input before send
+				}
+				document.querySelector('#chat-log').value += message;
+			}
 		};
 	}
 
-	console.log(window.openChatWebSockets[friendship.friendshipId]);
-	// Focus on the chatInput
-	document.querySelector('#chatInput').focus();
-	document.querySelector('#chatInput').onkeyup = function (e) {
-		if (document.querySelector('#chatInput').value.length > 0 && e.key === 'Enter') {
-			const userName = sessionStorage.getItem('userName');
-			const userId = sessionStorage.getItem('userId');
-			console.log(userName);
-			const messageInputDom = document.querySelector('#chatInput');
-			console.log("messageInput length:", messageInputDom.value.length);
-			const message = userName + ': ' + messageInputDom.value + '\n';
-
-			console.log(friendship.friendUserId)
-			// Recuperar el WebSocket correcto del mapa antes de enviar el mensaje
-			const chatSocket = window.openChatWebSockets[friendship.friendshipId].chatSocket;
-			if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-				chatSocket.send(JSON.stringify({
-					message: message,
-					chatId: friendship.friendshipId,
-					senderId: userId,
-				}));
-				messageInputDom.value = ''; // Clean input before send
-			}
-			window.openChatWebSockets[friendship.friendshipId].chatMessages.push({
-				senderId: userId,
-				isRead: false,
-				message: message
-				});
-		}
-	};
 }

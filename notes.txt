@@ -32,6 +32,16 @@ Juego contra IA.
 - Comprobar cómo queda el estado del jugador tras cerrar el navegador - En principio NO PASA NADA!!!!
 - Comprobar límites / bordes de impacto de la pelota en palas.
 
+# Pendientes vde-prad:
+- Implementar el botón de bloquear amigo
+- Implementar poder ir al perfil de un amigo
+- Que sea posible recibir o mandar una invitación para jugar con un amigo
+- Recuperar del modelo todos los mensajes con los diferentes amigos cuando se hace
+  login o se recarga la página
+- Error: si chateo con otro amigo, los mensajes de otros amigos que recibo se imprimen en el chat-log
+  del amigo con el que estoy hablando actualmente
+
+
 # Pendientes:
 - Gestión de interfaz para desconexiones (Popup cancelación torneo) - socketMng.js - openNewSocketTournament()
 - Popup de desconexión al cancelar la búsqueda de un torneo
