@@ -96,7 +96,6 @@ export function twoFactorPushButton()
 		if (data.success) {
 			sessionStorage.setItem('pongToken', data.context.jwt);
 			sessionStorage.setItem('userId', data.userId);
-			changeUserName();
 			navigateTo("/home");
 		}
 	})
@@ -118,16 +117,19 @@ export function login42(code){
     })
     .then(data => {
         console.log('Success:', data);
-        if(data.context.jwt) {
-            console.log('Login successful');
-            sessionStorage.setItem('pongToken', data.context.jwt);
-            sessionStorage.setItem('userId', data.userId);
-			changeUserName();
-			navigateTo("/home");
-        } else if(data.detail) {
-            console.error('Error:', data.detail);
+        if(data.success) {
+            if (data.redirect_url === "pass2fa"){
+                sessionStorage.setItem('user', data.context.user);
+                navigateTo("/twofactor");
+            } else {
+                console.log('Login successful');
+                sessionStorage.setItem('pongToken', data.context.jwt);
+                sessionStorage.setItem('userId', data.userId);
+			    changeUserName();
+                navigateTo("/home");
+            }
         } else {
-            console.error('Token not found in response');
+            console.error('Error');
         }
     })
     .catch(error => console.error('Error:', error));

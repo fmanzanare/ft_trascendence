@@ -65,9 +65,12 @@ async function  tokenFalse(url)
 	let pippo = new URL(window.location.href);
 	let code = pippo.searchParams.get("code")
 	if (code) {
-		console.log("hola42");
-		login42(code);
-		return;
+		const $user = sessionStorage.getItem('user');
+		if (!$user){
+			console.log("hola42 - Inicio de sesion");
+			login42(code);
+			return;
+		}
 	}
 
 	if (!$navElement.classList.contains('d-none'))
