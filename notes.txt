@@ -39,7 +39,7 @@ Juego contra IA.
 - Recuperar del modelo todos los mensajes con los diferentes amigos cuando se hace
   login o se recarga la página
 - Error: si chateo con otro amigo, los mensajes de otros amigos que recibo se imprimen en el chat-log
-  del amigo con el que estoy hablando actualmente
+  del amigo con el que estoy hablando actualmente (Hecho)
 
 
 # Pendientes:

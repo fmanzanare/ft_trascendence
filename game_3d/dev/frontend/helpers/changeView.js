@@ -149,24 +149,6 @@ function printFriends(friendList) {
 	let plusBtnNode;
 	let lessBtnNode;
 	
-	// const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
-	// existingNames.forEach(name => {
-	// 	const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
-	// 	if (nodeToRemove) {
-	// 		console.log("Removing node: ", nodeToRemove);
-	// 		nodeToRemove.remove();
-	// 	}
-	// 	const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
-	// 	if (plusBtnToRemove) {
-	// 		console.log("Removing plus button: ", plusBtnToRemove);
-	// 		plusBtnToRemove.remove();
-	// 	}
-	// 	const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
-	// 	if (lessBtnToRemove) {
-	// 		console.log("Removing less button: ", lessBtnToRemove);
-	// 		lessBtnToRemove.remove();
-	// 	}
-	// });
 	deleteFriendshipRequestButtons(friendList);
 	for (let i = 0; i < friendList.length; i++) {
 		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {

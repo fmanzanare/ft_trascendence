@@ -24,6 +24,50 @@ function showCurrentChatFriendName(friendName) {
 	friendBox.appendChild(currentChatFriend);
 }
 
+// Retrieves the list of friends from the server and prints them.
+function getChatMessages(friendshipId) {
+
+	const $token = sessionStorage.getItem('pongToken');
+	const $chatMessagesUrl = `${apiUrl}chatMessages/${friendshipId}/`;
+
+	fetch($chatMessagesUrl, {
+		method: 'GET',
+		headers: {
+			"Authorization": $token,
+		}
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`Error en la solicitud: ${response.status}`);
+		}
+		return response.json()
+	})
+	.then(data => {
+		// Asignar los mensajes recibidos al array global
+		if (Array.isArray(data.messages)) {
+			openChatWebSockets[friendshipId].messages = data.messages;
+		} else {
+			console.error('Error: data.messages no es un array');
+		}
+
+		// Actualizar el chat-log con los mensajes recibidos
+		const chatLog = document.querySelector('#chat-log');
+		chatLog.innerHTML = ''; // Limpiar el chat-log antes de agregar los nuevos mensajes
+		openChatWebSockets[friendshipId].messages.forEach(message => {
+			chatLog.value += message.message;
+			// const newMessageElement = document.createElement('div');
+			// newMessageElement.textContent = message;
+			// chatLog.appendChild(newMessageElement);
+		});
+
+		console.log("muestro openChatWebSockets.messages");
+		console.log(openChatWebSockets[friendshipId].messages);
+	})
+	.catch(error => {
+		console.error('Error en la solicitud:', error);
+	});
+}
+
 /**
  * Handles the chat input functionality.
  * It shows the current chat friend's name in the upper chat bar and clears the chat log.
@@ -55,7 +99,6 @@ export function handleChatInput(friendship, friendName) {
 		// Assign event handlers here to ensure they are applied to the new WebSocket
 		openChatWebSockets[friendship.friendshipId].chatSocket.onmessage = function (e) {
 			const data = JSON.parse(e.data);
-			console.log("senderUsername: ", data.senderUsername, "friendName: ", document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
 			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
 				document.querySelector('#chat-log').value += data.message;
 			}
@@ -64,11 +107,15 @@ export function handleChatInput(friendship, friendName) {
 				isRead: false,
 				message: data.message
 				});
-		}
+		};
+
 		openChatWebSockets[friendship.friendshipId].chatSocket.onclose = function (e) {
 			console.error('chat socket closed unexpectedly');
 		};
-	
+
+		openChatWebSockets[friendship.friendshipId].chatSocket.onopen = function (e) {
+			getChatMessages(friendship.friendshipId);
+		};
 		console.log(openChatWebSockets[friendship.friendshipId]);
 		// Focus on the chatInput
 		document.querySelector('#chatInput').focus();
@@ -95,6 +142,7 @@ export function handleChatInput(friendship, friendName) {
 				document.querySelector('#chat-log').value += message;
 			}
 		};
+		console.log(openChatWebSockets);
 	}
 
 }

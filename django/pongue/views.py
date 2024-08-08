@@ -11,6 +11,7 @@ import requests
 import os
 from django.db.models import Q
 from .models import GameResults, PongueUser, PlayerFriend, RankingUserDTO, UserHistoryDTO, UserProfile
+from chat.models import ChatMessage
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
@@ -706,4 +707,29 @@ def user_history(request):
 		})
 	return JsonResponse(status=HTTPStatus.OK, data={
 		"history": historyDtos
+	})
+
+
+@jwt_required
+def chatMessages(request, *args, **kwargs):
+	print(kwargs)
+	# print("chatId",chatId)
+	# chatId = 2
+	messages : list[ChatMessage] = ChatMessage.getMessages(kwargs["chatId"])
+	messagesDto = []
+	for message in messages:
+		messagesDto.append({
+			"chatId": message.chat.id,
+			"senderId": message.senderId.id,
+			"isRead": message.isRead,
+			"message": message.message
+		})
+
+	# for chat_id in chat_ids:
+	# 	chat_messages = ChatMessage.objects.filter(chat_id=chat_id).values()
+	# 	messages.extend(chat_messages)
+	print(messagesDto)
+	return JsonResponse({
+		"success": True,
+		"messages": messagesDto
 	})
