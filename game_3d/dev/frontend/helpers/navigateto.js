@@ -1,6 +1,7 @@
 import { router } from "./router.js";
 import { login42 } from "./login.js";
-import { checkJwt, changeUserName, changeState, getAlertMessage } from "./utils.js";
+import { checkJwt, changeUserName, getAlertMessage } from "./utils.js";
+import { changeState } from "./statusUser.js";
 
 function showLoading() {
     const $loadingElement = document.getElementById("loadingApp");

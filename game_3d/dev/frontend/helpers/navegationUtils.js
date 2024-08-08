@@ -1,5 +1,6 @@
 import { navigateTo } from "./navigateto.js";
-import { changeState, getAlertMessage } from "./utils.js";
+import { getAlertMessage } from "./utils.js";
+import { changeState } from "./statusUser.js";
 import { sockets } from "../index.js";
 import { localGame } from "./gameMode.js";
 

@@ -1,6 +1,6 @@
 import { Game } from "../../game3D/src/class/Game.js";
 import { openNewSocket, openNewSocketTournament } from "./socketsMng.js";
-import { changeState } from "./utils.js";
+import { changeState } from "./statusUser.js";
 
 function isEmptyOrSpaces(str) {
     return str === null || str.match(/^ *$/) !== null;

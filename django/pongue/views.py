@@ -648,6 +648,16 @@ def change_status_to_online(request):
 	})
 
 @jwt_required
+def change_status_to_offline(request):
+	user = get_user_from_jwt(request)
+	user.status = PongueUser.Status.OFFLINE
+	user.save()
+	return JsonResponse({
+		"userId": user.id,
+		"status": user.status
+	})
+
+@jwt_required
 def user_history(request):
 	user_id = request.GET.get("userId")
 	user = PongueUser.objects.get(id=user_id)

@@ -1,6 +1,6 @@
 import { GameRemote } from "../../game3D/src/class/remote/GameRemote.js";
 import { navigateTo } from "./navigateto.js";
-import { changeState } from "./utils.js";
+import { changeState } from "./statusUser.js";
 import { sockets } from "../index.js"
 
 export function openNewSocket(data) {
