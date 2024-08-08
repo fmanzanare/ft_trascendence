@@ -9,7 +9,7 @@ function isEmptyOrSpaces(str) {
 
 export const localGame = {"local": null};
 
-export function playOnline()
+export async function playOnline()
 {
 	if (document.getElementById("selectMode"))
 	{
@@ -49,7 +49,7 @@ export function playOnline()
 		const $token = sessionStorage.getItem('pongToken');
 		const $nickNameData = new URLSearchParams();
 		$nickNameData.append('nickname', $nickName.value);
-		fetch(`${apiUrl}nickname/`, {
+		await fetch(`${apiUrl}nickname/`, {
 			method: "POST",
 			headers: {
 				"Authorization": $token
@@ -67,7 +67,7 @@ export function playOnline()
 		})
 
 		$joinTournament.classList.add('d-none');
-		fetch(`${apiUrl}remote/find-tournament`, {
+		await fetch(`${apiUrl}remote/find-tournament`, {
 			method: "GET",
 			headers: {
 				"Authorization": $token
