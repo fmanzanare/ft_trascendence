@@ -1,4 +1,4 @@
-import {twoFactorChecked, twoFactorUnchecked, conectServerChange} from "./changeDataUserUtils.js"
+import {twoFactorChecked, twoFactorUnchecked, conectServerChange, getBase64Image} from "./changeDataUserUtils.js"
 
 export function generateQr()
 {
