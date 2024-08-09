@@ -45,7 +45,9 @@ function getChatMessages(friendshipId) {
 	.then(data => {
 		// Asignar los mensajes recibidos al array global
 		if (Array.isArray(data.messages)) {
-			openChatWebSockets[friendshipId].messages = data.messages;
+			openChatWebSockets[friendshipId].chatMessages = data.messages;
+			console.log("data.messages es un array", data.messages);
+			console.log("muestro openChatWebSockets.chatMessages", openChatWebSockets[friendshipId].chatMessages);
 		} else {
 			console.error('Error: data.messages no es un array');
 		}
@@ -53,7 +55,7 @@ function getChatMessages(friendshipId) {
 		// Actualizar el chat-log con los mensajes recibidos
 		const chatLog = document.querySelector('#chat-log');
 		chatLog.innerHTML = ''; // Limpiar el chat-log antes de agregar los nuevos mensajes
-		openChatWebSockets[friendshipId].messages.forEach(message => {
+		openChatWebSockets[friendshipId].chatMessages.forEach(message => {
 			chatLog.value += message.message;
 			// const newMessageElement = document.createElement('div');
 			// newMessageElement.textContent = message;
@@ -80,9 +82,11 @@ export function handleChatInput(friendship, friendName) {
 
 	showCurrentChatFriendName(friendName);
 
+	console.log("muestro openChatWebSockets", openChatWebSockets);
 	openChatWebSockets[friendship.friendshipId]?.chatMessages?.forEach(element => {
 		document.querySelector('#chat-log').value += (element.message);
 		console.log(element.message)
+		console.log("muestro chatMessages")
 	});
 	// Create new WebSocket and set its name
 	if (!openChatWebSockets[friendship.friendshipId]?.chatSocket) {
