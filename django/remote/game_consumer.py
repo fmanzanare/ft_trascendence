@@ -1,9 +1,10 @@
 import json
 import asyncio
-from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .new_game import Game
-from pongue.models import GameResults, PongueUser, Tournament
+from pongue.models import PongueUser
+from django.db import close_old_connections
+from channels.db import database_sync_to_async
 
 class GameConsumer(AsyncWebsocketConsumer):
     rooms = {}
@@ -39,7 +40,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
 
         if ("register" in data.keys()):
-            player: PongueUser = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+            player: PongueUser = await self.getUser(data["userId"])
             if (self.rooms[self.room_group_name]["players"]["player1"] == -1):
                 self.rooms[self.room_group_name]["players"]["player1"] = player
                 self.game.pOne.playerId = data["userId"]
@@ -94,7 +95,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if (self.room_group_name in self.rooms):
             player: PongueUser = self.rooms[self.room_group_name]["players"][await self.findSocketInGameSockets()]
             player.status = PongueUser.Status.ONLINE
-            await sync_to_async(player.save)()
+            await self.saveUserChanges(player)
             if (len(self.rooms[self.room_group_name]["players"]) == 1):
                 self.rooms.pop(self.room_group_name)
                 if (hasattr(self, "game_task") and self.game_task != None):
@@ -109,4 +110,13 @@ class GameConsumer(AsyncWebsocketConsumer):
             return "player1"
         elif (self.game.sockets["player2"] == self):
             return "player2"
-                    
+    
+    @database_sync_to_async
+    def getUser(self, userId):
+        close_old_connections()
+        return PongueUser.objects.get(id=userId)
+    
+    @database_sync_to_async
+    def saveUserChanges(self, user):
+        close_old_connections()
+        user.save()

@@ -81,3 +81,8 @@ Juego contra IA.
 - Display name and Nickname < 10 caracteres.
 - Nickname diferentes.
 - Online status (Antonio).
+
+
+# Pendientes 10/08/24:
+- Revisar cuando se imprime name y username. Mejorar la descripción de los campos, ya que es confusa.
+- Error 500 al enviar un jwt de un usuario que no existe en la DB
