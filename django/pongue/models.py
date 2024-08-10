@@ -145,6 +145,14 @@ class Tournament(models.Model):
 	def __str__(self):
 		return f"{self.player_1} | {self.player_2} | {self.player_3} | {self.player_4} | Winner: {self.winner}"
 
+# Path: django/pongue/models.py
+# This model represents the relationship between two players.
+# It has the following fields:
+# - id: The unique identifier of the player's friend.
+# - myUser: The player who sent the friend request.
+# - myFriend: The player who received the friend request.
+# - status: The status of the friend request (PENDING, ACCEPTED, REJECTED, BLOCKED).
+# - registerDate: The date when the friend request was sent.
 class PlayerFriend(models.Model):
 	class Status(models.TextChoices):
 		PENDING = 'PENDING'
@@ -158,6 +166,15 @@ class PlayerFriend(models.Model):
 	status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
 	registerDate = models.DateField(auto_now_add = True)
 
+	# Sets the status of the player's friend to BLOCKED and saves the changes.
+	# Example usage:
+	# friendship = PlayerFriend.objects.get(id=1)
+	# friendship.blockFriend()
+	def blockFriend(self):
+		self.status = PlayerFriend.Status.BLOCKED
+		self.save()
+
+	# Sets the status of the player's friend to ACCEPTED and saves the changes.
 	@classmethod
 	def searchOrCreate(cls, player_a, player_b):
 

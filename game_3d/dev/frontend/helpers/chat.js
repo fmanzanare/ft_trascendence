@@ -46,8 +46,6 @@ function getChatMessages(friendshipId) {
 		// Asignar los mensajes recibidos al array global
 		if (Array.isArray(data.messages)) {
 			openChatWebSockets[friendshipId].chatMessages = data.messages;
-			console.log("data.messages es un array", data.messages);
-			console.log("muestro openChatWebSockets.chatMessages", openChatWebSockets[friendshipId].chatMessages);
 		} else {
 			console.error('Error: data.messages no es un array');
 		}
@@ -61,9 +59,6 @@ function getChatMessages(friendshipId) {
 			// newMessageElement.textContent = message;
 			// chatLog.appendChild(newMessageElement);
 		});
-
-		console.log("muestro openChatWebSockets.messages");
-		console.log(openChatWebSockets[friendshipId].messages);
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
@@ -85,8 +80,6 @@ export function handleChatInput(friendship, friendName) {
 	console.log("muestro openChatWebSockets", openChatWebSockets);
 	openChatWebSockets[friendship.friendshipId]?.chatMessages?.forEach(element => {
 		document.querySelector('#chat-log').value += (element.message);
-		console.log(element.message)
-		console.log("muestro chatMessages")
 	});
 	// Create new WebSocket and set its name
 	if (!openChatWebSockets[friendship.friendshipId]?.chatSocket) {
@@ -146,7 +139,6 @@ export function handleChatInput(friendship, friendName) {
 				document.querySelector('#chat-log').value += message;
 			}
 		};
-		console.log(openChatWebSockets);
+		console.log("mostrando contenido de openChatWebSockets:", openChatWebSockets);
 	}
-
 }

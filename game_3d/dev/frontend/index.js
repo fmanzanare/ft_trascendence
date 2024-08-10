@@ -19,3 +19,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     router();
 });
+
+function nonHtml(){
+    return    this.replace(/[&<>"'`]/g, function (char){
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&apos;',
+            '`': '&#96;'
+        }
+    });
+}

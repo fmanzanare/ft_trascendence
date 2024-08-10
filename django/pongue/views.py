@@ -460,7 +460,18 @@ def friends(request):
 			if not user or not friend:
 				return JsonResponse({"success": False, "message": "User or friend not found"}, status=404)
 
-			if action == "add":
+			if action == "block":
+				friendship = (PlayerFriend.objects.filter(myUser=user, myFriend=friend) |
+							PlayerFriend.objects.filter(myUser=friend, myFriend=user)).first()
+				if not friendship:
+					return JsonResponse({
+						"success": False,
+						"message": "Friendship not found"
+						}, status=404)
+				else:
+					print("friendship", friendship)
+					friendship.blockFriend()
+			elif action == "add":
 				PlayerFriend.searchOrCreate(get_user_from_jwt(request), username)
 			elif action == "remove":
 				user.friends.remove(friend)
@@ -499,7 +510,7 @@ def friends(request):
 			return JsonResponse({
 				"success": False,
 				"message": "An unexpected error occurred"
-			}, status=500)
+			}, status=404)
 	elif request.method == "GET":
 		try:
 			# Asumiendo que get_user_from_jwt(request) devuelve un objeto de usuario válido
@@ -710,11 +721,13 @@ def user_history(request):
 	})
 
 
+# Retrieves the chat messages for a user.
+# Parameters:
+# - request: The HTTP request object.
+# Returns:
+# - A JSON response containing the chat messages for the user.
 @jwt_required
 def chatMessages(request, *args, **kwargs):
-	print(kwargs)
-	# print("chatId",chatId)
-	# chatId = 2
 	messages : list[ChatMessage] = ChatMessage.getMessages(kwargs["chatId"])
 	messagesDto = []
 	for message in messages:
@@ -724,11 +737,6 @@ def chatMessages(request, *args, **kwargs):
 			"isRead": message.isRead,
 			"message": message.message
 		})
-
-	# for chat_id in chat_ids:
-	# 	chat_messages = ChatMessage.objects.filter(chat_id=chat_id).values()
-	# 	messages.extend(chat_messages)
-	print(messagesDto)
 	return JsonResponse({
 		"success": True,
 		"messages": messagesDto

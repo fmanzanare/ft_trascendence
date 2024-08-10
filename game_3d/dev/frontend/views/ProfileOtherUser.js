@@ -14,7 +14,9 @@ export default class extends AbstractView {
 			const $profileUrl = `${apiUrl}profile_id/?userId=${encodeURIComponent(userId)}`
             const response = await fetch($profileUrl, {
                 method: "GET",
-                headers: { "Authorization": $token }
+                headers: { "Authorization": $token,
+					"content-type": 'application/json'
+				 }
             });
 
             if (!response.ok) {
@@ -28,7 +30,9 @@ export default class extends AbstractView {
 			const $historyUrl = `${apiUrl}user_history/?userId=${encodeURIComponent(userId)}`
             const response = await fetch($historyUrl, {
                 method: "GET",
-                headers: { "Authorization": $token }
+                headers: { "Authorization": $token,
+					"content-type": 'application/json'
+				}
             });
 
             if (!response.ok) {

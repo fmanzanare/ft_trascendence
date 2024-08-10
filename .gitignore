@@ -60,3 +60,6 @@ django/pongue/migrations/*
 django/remote/migrations/*
 !./django/remote/migrations/__init__.py
 !./django/pongue/migrations/__init__.py
+
+# Caddy
+caddy/

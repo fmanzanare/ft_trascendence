@@ -37,7 +37,7 @@ Juego contra IA.
 - Implementar poder ir al perfil de un amigo
 - Que sea posible recibir o mandar una invitación para jugar con un amigo
 - Recuperar del modelo todos los mensajes con los diferentes amigos cuando se hace
-  login o se recarga la página
+  login o se recarga la página (Hecho)
 - Error: si chateo con otro amigo, los mensajes de otros amigos que recibo se imprimen en el chat-log
   del amigo con el que estoy hablando actualmente (Hecho)
 
