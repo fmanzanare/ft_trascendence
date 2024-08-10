@@ -206,19 +206,18 @@ class Game:
         print(f"p1: {p1.games_won}, p2: {p2.games_won}")
         if (winner == p1.id):
             p1.games_won += 1
-            # p1.points += 3
-            # p2.games_lost += 1
+            p1.points += 3
+            p2.games_lost += 1
         else:
             p2.games_won += 1
-            # p2.points += 3
-            # p1.games_lost += 1
+            p2.points += 3
+            p1.games_lost += 1
         print(f"p1: {p1.games_won}, p2: {p2.games_won}")
 
-        await database_sync_to_async(p1.save)(fields=["games_won", "games_lost", "games_played", "points"])
-        
-        await database_sync_to_async(p2.save)(fields=["games_won", "games_lost", "games_played", "points"])
-        # await self.saveUserChanges(p1)
-        # await self.saveUserChanges(p2)
+        # await database_sync_to_async(p1.save)()
+        # await database_sync_to_async(p2.save)()
+        await self.saveUserChanges(p1)
+        await self.saveUserChanges(p2)
 
         p1copy:PongueUser = await self.getUser(p1.id)
         print(f"p1copy: {p1copy.games_won}")
