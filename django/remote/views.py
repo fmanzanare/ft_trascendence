@@ -65,46 +65,46 @@ def cancel_find_game(request):
 		"debug": "game cancelled successfully"
 	})
 
-@jwt_required
-def register_result(request):
-	player_1 = request.POST.get("player_1")
-	player_2 = request.POST.get("player_2")
-	player_1_score = request.POST.get("player_1_score")
-	player_2_score = request.POST.get("player_2_score")
-	created_at = request.POST.get("created_at")
-	updated_at = request.POST.get("updated_at")
+# @jwt_required
+# def register_result(request):
+# 	player_1 = request.POST.get("player_1")
+# 	player_2 = request.POST.get("player_2")
+# 	player_1_score = request.POST.get("player_1_score")
+# 	player_2_score = request.POST.get("player_2_score")
+# 	created_at = request.POST.get("created_at")
+# 	updated_at = request.POST.get("updated_at")
 
-	user1 = PongueUser.objects.get(id=player_1)
-	user1.status = PongueUser.Status.ONLINE
-	user2 = PongueUser.objects.get(id=player_2)
-	user2.status = PongueUser.Status.ONLINE
+# 	user1 = PongueUser.objects.get(id=player_1)
+# 	user1.status = PongueUser.Status.ONLINE
+# 	user2 = PongueUser.objects.get(id=player_2)
+# 	user2.status = PongueUser.Status.ONLINE
 
-	if (player_1_score > player_2_score):
-		user1.points += 10
-		user1.games_won += 1
-		user2.games_lost += 1
-	else:
-		user2.points += 10
-		user2.games_won += 1
-		user1.games_lost += 1
-	user1.games_played += 1
-	user2.games_played += 1
+# 	if (player_1_score > player_2_score):
+# 		user1.points += 10
+# 		user1.games_won += 1
+# 		user2.games_lost += 1
+# 	else:
+# 		user2.points += 10
+# 		user2.games_won += 1
+# 		user1.games_lost += 1
+# 	user1.games_played += 1
+# 	user2.games_played += 1
 
-	user1.save()
-	user2.save()
+# 	user1.save()
+# 	user2.save()
 
-	game_result = GameResults()
-	game_result.player_1 = user1
-	game_result.player_2 = user2
-	game_result.player_1_score = player_1_score
-	game_result.player_2_score = player_2_score
-	game_result.created_at = created_at
-	game_result.updated_at = updated_at
-	game_result.save()
+# 	game_result = GameResults()
+# 	game_result.player_1 = user1
+# 	game_result.player_2 = user2
+# 	game_result.player_1_score = player_1_score
+# 	game_result.player_2_score = player_2_score
+# 	game_result.created_at = created_at
+# 	game_result.updated_at = updated_at
+# 	game_result.save()
 
-	return JsonResponse(status=HTTPStatus.OK, data={
-		"debug": "received"
-	})
+# 	return JsonResponse(status=HTTPStatus.OK, data={
+# 		"debug": "received"
+# 	})
 
 @jwt_required
 def find_tournament(request):
@@ -127,12 +127,12 @@ def find_tournament(request):
 			"userId": user.id,
 		})
 
-@jwt_required
-def register_tournament_win(request):
-	user = get_user_from_jwt(request)
-	user.points += 100
-	user.tournaments += 1
-	user.save()
-	return JsonResponse(status=HTTPStatus.OK, data={
-		"debug": "received"
-	})
+# @jwt_required
+# def register_tournament_win(request):
+# 	user = get_user_from_jwt(request)
+# 	user.points += 100
+# 	user.tournaments += 1
+# 	user.save()
+# 	return JsonResponse(status=HTTPStatus.OK, data={
+# 		"debug": "received"
+# 	})
