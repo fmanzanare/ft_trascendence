@@ -43,7 +43,7 @@ export default class extends AbstractView {
 			const historyData = await fetchHistory(this.userId);
 			let status;
 			let statusColor;
-			console.log(data);
+			const porGamesWins = data.context.user.wins / data.context.user.games * 100
 			switch (data.context.user.status){
 				case "ON":
 					status = "online";
@@ -91,7 +91,16 @@ export default class extends AbstractView {
 											<h2>${data.context.user.display_name}</h2>
 											<h2 style="color:${statusColor}">${status}</h2>
 											<p>points: ${data.context.user.puntos}</p>
-											<
+											`
+											if (data.context.user.games > 0)
+											page += `
+											<p>Games win:</p>
+											<div class="progress">
+												<div class="progress-bar" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
+												<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+											</div> `
+											page +=
+											`
 										</div>
 									</div>
 								</div>

@@ -118,6 +118,8 @@ class UserProfile:
 	points: int = 0
 	avatar: str = ""
 	status: str = ""
+	games: int = 0
+	wins: int = 0
 
 	@staticmethod
 	def toUseUserProfile(user: PongueUser):
@@ -126,6 +128,8 @@ class UserProfile:
 		userProfile.points = user.points
 		userProfile.avatar = user.avatar_base64
 		userProfile.status = user.status
+		userProfile.games = user.games_played
+		userProfile.wins = user.games_won
 		return userProfile
 
 

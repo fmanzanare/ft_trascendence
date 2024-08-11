@@ -23,6 +23,7 @@ export default class extends AbstractView {
         })
         .then(data => {
             rankig = data.users
+            console.log(rankig);
             let page =
             `
                 <div class="container-fluid py-10 h-100">

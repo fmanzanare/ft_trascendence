@@ -561,7 +561,9 @@ def profile_id(request):
                 "display_name": userProfile.nick,
                 "puntos": userProfile.points,
                 "avatar_base64": userProfile.avatar,
-				"status": userProfile.status
+				"status": userProfile.status,
+				"games": userProfile.games,
+				"wins": userProfile.wins
             }
         }
     })

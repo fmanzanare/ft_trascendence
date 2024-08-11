@@ -60,7 +60,8 @@ export default class extends AbstractView {
 				console.log("cambiando el user de session storage");
 				sessionStorage.setItem('user', data.context.user.username);
 			}
-
+			console.log(data);
+			const porGamesWins = data.context.user.games_won / data.context.user.games_played * 100
 			let page =
 			`
 				<div class="container-fluid py-10 h-100">
@@ -93,6 +94,16 @@ export default class extends AbstractView {
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
 											<h2>${data.context.user.username}</h2>
 											<p>points: ${data.context.points}</p>
+											`
+											if (data.context.user.games_played > 0)
+											page += `
+											<p>Games win:</p>
+											<div class="progress">
+												<div class="progress-bar" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
+												<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+											</div> `
+											page +=
+											`
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
