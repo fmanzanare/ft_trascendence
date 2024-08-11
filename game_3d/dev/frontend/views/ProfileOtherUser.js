@@ -41,6 +41,23 @@ export default class extends AbstractView {
 		try {
 			const data = await fetchProfileUser(this.userId);
 			const historyData = await fetchHistory(this.userId);
+			let status;
+			let statusColor;
+			const porGamesWins = data.context.user.wins / data.context.user.games * 100
+			switch (data.context.user.status){
+				case "ON":
+					status = "online";
+					statusColor = "green";
+					break;
+				case "OFF":
+					status = "offline";
+					statusColor = "gray";
+					break;
+				default:
+					status = "In game";
+					statusColor = "red";
+					break;
+			}
 			let page =
 			`
 			<div class="container-fluid py-10 h-100">
@@ -64,15 +81,26 @@ export default class extends AbstractView {
 										<div class="col-md-6">
 											`
 											if (data.context.user.avatar_base64 == "")
-												page += ` <img src="../dev/frontend/assets/homerSimpson.webp" class="max-width-75" alt="profile picture">`
+												page += ` <img src="../dev/frontend/assets/homerSimpson.webp" class="rounded max-width-75" alt="profile picture">`
 											else
-												page += ` <img src="${data.context.user.avatar_base64}" class="max-width-75" alt="profile picture">`
+												page += ` <img src="${data.context.user.avatar_base64}" class="rounded max-width-75" alt="profile picture">`
 											page +=
 											`
 										</div>
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
 											<h2>${data.context.user.display_name}</h2>
-											<p>${data.context.user.puntos}</p>
+											<h2 style="color:${statusColor}">${status}</h2>
+											<p>points: ${data.context.user.puntos}</p>
+											`
+											if (data.context.user.games > 0)
+											page += `
+											<p>Games win:</p>
+											<div class="progress">
+												<div class="progress-bar" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
+												<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+											</div> `
+											page +=
+											`
 										</div>
 									</div>
 								</div>

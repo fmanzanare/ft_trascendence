@@ -45,31 +45,6 @@ export function getAlertMessage(state) {
 	return(message);
 }
 
-export function changeState(status){
-	const $userStatus = document.getElementById("userStatus");
-	$userStatus.style.color = "blue"
-	switch (status) {
-        case "Searching game":
-            $userStatus.textContent = "Searching game"
-            break;
-        case "Searching tournament":
-            $userStatus.textContent = "Searching tournament"
-            break;
-        case "In game":
-            $userStatus.textContent = "In game"
-			$userStatus.style.color = "#ff5252"
-            break;
-        case "In tournament":
-            $userStatus.textContent = "In tournament"
-			$userStatus.style.color = "#ff5252"
-            break;
-        default:
-            $userStatus.textContent = "Online"
-			$userStatus.style.color = "#56ba6f"
-            break;
-    }
-}
-
 export function closeWinnerMsg(){
 	sessionStorage.removeItem('winner');
 	navigateTo("/home")
@@ -95,7 +70,6 @@ export function changeUserName()
 	const $token = sessionStorage.getItem('pongToken');
 	const $userName = document.getElementById("userNameNavBar");
 	const $profileUrl = apiUrl + 'profile/';
-	console.log("Estoy con un token: ", );
 	
 	return fetch($profileUrl, {
 		method: "GET",
@@ -110,7 +84,7 @@ export function changeUserName()
 		return response.json();
 	})
 	.then(data => {
-		$userName.textContent = data.context.user.display_name;
+		$userName.textContent = data.context.user.username;
 	})
 	.catch(error => {
 		console.error('Error:', error);

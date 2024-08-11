@@ -548,7 +548,7 @@ def profile(request):
 			"redirect_url": "",
 			"context": {},
 		})
-
+#Profile other user
 @jwt_required
 def profile_id(request):
     user_id = request.GET.get("userId")
@@ -560,7 +560,10 @@ def profile_id(request):
             "user": {
                 "display_name": userProfile.nick,
                 "puntos": userProfile.points,
-                "avatar_base64": userProfile.avatar
+                "avatar_base64": userProfile.avatar,
+				"status": userProfile.status,
+				"games": userProfile.games,
+				"wins": userProfile.wins
             }
         }
     })
@@ -618,6 +621,7 @@ def nickname(request):
 			nickname = request.POST.get("nickname")
 			if (not check_available_nickname(nickname=nickname, target=user)):
 				return JsonResponse(status=HTTPStatus.CONFLICT, data={
+					"success": False,
 					"error": "Nickname is already in use"
 				})
 			else:
@@ -631,6 +635,7 @@ def nickname(request):
 				})
 		else:
 			return JsonResponse(status=HTTPStatus.CONFLICT, data={
+				"success": False,
 				"error": "Nickname field must be filled"
 			})
 
@@ -638,6 +643,16 @@ def nickname(request):
 def change_status_to_online(request):
 	user = get_user_from_jwt(request)
 	user.status = PongueUser.Status.ONLINE
+	user.save()
+	return JsonResponse({
+		"userId": user.id,
+		"status": user.status
+	})
+
+@jwt_required
+def change_status_to_offline(request):
+	user = get_user_from_jwt(request)
+	user.status = PongueUser.Status.OFFLINE
 	user.save()
 	return JsonResponse({
 		"userId": user.id,

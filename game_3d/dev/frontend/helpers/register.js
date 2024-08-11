@@ -26,6 +26,12 @@ export async function singPushButton() {
         return;
     }
 
+    if ($username.value.length > 8){
+        $username.classList.add("border-danger");
+        $errorMessage.textContent = "Username must be less than 9 characters long";
+        return;
+    }
+
     if ($pass.value !== $passTwo.value) {
         $pass.classList.add("border-danger");
         $passTwo.classList.add("border-danger");

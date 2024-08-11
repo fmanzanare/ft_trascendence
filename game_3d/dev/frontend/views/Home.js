@@ -16,21 +16,16 @@ export default class extends AbstractView {
                     </div>
                     <div class="row d-flex justify-content-center align-items-center h-100">
                         <div id="gameDiv">
-                            <div id="blackDiv" style="Height:${$Height}px;width:${$width}px">
+                            <div class="rounded" id="blackDiv" style="Height:${$Height}px;width:${$width}px">
                                 <div class="d-flex justify-content-around align-items-center" id="selectMode" style="height:100%">
                                     <div class="fs-3 p-2 h-50 bd-highlight" id="playOnline" role="button" style="width:25%;">
-                                        <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
+                                        <div class="rounded d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                             <h1>1 vs 1</h1>
                                             <p>Online</p>
                                         </div>
                                     </div>
-                                    <div class="fs-3 p-2 h-50 bd-highlight" role="button" style="width:25%;">
-                                        <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
-                                            <h1>AI</h1>
-                                        </div>
-                                    </div>
                                     <div class="fs-3 p-2 h-50 bd-highlight" id="playLocal" role="button" style="width:25%;">
-                                        <div class="d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
+                                        <div class="rounded d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                             <h1>Local</h1>
                                             <p>One vs one</p>
                                         </div>
@@ -54,22 +49,22 @@ export default class extends AbstractView {
                         </div>
                     </div>
                     <div id="instructions">
-                        <div class="p-3 h-100 text-center" style="background-color: #5272c1;">
+                        <div class="rounded p-3 h-100 text-center" style="background-color: #5272c1;">
                             <h2>Instructions</h2>
                             <div id="instructionsImg">
                                 <img src="./dev/frontend/assets/ws.webp" alt="instructions">
                             </div>   
                         </div>
                     </div>
-                    <div id="instructionsTwoPlayer" class="d-flex d-none justify-content-around">
-                        <div class="p-3 text-center" style="background-color: #5272c1;">
-                            <h2>Instructions player one</h2>
+                    <div id="instructionsTwoPlayer" class="d-flex d-none justify-content-around" style="margin-top:10px">
+                        <div class="rounded p-3 text-center" style="background-color: #5272c1;">
+                            <h4>Instructions player one</h4>
                             <div id="instructionsImg">
                                 <img src="./dev/frontend/assets/ws.webp" alt="instructions">
                             </div>   
                         </div>
-                        <div class="p-3 text-center" style="background-color: #5272c1;">
-                            <h2>Instructions player two</h2>
+                        <div class="rounded p-3 text-center" style="background-color: #5272c1;">
+                            <h4>Instructions player two</h4>
                             <div id="instructionsImg">
                                 <img src="./dev/frontend/assets/sb.webp" alt="instructions">
                             </div>   

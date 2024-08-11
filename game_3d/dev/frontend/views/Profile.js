@@ -56,7 +56,12 @@ export default class extends AbstractView {
             const twoFactor = await fetchTwoFactor();
             const historyData = await fetchHistory();
             const data = await fetchProfile();
-
+			if (!sessionStorage.getItem('user')){
+				console.log("cambiando el user de session storage");
+				sessionStorage.setItem('user', data.context.user.username);
+			}
+			console.log(data);
+			const porGamesWins = data.context.user.games_won / data.context.user.games_played * 100
 			let page =
 			`
 				<div class="container-fluid py-10 h-100">
@@ -80,15 +85,25 @@ export default class extends AbstractView {
 											<div class="col-md-6">
 											`
 											if (data.context.user.avatar_base64 == "")
-												page += ` <img src="./dev/frontend/assets/homerSimpson.webp" class="max-width-75" alt="profile picture">`
+												page += ` <img src="./dev/frontend/assets/homerSimpson.webp" class="rounded max-width-75" alt="profile picture">`
 											else
-												page += ` <img src="${data.context.user.avatar_base64}" class="max-width-75" alt="profile picture">`
+												page += ` <img src="${data.context.user.avatar_base64}" class="rounded max-width-75" alt="profile picture">`
 											page +=
 											`
 											</div>
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
-											<h2>${data.context.user.display_name}</h2>
-											<p>${data.context.points}</p>
+											<h2>${data.context.user.username}</h2>
+											<p>points: ${data.context.points}</p>
+											`
+											if (data.context.user.games_played > 0)
+											page += `
+											<p>Games win:</p>
+											<div class="progress">
+												<div class="progress-bar" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
+												<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+											</div> `
+											page +=
+											`
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
@@ -106,11 +121,11 @@ export default class extends AbstractView {
 			`
 											<button class="btn btn-primary mt-2" style="max-width: 200px" id="changeDataView">Change data</button>
 										</div>
-										<div class="d-none col-md-6" id="dataUserChange">
+										<div class="d-none col-md-6" id="dataUserChange" style="color:white">
 											<div class="form-outline form-white mb-4">
 												<input type="text" id="UserNameChange" placeholder="Username" class="inputSingUp form-control form-control-lg"/>
 											</div>
-											<div class="form-outline form-white mb-4">
+											<div class="form-outline form-white mb-4" style="color:white">
 												<label for="profilePictureChange">New profile picture:</label>
 												<input type="file" class="form-control-file" id="profilePictureChange" name="profilePicture">
 											</div>

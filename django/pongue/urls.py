@@ -21,4 +21,5 @@ urlpatterns = [
 	path("api/user_history/", views.user_history, name="user_history"),
 	path("api/nickname/", views.nickname, name="nickname"),
 	path("api/online-status/", views.change_status_to_online, name="online_status"),
+	path("api/offline-status/", views.change_status_to_offline, name="offline_status"),
 ]

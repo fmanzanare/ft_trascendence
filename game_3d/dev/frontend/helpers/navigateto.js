@@ -1,6 +1,7 @@
 import { router } from "./router.js";
 import { login42 } from "./login.js";
-import { checkJwt, changeUserName, changeState, getAlertMessage } from "./utils.js";
+import { checkJwt, changeUserName, getAlertMessage } from "./utils.js";
+import { changeState } from "./statusUser.js";
 
 function showLoading() {
     const $loadingElement = document.getElementById("loadingApp");
@@ -27,8 +28,8 @@ async function tokenTrue(url)
 	const $chatButton = document.getElementById("displayChat");
 	const $navElement = document.getElementById("nav");
 	const $currentState = document.getElementById("userStatus").textContent;
-
-	if ($currentState != "Online") {
+	const $winner = sessionStorage.getItem('winner');
+	if ($currentState != "Online" && !$winner) {
         handleOfflineState(url);
         return;
     }
@@ -63,12 +64,14 @@ async function  tokenFalse(url)
 	const $navElement = document.getElementById("nav");
 
 	let pippo = new URL(window.location.href);
-	console.log(pippo);
 	let code = pippo.searchParams.get("code")
 	if (code) {
-		console.log("hola42");
-		login42(code);
-		return;
+		const $user = sessionStorage.getItem('user');
+		if (!$user){
+			console.log("hola42 - Inicio de sesion");
+			login42(code);
+			return;
+		}
 	}
 
 	if (!$navElement.classList.contains('d-none'))
