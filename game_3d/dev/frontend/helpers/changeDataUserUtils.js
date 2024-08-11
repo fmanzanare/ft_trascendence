@@ -1,7 +1,7 @@
 import { navigateTo } from "./navigateto.js";
 import { changeUserName } from "./utils.js";
 
-function getBase64Image(img)
+export function getBase64Image(img)
 {
 	var canvas = document.createElement("canvas");
 	canvas.width = img.width;

@@ -11,7 +11,7 @@ urlpatterns = [
 	path("api/enable2fa/", views.enable2fa, name="enable2fa"),
 	path("api/disable2fa/", views.disable2fa, name="disable2fa"),
 	path("api/friends/", views.friends, name="friends"),
-	path("api/add_game_result/", views.add_game_result, name="add_game_result"),
+	# path("api/add_game_result/", views.add_game_result, name="add_game_result"),
 	path("api/check_jwt/", views.check_jwt, name="check_jwt"),
 	path("api/profile/", views.profile, name="profile"),
 	path("api/profile_id/", views.profile_id, name="profile_id"),
@@ -21,4 +21,5 @@ urlpatterns = [
 	path("api/user_history/", views.user_history, name="user_history"),
 	path("api/nickname/", views.nickname, name="nickname"),
 	path("api/online-status/", views.change_status_to_online, name="online_status"),
+	path("api/offline-status/", views.change_status_to_offline, name="offline_status"),
 ]

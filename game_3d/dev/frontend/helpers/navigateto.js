@@ -1,6 +1,7 @@
 import { router } from "./router.js";
 import { login42 } from "./login.js";
-import { checkJwt, changeUserName, changeState, getAlertMessage } from "./utils.js";
+import { checkJwt, changeUserName, getAlertMessage } from "./utils.js";
+import { changeState } from "./statusUser.js";
 
 function showLoading() {
     const $loadingElement = document.getElementById("loadingApp");
@@ -65,9 +66,12 @@ async function  tokenFalse(url)
 	let pippo = new URL(window.location.href);
 	let code = pippo.searchParams.get("code")
 	if (code) {
-		console.log("hola42");
-		login42(code);
-		return;
+		const $user = sessionStorage.getItem('user');
+		if (!$user){
+			console.log("hola42 - Inicio de sesion");
+			login42(code);
+			return;
+		}
 	}
 
 	if (!$navElement.classList.contains('d-none'))

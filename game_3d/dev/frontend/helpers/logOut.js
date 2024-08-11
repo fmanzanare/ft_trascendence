@@ -24,30 +24,3 @@ export function logOut()
 		console.error('Error en la solicitud:', error);
 	});
 }
-
-export function putOffline()
-{
-	const $token = sessionStorage.getItem('pongToken');
-	const $logoutUrl = apiUrl + 'logout/';
-
-	fetch($logoutUrl, {
-		method: 'GET',
-		headers: {
-			"Authorization": $token
-		}
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
-	.then(data => {
-		sessionStorage.clear();
-		window.history.pushState(null, null, '/');
-		window.location.reload();
-	})
-	.catch(error => {
-		console.error('Error en la solicitud:', error);
-	});
-}

@@ -1,7 +1,8 @@
 import random, asyncio, time, json
 from .game_classes import *
-from asgiref.sync import sync_to_async
 from pongue.models import PongueUser, GameResults
+from django.db import close_old_connections
+from channels.db import database_sync_to_async
 
 class Game:
     def __init__(self, pOneId, pTwoId):
@@ -154,19 +155,12 @@ class Game:
             await asyncio.sleep(0.033)
 
         finishTime = time.time()
-        userPlayerOne: PongueUser = await sync_to_async(PongueUser.objects.get)(id=self.pOne.playerId)
-        userPlayerTwo: PongueUser = await sync_to_async(PongueUser.objects.get)(id=self.pTwo.playerId)
+        userPlayerOne: PongueUser = await self.getUser(self.pOne.playerId)
+        userPlayerTwo: PongueUser = await self.getUser(self.pTwo.playerId)
 
         if (self.disFlags["player1"] == False and self.disFlags["player2"] == False):
             self.winner = self.pOne.playerId if self.score.pOne > self.score.pTwo else self.pTwo.playerId
-            await sync_to_async(GameResults.objects.create)(
-                player_1=userPlayerOne,
-                player_2=userPlayerTwo,
-                player_1_score=self.score.pOne,
-                player_2_score=self.score.pTwo,
-                created_at=gameStart,
-                updated_at=finishTime
-            )
+            await self.createGameResult(userPlayerOne, userPlayerTwo, self.score.pOne, self.score.pTwo, gameStart, finishTime)
             await self.registerUserStatistics(userPlayerOne, userPlayerTwo, self.winner)
 
             finishedGame = {
@@ -190,15 +184,7 @@ class Game:
             playerTwoScore = 0 if self.disFlags["player2"] else 11
             self.winner = self.pOne.playerId if self.disFlags["player2"] == True else self.pTwo.playerId
             await self.registerUserStatistics(userPlayerOne, userPlayerTwo, self.winner)
-
-            await sync_to_async(GameResults.objects.create)(
-                player_1=userPlayerOne,
-                player_2=userPlayerTwo,
-                player_1_score=playerOneScore,
-                player_2_score=playerTwoScore,
-                created_at=gameStart,
-                updated_at=finishTime
-            )
+            await self.createGameResult(userPlayerOne, userPlayerTwo, playerOneScore, playerTwoScore, gameStart, finishTime)
             await self.disconnection()
 
     async def disconnection(self):
@@ -209,17 +195,52 @@ class Game:
         elif self.disFlags["player2"] == True:
             await self.sockets["player1"].send(text_data=json.dumps(data))
     
-    async def registerUserStatistics(self, userPlayerOne, userPlayerTwo, winner):
-        userPlayerOne.games_played += 1
-        userPlayerTwo.games_played += 1
-        if (winner == userPlayerOne.id):
-            userPlayerOne.games_won += 1
-            userPlayerOne.points += 3
-            userPlayerTwo.games_lost += 1
-        else:
-            userPlayerOne.games_lost += 1
-            userPlayerTwo.games_won += 1
-            userPlayerTwo.points += 3
-        await sync_to_async(userPlayerOne.save)()
-        await sync_to_async(userPlayerTwo.save)()
+    async def registerUserStatistics(self, userPlayerOne: PongueUser, userPlayerTwo: PongueUser, winner):
+        p1: PongueUser = await self.getUser(userPlayerOne.id)
+        p2: PongueUser = await self.getUser(userPlayerTwo.id)
 
+        p1.games_played += 1
+        p2.games_played += 1
+
+        print(f"winner: {winner}, p1: {p1.id}, p2: {p2.id}, res: {winner == p1.id}")
+        print(f"p1: {p1.games_won}, p2: {p2.games_won}")
+        if (winner == p1.id):
+            p1.games_won += 1
+            p1.points += 3
+            p2.games_lost += 1
+        else:
+            p2.games_won += 1
+            p2.points += 3
+            p1.games_lost += 1
+        print(f"p1: {p1.games_won}, p2: {p2.games_won}")
+
+        # await database_sync_to_async(p1.save)()
+        # await database_sync_to_async(p2.save)()
+        await self.saveUserChanges(p1)
+        await self.saveUserChanges(p2)
+
+        p1copy:PongueUser = await self.getUser(p1.id)
+        print(f"p1copy: {p1copy.games_won}")
+    
+    @database_sync_to_async
+    def getUser(self, userId):
+        close_old_connections()
+        return PongueUser.objects.get(id=userId)
+    
+    @database_sync_to_async
+    def saveUserChanges(self, user: PongueUser):
+        close_old_connections()
+        print(f"user: {user.games_won}, {user.games_lost}, {user.points}")
+        user.save()
+
+    @database_sync_to_async
+    def createGameResult(self, playerOne: PongueUser, playerTwo: PongueUser, playerOneScore, playerTwoScore, gameStart, finishTime):
+        close_old_connections()
+        GameResults.objects.create(
+            player_1=playerOne,
+            player_2=playerTwo,
+            player_1_score=playerOneScore,
+            player_2_score=playerTwoScore,
+            created_at=gameStart,
+            updated_at=finishTime
+        )

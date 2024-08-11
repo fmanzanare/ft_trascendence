@@ -480,41 +480,41 @@ def friends(request):
 # POST: Adds a game result to the database¡
 # Parameters: "player_1", "player_2", "player_1_score", "player_2_score"
 # Format: application/x-www-form-urlencoded
-def add_game_result(request):
-	if request.method == "POST":
-		player_1 = PongueUser.objects.get(username=request.POST.get("player_1"))
-		player_2 = PongueUser.objects.get(username=request.POST.get("player_2"))
-		player_1_score = request.POST.get("player_1_score")
-		player_2_score = request.POST.get("player_2_score")
-		game = GameResults(player_1=player_1, player_2=player_2, player_1_score=player_1_score, player_2_score=player_2_score)
-		game.save()
-		player_1.games_played += 1
-		player_2.games_played += 1
-		if player_1_score > player_2_score:
-			player_1.games_won += 1
-			player_2.games_lost += 1
-		elif player_1_score < player_2_score:
-			player_1.games_lost += 1
-			player_2.games_won += 1
-		player_1.status = PongueUser.Status.ONLINE
-		player_2.status = PongueUser.Status.ONLINE
-		player_1.save()
-		player_2.save()
-		return JsonResponse({
-			"success": True,
-			"message": "",
-			"redirect": True,
-			"redirect_url": "index",
-			"context": {},
-		})
-	else:
-		return JsonResponse({
-			"success": False,
-			"message": "Invalid method",
-			"redirect": True,
-			"redirect_url": "login",
-			"context": {}
-		})
+# def add_game_result(request):
+# 	if request.method == "POST":
+# 		player_1 = PongueUser.objects.get(username=request.POST.get("player_1"))
+# 		player_2 = PongueUser.objects.get(username=request.POST.get("player_2"))
+# 		player_1_score = request.POST.get("player_1_score")
+# 		player_2_score = request.POST.get("player_2_score")
+# 		game = GameResults(player_1=player_1, player_2=player_2, player_1_score=player_1_score, player_2_score=player_2_score)
+# 		game.save()
+# 		player_1.games_played += 1
+# 		player_2.games_played += 1
+# 		if player_1_score > player_2_score:
+# 			player_1.games_won += 1
+# 			player_2.games_lost += 1
+# 		elif player_1_score < player_2_score:
+# 			player_1.games_lost += 1
+# 			player_2.games_won += 1
+# 		player_1.status = PongueUser.Status.ONLINE
+# 		player_2.status = PongueUser.Status.ONLINE
+# 		player_1.save()
+# 		player_2.save()
+# 		return JsonResponse({
+# 			"success": True,
+# 			"message": "",
+# 			"redirect": True,
+# 			"redirect_url": "index",
+# 			"context": {},
+# 		})
+# 	else:
+# 		return JsonResponse({
+# 			"success": False,
+# 			"message": "Invalid method",
+# 			"redirect": True,
+# 			"redirect_url": "login",
+# 			"context": {}
+# 		})
 
 # /profile
 # GET: Returns the profile object
@@ -561,7 +561,9 @@ def profile_id(request):
                 "display_name": userProfile.nick,
                 "puntos": userProfile.points,
                 "avatar_base64": userProfile.avatar,
-				"status": userProfile.status
+				"status": userProfile.status,
+				"games": userProfile.games,
+				"wins": userProfile.wins
             }
         }
     })
@@ -619,6 +621,7 @@ def nickname(request):
 			nickname = request.POST.get("nickname")
 			if (not check_available_nickname(nickname=nickname, target=user)):
 				return JsonResponse(status=HTTPStatus.CONFLICT, data={
+					"success": False,
 					"error": "Nickname is already in use"
 				})
 			else:
@@ -632,6 +635,7 @@ def nickname(request):
 				})
 		else:
 			return JsonResponse(status=HTTPStatus.CONFLICT, data={
+				"success": False,
 				"error": "Nickname field must be filled"
 			})
 
@@ -639,6 +643,16 @@ def nickname(request):
 def change_status_to_online(request):
 	user = get_user_from_jwt(request)
 	user.status = PongueUser.Status.ONLINE
+	user.save()
+	return JsonResponse({
+		"userId": user.id,
+		"status": user.status
+	})
+
+@jwt_required
+def change_status_to_offline(request):
+	user = get_user_from_jwt(request)
+	user.status = PongueUser.Status.OFFLINE
 	user.save()
 	return JsonResponse({
 		"userId": user.id,
