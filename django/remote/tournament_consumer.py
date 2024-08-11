@@ -79,7 +79,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             return
 
     async def disconnect(self, close_code):
-        print(len(self.rooms[self.room_group_name]["players"]))
         if (self.room_group_name in self.rooms):
             playerFromRoom: PongueUser = self.rooms[self.room_group_name]["players"][await self.findSocketInGameSockets()]
             player: PongueUser = await self.getUser(playerFromRoom.id)
@@ -100,6 +99,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 )
                 self.rooms[self.room_group_name]["players"].pop(await self.findPlayerSocket())
                 self.rooms[self.room_group_name]["sockets"].pop(await self.findPlayerSocket())
+                # TODO - Check if this is need:
+                self.rooms.pop(self.room_group_name)
             else:
                 if ("onProgress" in self.rooms[self.room_group_name]):
                     await self.manageSocketDisconnectionFromGame()
@@ -385,8 +386,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         )
 
     async def registerTournmanet(self, player1, player2, player3, player4, winnerId):
-        tournamentWinner: PongueUser = await self.getUser(winnerId)
-        await self.createTournament(player1, player2, player3, player4, tournamentWinner)
         player1ToSave: PongueUser = await self.getUser(player1.id)
         player1ToSave.tournaments += 1
         await self.saveUserChanges(player1ToSave)
@@ -399,10 +398,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         player4ToSave: PongueUser = await self.getUser(player4.id)
         player4ToSave.tournaments += 1
         await self.saveUserChanges(player4ToSave)
+        tournamentWinner: PongueUser = await self.getUser(winnerId)
+        await self.createTournament(player1, player2, player3, player4, tournamentWinner)
         tournamentWinner.points += 10
+        tournamentWinner.tournaments_won += 1
         await self.saveUserChanges(tournamentWinner)
-        test: PongueUser = await self.getUser(tournamentWinner.id)
-
 
     async def getSemifinalWinners(self, game1: Game, game2: Game, flag):
         game1Task = asyncio.create_task(game1.runGame())
