@@ -81,3 +81,10 @@ Juego contra IA.
 - Display name and Nickname < 10 caracteres.
 - Nickname diferentes.
 - Online status (Antonio).
+
+
+# Pendientes 10/08/24:
+- Contador 3, 2, 1, antes de empezar partida.
+- Revisar cuando se imprime name y username. Mejorar la descripción de los campos, ya que es confusa.
+- Error 500 al enviar un jwt de un usuario que no existe en la DB
+- Mejorar la devolución de datos del historial, para que solo devuelva los 5 primeros

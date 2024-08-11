@@ -1,10 +1,11 @@
 import json
 import asyncio
 
-from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .new_game import Game
 from pongue.models import PongueUser, Tournament
+from django.db import close_old_connections
+from channels.db import database_sync_to_async
 
 class TournamentConsumer(AsyncWebsocketConsumer):
     rooms = {}
@@ -46,7 +47,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
 
         if ("register" in data.keys()):
-            player: PongueUser = await sync_to_async(PongueUser.objects.get)(id=data["userId"])
+            player: PongueUser = await self.getUser(data["userId"])
             if (self.rooms[self.room_group_name]["players"]["player1"] == -1):
                 self.rooms[self.room_group_name]["players"]["player1"] = player
             elif (self.rooms[self.room_group_name]["players"]["player2"] == -1):
@@ -78,11 +79,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             return
 
     async def disconnect(self, close_code):
-        print(len(self.rooms[self.room_group_name]["players"]))
         if (self.room_group_name in self.rooms):
-            player: PongueUser = self.rooms[self.room_group_name]["players"][await self.findSocketInGameSockets()]
+            playerFromRoom: PongueUser = self.rooms[self.room_group_name]["players"][await self.findSocketInGameSockets()]
+            player: PongueUser = await self.getUser(playerFromRoom.id)
             player.status = PongueUser.Status.ONLINE
-            await sync_to_async(player.save)()
+            await self.saveUserChanges(player)
             if (len(self.rooms[self.room_group_name]["players"]) == 1):
                 self.rooms.pop(self.room_group_name)
                 await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -98,6 +99,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 )
                 self.rooms[self.room_group_name]["players"].pop(await self.findPlayerSocket())
                 self.rooms[self.room_group_name]["sockets"].pop(await self.findPlayerSocket())
+                # TODO - Check if this is need:
+                self.rooms.pop(self.room_group_name)
             else:
                 if ("onProgress" in self.rooms[self.room_group_name]):
                     await self.manageSocketDisconnectionFromGame()
@@ -140,9 +143,10 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     
     # Auxiliar methods
     async def changeUsersStatusToInTournament(self, userNum: str):
-        user: PongueUser = self.rooms[self.room_group_name]["players"][userNum]
+        userFromRoom: PongueUser = self.rooms[self.room_group_name]["players"][userNum]
+        user: PongueUser = await self.getUser(userFromRoom.id)
         user.status = PongueUser.Status.INTOURNAMENT
-        await sync_to_async(user.save)()
+        await self.saveUserChanges(user)
 
     async def getPlayerFromRoom(self, userNum: str):
         if (userNum in self.rooms[self.room_group_name]["players"].keys()):
@@ -330,11 +334,13 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         semifinalTask.cancel()
 
         if (len(self.rooms[self.room_group_name]["players"]) == 1):
+            winnerId = self.rooms[self.room_group_name]["players"][list(self.rooms[self.room_group_name]["players"].keys())[-1]].id
+            await self.registerTournmanet(player1, player2, player3, player4, winnerId)
             await self.channel_layer.group_send(
                 self.room_group_name, {
                     "type": "final.winner",
                     "finalWinner": True,
-                    "tournamentWinner": self.rooms[self.room_group_name]["players"][list(self.rooms[self.room_group_name]["players"].keys())[-1]].id
+                    "tournamentWinner": winnerId
                 }
             )
             return
@@ -368,6 +374,8 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await flag.wait()
         finalTask.cancel()
 
+        await self.registerTournmanet(player1, player2, player3, player4, game3.winner)
+
         await self.channel_layer.group_send(
             self.room_group_name, {
                 "type": "final.winner",
@@ -377,25 +385,24 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             }
         )
 
-        # Register Tournament in DB
-        tournamentWinner: PongueUser = await sync_to_async(PongueUser.objects.get)(id=game3.winner)
-        await sync_to_async(Tournament.objects.create)(
-            player_1=player1,
-            player_2=player2,
-            player_3=player3,
-            player_4=player4,
-            winner=tournamentWinner
-        )
-        player1.tournaments += 1
-        await sync_to_async(player1.save)()
-        player2.tournaments += 1
-        await sync_to_async(player2.save)()
-        player3.tournaments += 1
-        await sync_to_async(player3.save)()
-        player4.tournaments += 1
-        await sync_to_async(player4.save)()
-        tournamentWinner.points += 100
-        await sync_to_async(tournamentWinner.save)()
+    async def registerTournmanet(self, player1, player2, player3, player4, winnerId):
+        player1ToSave: PongueUser = await self.getUser(player1.id)
+        player1ToSave.tournaments += 1
+        await self.saveUserChanges(player1ToSave)
+        player2ToSave: PongueUser = await self.getUser(player2.id)
+        player2ToSave.tournaments += 1
+        await self.saveUserChanges(player2ToSave)
+        player3ToSave: PongueUser = await self.getUser(player3.id)
+        player3ToSave.tournaments += 1
+        await self.saveUserChanges(player3ToSave)
+        player4ToSave: PongueUser = await self.getUser(player4.id)
+        player4ToSave.tournaments += 1
+        await self.saveUserChanges(player4ToSave)
+        tournamentWinner: PongueUser = await self.getUser(winnerId)
+        await self.createTournament(player1, player2, player3, player4, tournamentWinner)
+        tournamentWinner.points += 10
+        tournamentWinner.tournaments_won += 1
+        await self.saveUserChanges(tournamentWinner)
 
     async def getSemifinalWinners(self, game1: Game, game2: Game, flag):
         game1Task = asyncio.create_task(game1.runGame())
@@ -437,3 +444,24 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         
         game3Task.cancel()
         flag.set()
+
+    @database_sync_to_async
+    def getUser(self, userId):
+        close_old_connections()
+        return PongueUser.objects.get(id=userId)
+    
+    @database_sync_to_async
+    def saveUserChanges(self, user):
+        close_old_connections()
+        user.save()
+
+    @database_sync_to_async
+    def createTournament(self, player1, player2, player3, player4, tournamentWinner):
+        close_old_connections()
+        Tournament.objects.create(
+            player_1=player1,
+            player_2=player2,
+            player_3=player3,
+            player_4=player4,
+            winner=tournamentWinner
+        )

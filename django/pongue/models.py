@@ -29,6 +29,7 @@ class PongueUser(AbstractUser):
 	games_lost = models.IntegerField(default=0, verbose_name="Losses")
 	games_played = models.IntegerField(default=0, verbose_name="Games played")
 	tournaments = models.IntegerField(default=0, verbose_name="Tournaments played")
+	tournaments_won = models.IntegerField(default=0, verbose_name="Tournaments won")
 	has_2fa = models.BooleanField(default=False, verbose_name="2FA activated")
 	from_42 = models.BooleanField(default=False, verbose_name="42 User")
 	friends = models.CharField(max_length=1000, default="", verbose_name="Friends")

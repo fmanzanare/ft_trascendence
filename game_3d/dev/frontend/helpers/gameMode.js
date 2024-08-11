@@ -8,7 +8,7 @@ function isEmptyOrSpaces(str) {
 
 export const localGame = {"local": null};
 
-export function playOnline()
+export async function playOnline()
 {
 	if (document.getElementById("selectMode"))
 	{
