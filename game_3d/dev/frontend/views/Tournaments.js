@@ -35,7 +35,7 @@ export default class extends AbstractView {
 								</div>    
 							</div>
 						</div>
-						<div class="d-none" id="blackDivTournament" style="Height:${$Height}px;width:${$width}px">
+						<div class="rounded d-none" id="blackDivTournament" style="Height:${$Height}px;width:${$width}px">
 							<div id="winnerDivTournament" class="position-relative" style="Height:${$Height}px;width:${$width}px;background-color:#1e1e1e">
                                 <div class="d-flex flex-column justify-content-evenly align-items-center h-100" style="color:white;">
                                     <h1 id="playerWinnerTournament"></h1>

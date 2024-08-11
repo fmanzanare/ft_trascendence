@@ -84,15 +84,15 @@ export default class extends AbstractView {
 											<div class="col-md-6">
 											`
 											if (data.context.user.avatar_base64 == "")
-												page += ` <img src="./dev/frontend/assets/homerSimpson.webp" class="max-width-75" alt="profile picture">`
+												page += ` <img src="./dev/frontend/assets/homerSimpson.webp" class="rounded max-width-75" alt="profile picture">`
 											else
-												page += ` <img src="${data.context.user.avatar_base64}" class="max-width-75" alt="profile picture">`
+												page += ` <img src="${data.context.user.avatar_base64}" class="rounded max-width-75" alt="profile picture">`
 											page +=
 											`
 											</div>
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
 											<h2>${data.context.user.username}</h2>
-											<p>${data.context.points}</p>
+											<p>points: ${data.context.points}</p>
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
