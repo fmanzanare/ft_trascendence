@@ -14,6 +14,12 @@ down:
 clean:
 	$(DOCKER_COMPOSE) down -v --remove-orphans
 
+p_shell:
+	docker exec -it ft_transcendence_backend_1 python manage.py shell_plus
+
+db_debug:
+	docker exec -it ft_transcendence_db_1 psql -U ft_db
+
 .PHONY: re
 re: down up
 
@@ -27,11 +33,19 @@ logs:
 
 .PHONY: exec
 exec:
-	$(DOCKER_COMPOSE) exec <service_name> <command>
+	$(DOCKER_COMPOSE) exec frontend sh
 
 .PHONY: build
 build:
 	$(DOCKER_COMPOSE) build
+
+.PHONY: makemigrations
+makemigrations:
+	docker exec -it ft_transcendence_backend_1 python manage.py makemigrations
+	
+.PHONY: migrate
+migrate:
+	docker exec -it ft_transcendence_backend_1 python manage.py migrate
 
 .PHONY: help
 help:

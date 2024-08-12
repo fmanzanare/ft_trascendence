@@ -2,6 +2,9 @@ import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
 import { changeState, putOnline} from "./helpers/statusUser.js";
 
+// Global variables
+export const openChatWebSockets = {};
+
 window.apiUrl = 'https://localhost:4000/api/';
 
 export const sockets = {};
@@ -36,3 +39,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     router();
 });
+
+function nonHtml(){
+    return    this.replace(/[&<>"'`]/g, function (char){
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&apos;',
+            '`': '&#96;'
+        }
+    });
+}

@@ -25,6 +25,8 @@ services:
 
   db:
     image: postgres:15
+    ports:
+      - 5432:5432 # expose the port for debugging
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:

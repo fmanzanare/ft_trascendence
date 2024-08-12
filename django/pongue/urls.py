@@ -22,4 +22,5 @@ urlpatterns = [
 	path("api/nickname/", views.nickname, name="nickname"),
 	path("api/online-status/", views.change_status_to_online, name="online_status"),
 	path("api/offline-status/", views.change_status_to_offline, name="offline_status"),
+	path("api/chatMessages/<chatId>/", views.chatMessages, name="chatMessages"),
 ]

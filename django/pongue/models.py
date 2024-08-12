@@ -32,8 +32,7 @@ class PongueUser(AbstractUser):
 	tournaments_won = models.IntegerField(default=0, verbose_name="Tournaments won")
 	has_2fa = models.BooleanField(default=False, verbose_name="2FA activated")
 	from_42 = models.BooleanField(default=False, verbose_name="42 User")
-	friends = models.CharField(max_length=1000, default="", verbose_name="Friends")
-	# friends = models.ManyToManyField('self', related_name="Friends", symmetrical=False, verbose_name="Friends")
+	friends = models.ManyToManyField('self', blank=True, through="PlayerFriend", verbose_name="Friends")
 	points = models.BigIntegerField(default=0, verbose_name="Ranking points")
 
 	class Meta:
@@ -156,3 +155,51 @@ class Tournament(models.Model):
 
 	def __str__(self):
 		return f"{self.player_1} | {self.player_2} | {self.player_3} | {self.player_4} | Winner: {self.winner}"
+
+# Path: django/pongue/models.py
+# This model represents the relationship between two players.
+# It has the following fields:
+# - id: The unique identifier of the player's friend.
+# - myUser: The player who sent the friend request.
+# - myFriend: The player who received the friend request.
+# - status: The status of the friend request (PENDING, ACCEPTED, REJECTED, BLOCKED).
+# - registerDate: The date when the friend request was sent.
+class PlayerFriend(models.Model):
+	class Status(models.TextChoices):
+		PENDING = 'PENDING'
+		ACCEPTED = 'ACCEPTED'
+		REJECTED = 'REJECTED'
+		BLOCKED = 'BLOCKED'
+	
+	id = models.AutoField(primary_key=True)
+	myUser = models.ForeignKey("PongueUser", on_delete=models.DO_NOTHING, related_name = "my_user")
+	myFriend = models.ForeignKey("PongueUser", on_delete=models.DO_NOTHING, related_name = "my_friend")
+	status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+	registerDate = models.DateField(auto_now_add = True)
+
+	# Sets the status of the player's friend to BLOCKED and saves the changes.
+	# Example usage:
+	# friendship = PlayerFriend.objects.get(id=1)
+	# friendship.blockFriend()
+	def blockFriend(self):
+		self.status = PlayerFriend.Status.BLOCKED
+		self.save()
+
+	# Sets the status of the player's friend to ACCEPTED and saves the changes.
+	@classmethod
+	def searchOrCreate(cls, player_a, player_b):
+
+		player1 = PongueUser.objects.filter(username__exact=player_a).first()
+		player2 = PongueUser.objects.filter(username__exact=player_b).first()
+
+		if player1 is None or player2 is None:
+			return None
+
+		makeFriend = PlayerFriend.objects.filter(myUser__exact=player1, myFriend__exact=player2) | \
+					 PlayerFriend.objects.filter(myUser__exact=player2, myFriend__exact=player1)
+
+		if makeFriend.count() == 0:
+			makeFriend = PlayerFriend.objects.create(myUser=player1, myFriend=player2)
+		else:
+			makeFriend = makeFriend.first()
+		return makeFriend

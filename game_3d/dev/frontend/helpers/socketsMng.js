@@ -46,6 +46,7 @@ export function openNewSocket(data) {
 		}
 		if (data.gameData || data.scoreData) {
 			game.getReceivedDataFromWS(data);
+			console.log(data);
 		}
 		if (data.disconnection) {
 			sessionStorage.setItem('winner', "You");

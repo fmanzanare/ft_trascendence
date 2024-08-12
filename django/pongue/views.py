@@ -1,5 +1,6 @@
+import json
 from functools import wraps
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CreateUserForm
 from django.contrib import messages
@@ -8,7 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import requests
 import os
-from .models import GameResults, PongueUser, RankingUserDTO, UserHistoryDTO, UserProfile
+from django.db.models import Q
+from .models import GameResults, PongueUser, PlayerFriend, RankingUserDTO, UserHistoryDTO, UserProfile
+from chat.models import ChatMessage
 from .otp import totp
 import base64, hashlib
 from django.http import JsonResponse
@@ -22,6 +25,8 @@ def get_user_from_jwt(request):
 	jwt = request.headers.get("Authorization")
 	if jwt:
 		payload = decode_jwt(jwt)
+		if not 'user' in payload:
+			return None
 		user = json.loads(payload['user'])[0]['fields']
 		if user and payload['exp'] > datetime.timestamp(datetime.utcnow()):
 			user_django = PongueUser.objects.get(username=user['username'])
@@ -191,7 +196,8 @@ def pass2fa(request, user_obj):
 			"redirect": True,
 			"redirect_url": "home",
 			"context": {
-				"jwt": generate_jwt(user_obj)
+				"jwt": generate_jwt(user_obj),
+				"userId": user_obj.id
 			},
 		})
 
@@ -441,32 +447,105 @@ def auth(request):
 @jwt_required
 def friends(request):
 	if request.method == "POST":
-		username = request.POST.get("username")
-		action = request.POST.get("action")
-		user = PongueUser.objects.get(username=get_user_from_jwt(request))
-		if action == "add":
-			user.friends += username + ","
-		elif action == "remove":
-			user.friends = user.friends.replace(username + ",", "")
-		user.save()
-		return JsonResponse({
-			"success": True,
-			"message": "",
-			"redirect": True,
-			"redirect_url": "index",
-			"context": {},
-		})
+		try:
+			body = json.loads(request.body)
+			username = body.get("username")
+			action = body.get("action")
+
+			if not username or not action:
+				return JsonResponse({"success": False, "message": "Missing username or action"}, status=400)
+
+			user = PongueUser.objects.filter(username=get_user_from_jwt(request)).first()
+			friend = PongueUser.objects.filter(username=username).first()
+
+			if not user or not friend:
+				return JsonResponse({"success": False, "message": "User or friend not found"}, status=404)
+
+			if action == "block":
+				friendship = (PlayerFriend.objects.filter(myUser=user, myFriend=friend) |
+							PlayerFriend.objects.filter(myUser=friend, myFriend=user)).first()
+				if not friendship:
+					return JsonResponse({
+						"success": False,
+						"message": "Friendship not found"
+						}, status=404)
+				else:
+					print("friendship", friendship)
+					friendship.blockFriend()
+			elif action == "add":
+				PlayerFriend.searchOrCreate(get_user_from_jwt(request), username)
+			elif action == "remove":
+				user.friends.remove(friend)
+			elif action in ["accept", "reject"]:
+				friendship = (PlayerFriend.objects.filter(myUser=user, myFriend=friend) |
+							PlayerFriend.objects.filter(myUser=friend, myFriend=user)).first()
+				if not friendship:
+					return JsonResponse({
+						"success": False,
+						"message": "Friendship not found"
+						}, status=404)
+				friendship.status = PlayerFriend.Status.ACCEPTED if action == "accept" else PlayerFriend.Status.REJECTED
+				friendship.save()
+			else:
+				return JsonResponse({
+					"success": False,
+					"message": "Invalid action"
+				}, status=400)
+
+			user.save()
+			return JsonResponse({
+				"success": True,
+				"message": "Action completed successfully",
+				"redirect": False,
+				"redirect_url": "",
+				"context": {}
+			})
+
+		except json.JSONDecodeError:
+			return JsonResponse({
+				"success": False,
+				"message": "Invalid JSON",
+			}, status=400)
+		except Exception as e:
+			# En un entorno de producción, sería mejor no devolver el mensaje de error interno directamente al cliente
+			return JsonResponse({
+				"success": False,
+				"message": "An unexpected error occurred"
+			}, status=404)
 	elif request.method == "GET":
-		user = PongueUser.objects.get(username=get_user_from_jwt(request))
-		friends = user.friends.split(",")
-		friends.pop()
-		return JsonResponse({
-			"success": True,
-			"message": "",
-			"redirect": False,
-			"redirect_url": "",
-			"context": {"friends": friends},
-		})
+		try:
+			# Asumiendo que get_user_from_jwt(request) devuelve un objeto de usuario válido
+			current_user = get_user_from_jwt(request)
+			# Obtener todos los objetos de amistad donde el usuario actual es el usuario o el amigo
+			friendships = PlayerFriend.objects.filter(
+				Q(myUser__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED, PlayerFriend.Status.REJECTED, PlayerFriend.Status.BLOCKED]) |
+				Q(myFriend__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED, PlayerFriend.Status.REJECTED, PlayerFriend.Status.BLOCKED])
+			).distinct()
+			# Preparar la lista de amigos para la respuesta
+			friends_list = [
+				{
+					"username": friendship.myFriend.username if friendship.myUser == current_user else friendship.myUser.username,
+					"friendUsername": friendship.myFriend.username,
+					"friendUserId": friendship.myFriend.id,
+					"friendshipId": friendship.id,
+					"status": friendship.status
+				} for friendship in friendships
+			]
+			return JsonResponse({
+				"success": True,
+				"message": "Friends list fetched successfully.",
+				"redirect": False,
+				"redirect_url": "",
+				"context": {"friends": friends_list},
+			})
+		except Exception as e:
+			return JsonResponse({
+				"success": False,
+				"message": f"An error occurred: {str(e)}",
+				"redirect": False,
+				"redirect_url": "",
+				"context": {}
+			})
 	else:
 		return JsonResponse({
 			"success": False,
@@ -679,4 +758,26 @@ def user_history(request):
 		})
 	return JsonResponse(status=HTTPStatus.OK, data={
 		"history": historyDtos
+	})
+
+
+# Retrieves the chat messages for a user.
+# Parameters:
+# - request: The HTTP request object.
+# Returns:
+# - A JSON response containing the chat messages for the user.
+@jwt_required
+def chatMessages(request, *args, **kwargs):
+	messages : list[ChatMessage] = ChatMessage.getMessages(kwargs["chatId"])
+	messagesDto = []
+	for message in messages:
+		messagesDto.append({
+			"chatId": message.chat.id,
+			"senderId": message.senderId.id,
+			"isRead": message.isRead,
+			"message": message.message
+		})
+	return JsonResponse({
+		"success": True,
+		"messages": messagesDto
 	})

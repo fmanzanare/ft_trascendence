@@ -72,3 +72,16 @@ body
 {
 	max-width: 75%;
 }
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+.search-friend-justify {
+	display: flex;
+	margin: 2%;
+	gap: 3px;
+}
