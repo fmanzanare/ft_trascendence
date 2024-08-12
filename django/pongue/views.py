@@ -563,7 +563,9 @@ def profile_id(request):
                 "avatar_base64": userProfile.avatar,
 				"status": userProfile.status,
 				"games": userProfile.games,
-				"wins": userProfile.wins
+				"wins": userProfile.wins,
+				"tournament": userProfile.tournaments,
+				"tournaments_win": userProfile.tournamentsWin
             }
         }
     })
