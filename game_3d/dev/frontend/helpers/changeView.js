@@ -114,6 +114,7 @@ function getFriends() {
 		const friendList = data.context.friends;
 		console.log("muestro friendlist")
 		console.log(friendList);
+		deleteBlockedFriend(friendList);
 		printFriends(friendList);
 	})
 	.catch(error => {
@@ -156,7 +157,6 @@ function blockFriendButton(friendList) {
 		return;
 	}
 	const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
-	console.log("Existing names: ", existingNames);
 	existingNames.forEach(name => {
 		const friendName = chatPeople.querySelector(`p[data-username="${name}"]`);
 		if (friendName && friendList.some(friend => friend.username === name
@@ -178,9 +178,12 @@ function deleteBlockedFriend(friendList) {
 	if (!chatPeople) {
 		return;
 	}
-	const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
+	const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.getAttribute("data-username"));
+	console.log("Existing names: ", existingNames);
 	existingNames.forEach(name => {
+		console.log(`name: ${name} friendList: ${friendList}`);
 		const friendName = chatPeople.querySelector(`p[data-username="${name}"]`);
+		console.log(`friend.username: ${friendList[0].username} friend status: ${friendList[0].status}`);
 		if (friendName && friendList.some(friend => friend.username === name
 			&& friend.status === "BLOCKED")) {
 			console.log("Removing blocked friend: ", friendName);
@@ -207,7 +210,6 @@ function printFriends(friendList) {
 	let lessBtnNode;
 	
 	deleteFriendshipRequestButtons(friendList);
-	deleteBlockedFriend(friendList);
 	for (let i = 0; i < friendList.length; i++) {
 		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {
 			continue;
@@ -251,6 +253,7 @@ function printFriends(friendList) {
 		}
 	}
 	blockFriendButton(friendList);
+	deleteBlockedFriend(friendList);
 }
 
 export function changeViewProfile()

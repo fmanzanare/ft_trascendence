@@ -517,8 +517,8 @@ def friends(request):
 			current_user = get_user_from_jwt(request)
 			# Obtener todos los objetos de amistad donde el usuario actual es el usuario o el amigo
 			friendships = PlayerFriend.objects.filter(
-				Q(myUser__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED]) |
-				Q(myFriend__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED])
+				Q(myUser__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED, PlayerFriend.Status.REJECTED, PlayerFriend.Status.BLOCKED]) |
+				Q(myFriend__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED, PlayerFriend.Status.REJECTED, PlayerFriend.Status.BLOCKED])
 			).distinct()
 			# Preparar la lista de amigos para la respuesta
 			friends_list = [
