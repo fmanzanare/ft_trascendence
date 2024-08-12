@@ -43,7 +43,8 @@ export default class extends AbstractView {
 			const historyData = await fetchHistory(this.userId);
 			let status;
 			let statusColor;
-			const porGamesWins = data.context.user.wins / data.context.user.games * 100
+			const porGamesWins = data.context.user.wins / data.context.user.games * 100;
+			const porTournamentsWins = data.context.user.tournaments_win / data.context.user.tournament * 100
 			switch (data.context.user.status){
 				case "ON":
 					status = "online";
@@ -92,13 +93,22 @@ export default class extends AbstractView {
 											<h2 style="color:${statusColor}">${status}</h2>
 											<p>points: ${data.context.user.puntos}</p>
 											`
-											if (data.context.user.games > 0)
-											page += `
-											<p>Games win:</p>
-											<div class="progress">
-												<div class="progress-bar" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
-												<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
-											</div> `
+											if (data.context.user.games > 0){
+												page += `
+													<p>Games win:</p>
+													<div class="progress">
+														<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+														<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
+													</div> `
+											}
+											if (data.context.user.tournament > 0){
+												page += `
+													<p>Tournaments win:</p>
+													<div class="progress">
+														<div class="progress-bar bg-success" role="progressbar" style="width: ${porTournamentsWins}%" aria-valuenow="${porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${porTournamentsWins}%</div>
+														<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porTournamentsWins}%" aria-valuenow="${100 - porTournamentsWins}" aria-valuemin="0" aria-valuemax="100"></div>
+													</div> `
+											}
 											page +=
 											`
 										</div>

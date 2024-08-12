@@ -62,6 +62,7 @@ export default class extends AbstractView {
 			}
 			console.log(data);
 			const porGamesWins = data.context.user.games_won / data.context.user.games_played * 100
+			const porTournamentsWins = data.context.user.tournaments_won / data.context.user.tournaments * 100
 			let page =
 			`
 				<div class="container-fluid py-10 h-100">
@@ -95,13 +96,22 @@ export default class extends AbstractView {
 											<h2>${data.context.user.username}</h2>
 											<p>points: ${data.context.points}</p>
 											`
-											if (data.context.user.games_played > 0)
-											page += `
-											<p>Games win:</p>
-											<div class="progress">
-												<div class="progress-bar" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
-												<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
-											</div> `
+											if (data.context.user.games_played > 0){
+												page += `
+												<p>Games win:</p>
+												<div class="progress">
+													<div class="progress-bar" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
+													<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+												</div> `
+											}
+											if (data.context.user.tournaments > 0){
+												page += `
+													<p>Tournaments win:</p>
+													<div class="progress">
+														<div class="progress-bar bg-success" role="progressbar" style="width: ${porTournamentsWins}%" aria-valuenow="${porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${porTournamentsWins}%</div>
+														<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porTournamentsWins}%" aria-valuenow="${100 - porTournamentsWins}" aria-valuemin="0" aria-valuemax="100"></div>
+													</div> `
+											}
 											page +=
 											`
 											<div class="form-check form-switch">
