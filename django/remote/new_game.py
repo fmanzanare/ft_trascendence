@@ -121,10 +121,46 @@ class Game:
             }
             await self.sockets["player1"].send(text_data=json.dumps(scoreData))
             await self.sockets["player2"].send(text_data=json.dumps(scoreData))
+    
+    async def countdown(self):
+        startingGame = {
+            "type": "starting.game",
+            "startingGame": True,
+            "status": "READY"
+        }
+        if (type(self.sockets["player1"]) != 'int'):
+            await self.sockets["player1"].send(text_data=json.dumps(startingGame))
+        if (type(self.sockets["player2"]) != 'int'):
+            await self.sockets["player2"].send(text_data=json.dumps(startingGame))
+        await asyncio.sleep(1.5)
+
+        startingGame = {
+            "type": "starting.game",
+            "startingGame": True,
+            "status": "STEADY"
+        }
+        if (type(self.sockets["player1"]) != 'int'):
+            await self.sockets["player1"].send(text_data=json.dumps(startingGame))
+        if (type(self.sockets["player2"]) != 'int'):
+            await self.sockets["player2"].send(text_data=json.dumps(startingGame))
+        await asyncio.sleep(1.5)
+
+        startingGame = {
+            "type": "starting.game",
+            "startingGame": True,
+            "status": "GO!"
+        }
+        if (type(self.sockets["player1"]) != 'int'):
+            await self.sockets["player1"].send(text_data=json.dumps(startingGame))
+        if (type(self.sockets["player2"]) != 'int'):
+            await self.sockets["player2"].send(text_data=json.dumps(startingGame))
+        await asyncio.sleep(1.5)
+
 
     async def runGame(self):
         gameStart = time.time()
         self.calculateRandomBallDir()
+        await self.countdown()
 
         while (self.score.pOne < 11 and self.score.pTwo < 11 and self.disFlags["player1"] == False and self.disFlags["player2"] == False):
             gamePositions = {
@@ -140,8 +176,10 @@ class Game:
                 "pTwoPosY": self.pTwo.yPos,
                 "matchId": self.matchId
             }
-            await self.sockets["player1"].send(text_data=json.dumps(gamePositions))
-            await self.sockets["player2"].send(text_data=json.dumps(gamePositions))
+            if (type(self.sockets["player1"]) != 'int'):
+                await self.sockets["player1"].send(text_data=json.dumps(gamePositions))
+            if (type(self.sockets["player2"]) != 'int'):
+                await self.sockets["player2"].send(text_data=json.dumps(gamePositions))
 
             self.checkGameLimitsCollisions()
             self.checkBallAndPlayerCollision(self.pOne)
@@ -177,8 +215,10 @@ class Game:
                 "matchId": self.matchId
             }
 
-            await self.sockets["player1"].send(text_data=json.dumps(finishedGame))
-            await self.sockets["player2"].send(text_data=json.dumps(finishedGame))
+            if (type(self.sockets["player1"]) != 'int'):
+                await self.sockets["player1"].send(text_data=json.dumps(finishedGame))
+            if (type(self.sockets["player2"]) != 'int'):
+                await self.sockets["player2"].send(text_data=json.dumps(finishedGame))
         else:
             playerOneScore = 0 if self.disFlags["player1"] else 11
             playerTwoScore = 0 if self.disFlags["player2"] else 11
@@ -202,8 +242,6 @@ class Game:
         p1.games_played += 1
         p2.games_played += 1
 
-        print(f"winner: {winner}, p1: {p1.id}, p2: {p2.id}, res: {winner == p1.id}")
-        print(f"p1: {p1.games_won}, p2: {p2.games_won}")
         if (winner == p1.id):
             p1.games_won += 1
             p1.points += 3
@@ -212,15 +250,9 @@ class Game:
             p2.games_won += 1
             p2.points += 3
             p1.games_lost += 1
-        print(f"p1: {p1.games_won}, p2: {p2.games_won}")
 
-        # await database_sync_to_async(p1.save)()
-        # await database_sync_to_async(p2.save)()
         await self.saveUserChanges(p1)
         await self.saveUserChanges(p2)
-
-        p1copy:PongueUser = await self.getUser(p1.id)
-        print(f"p1copy: {p1copy.games_won}")
     
     @database_sync_to_async
     def getUser(self, userId):

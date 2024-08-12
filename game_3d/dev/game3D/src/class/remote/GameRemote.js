@@ -8,6 +8,7 @@ import { Spotlight } from "../Spotlight.js"
 import { Camera } from '../Camera.js';
 import { GameSizes } from '../Sizes.js';
 import { PlayersNames } from '../PlayersNames.js';
+import { Countdown } from '../Countdown.js';
 
 export class GameRemote {
 
@@ -23,6 +24,7 @@ export class GameRemote {
 	playerOne = new Player(true, this.scene, this.sizes);
 	playerTwo = new Player(false, this.scene, this.sizes);
 	ball = new Ball(this.scene, this.sizes);
+    countdown = new Countdown(this.scene, this.sizes);
 	score = new Score(this.scene);
     names = new PlayersNames(this.scene, '', '');
 	animation = null;
@@ -131,6 +133,12 @@ export class GameRemote {
 
     getReceivedDataFromWS(data) {
         if (data.gameData) {
+            if (this.countdown.onScene) {
+                this.countdown.deleteCountdown();
+            }
+            if (!this.ball.onScene && !this.countdown.onScene) {
+                this.ball.addBallToScene();
+            }
             this.ball.getBall().position.x = data.ballPosX;
             this.ball.getBall().position.y = data.ballPosY;
             this.playerOne.getPlayer().position.x = data.pOnePosX;
@@ -142,6 +150,16 @@ export class GameRemote {
             this.score.pOneScore = data.pOneScore
             this.score.pTwoScore = data.pTwoScore
             this.score.redrawScore()
+        }
+    }
+
+    drawCountdown(data) {
+        if (data.status != null) {
+            if (this.ball.onScene) {
+                this.ball.removeBallFromScene();
+            }
+            this.countdown.countdown = data.status;
+            this.countdown.redrawCountdown();
         }
     }
 

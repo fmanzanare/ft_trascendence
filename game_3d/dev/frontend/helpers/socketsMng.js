@@ -47,6 +47,9 @@ export function openNewSocket(data) {
 		if (data.gameData || data.scoreData) {
 			game.getReceivedDataFromWS(data);
 		}
+		if (data.startingGame) {
+			game.drawCountdown(data)
+		}
 		if (data.disconnection) {
 			sessionStorage.setItem('winner', "You");
 			changeState('Online');
@@ -155,6 +158,10 @@ export function openNewSocketTournament(data) {
 			if (data.matchId == matchId) {
 				game.getReceivedDataFromWS(data);
 			}
+		}
+
+		if (data.startingGame) {
+			game.drawCountdown(data)
 		}
 
 		if (data.semifinalWinners) {
