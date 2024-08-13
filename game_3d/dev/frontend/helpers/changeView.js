@@ -73,6 +73,10 @@ function requestFriendship(e){
 	const $friendsUrl = apiUrl + 'friends/';
 	const $loginUrl = apiUrl + 'login/';
 
+	if (friend.trim() === '') {
+		alert('Please enter a friend username');
+		return;
+	}
 	fetch($friendsUrl, {
 		method: 'POST',
 		headers: {
@@ -209,7 +213,7 @@ function printFriends(friendList) {
 	let plusBtnNode;
 	let lessBtnNode;
 	
-	console.log("antes de borrar botones");
+	console.log("Friend list: ", friendList);
 	deleteFriendshipRequestButtons(friendList);
 	for (let i = 0; i < friendList.length; i++) {
 		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {
