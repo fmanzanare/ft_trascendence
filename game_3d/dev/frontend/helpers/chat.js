@@ -85,7 +85,7 @@ export function handleChatInput(friendship, friendName) {
 	if (!openChatWebSockets[friendship.friendshipId]?.chatSocket) {
 		console.log(sessionStorage.getItem('userName'), 'Creating new WebSocket: ', friendship.friendshipId);
 		const chatSocket = new WebSocket(
-			'wss://' + 'localhost' + '/api/ws/chat/' + friendship.friendshipId + '/'
+			'wss://' + 'localhost:4000' + '/api/ws/chat/' + friendship.friendshipId + '/'
 		);
 
 		// Saving messages in global variable
