@@ -19,6 +19,17 @@ function showCurrentChatFriendName(friendName) {
 	currentChatFriend.setAttribute("id", "friendNameUpperBar");
 	currentChatFriend.setAttribute("style", "display: flex; justify-content: center; align-items: center; margin: 0;");
 	currentChatFriend.setAttribute("data-username", friendName);
+
+	// Create a button element
+	const playButton = document.createElement('button');
+	playButton.innerText = 'Jugar';
+
+	// Set the button's style
+	playButton.setAttribute("class", "start-0 position-absolute");
+	playButton.setAttribute("style", "margin-left: 5px;");
+
+	// Append the button to the upperChatBar
+	upperChatBar.appendChild(playButton);
 	upperChatBar.appendChild(currentChatFriend);
 }
 
@@ -111,7 +122,6 @@ export function handleChatInput(friendship, friendName) {
 		openChatWebSockets[friendship.friendshipId].chatSocket.onopen = function (e) {
 			getChatMessages(friendship.friendshipId);
 		};
-		console.log(openChatWebSockets[friendship.friendshipId]);
 		// Focus on the chatInput
 		document.querySelector('#chatInput').focus();
 		document.querySelector('#chatInput').onkeyup = function (e) {
