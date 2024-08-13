@@ -88,6 +88,7 @@ export class Game {
 	}
 
 	startGame() {
+		this.ball.addBallToScene();
 		this.addGameToDOM();
 		this.renderer.getRenderer().setAnimationLoop( () => {
 			if (this.cancelled) {

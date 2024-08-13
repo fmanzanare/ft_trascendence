@@ -52,6 +52,9 @@ export class GameRemote {
         this.socket = socket;
         this.userId = userId;
         this.host = host;
+
+        this.keyDownMovements = this.keyDownMovements.bind(this)
+        this.keyReleaseMovements = this.keyReleaseMovements.bind(this)
     }
 
     addGameToDOM() {
@@ -123,12 +126,13 @@ export class GameRemote {
             this.renderer.getRenderer().render(this.scene, this.camera.getCamera());
         })
 
-		window.addEventListener('keydown', (e) => {
-            this.keyDownMovements(e);
-		});
-		window.addEventListener('keyup', (e) => {
-			this.keyReleaseMovements(e);
-		});
+		window.addEventListener('keydown', this.keyDownMovements);
+		window.addEventListener('keyup', this.keyReleaseMovements);
+    }
+
+    removeEventListeners() {
+        window.removeEventListener('keydown', this.keyDownMovements);
+        window.removeEventListener('keyup', this.keyReleaseMovements);
     }
 
     getReceivedDataFromWS(data) {

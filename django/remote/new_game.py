@@ -126,7 +126,7 @@ class Game:
         startingGame = {
             "type": "starting.game",
             "startingGame": True,
-            "status": "READY"
+            "status": "3"
         }
         if (type(self.sockets["player1"]) != 'int'):
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
@@ -137,7 +137,7 @@ class Game:
         startingGame = {
             "type": "starting.game",
             "startingGame": True,
-            "status": "STEADY"
+            "status": "2"
         }
         if (type(self.sockets["player1"]) != 'int'):
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
@@ -148,7 +148,7 @@ class Game:
         startingGame = {
             "type": "starting.game",
             "startingGame": True,
-            "status": "GO!"
+            "status": "1"
         }
         if (type(self.sockets["player1"]) != 'int'):
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))

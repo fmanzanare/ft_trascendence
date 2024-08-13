@@ -83,6 +83,8 @@ export function openNewSocket(data) {
 	}
 
 	remoteSocket.onclose = function (e) {
+		console.log("Connection closed")
+		game.removeEventListeners();
 		const $token = sessionStorage.getItem('pongToken')
 		fetch(`${apiUrl}online-status/`, {
 			method: "POST",
@@ -227,6 +229,7 @@ export function openNewSocketTournament(data) {
 
 	remoteSocket.onclose = function (e) {
 		console.log("Connection closed")
+		game.removeEventListeners()
 		const $token = sessionStorage.getItem('pongToken')
 		fetch(`${apiUrl}online-status/`, {
 			method: "POST",
