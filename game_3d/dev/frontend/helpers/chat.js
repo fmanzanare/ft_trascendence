@@ -5,10 +5,8 @@ import { openChatWebSockets } from "../index.js";
  * @function showCurrentChatFriendName
  */
 function showCurrentChatFriendName(friendName) {
-	// Remove the previous chat log
 	let chatLog = document.getElementById('chat-log');
 	chatLog.value = '';
-	// Remove the previous friend name from the upperChatBar
 	let upperChatBar = document.getElementById('upper-bar');
 	if (upperChatBar.querySelector('p[data-username]')) {
 		upperChatBar.querySelector('p[data-username]').remove();
@@ -16,12 +14,49 @@ function showCurrentChatFriendName(friendName) {
 	let friendBox = document.createElement('div');
 	friendBox.setAttribute("style", "display: flex; justify-content: space-between;");
 	upperChatBar.appendChild(friendBox);
-
 	let currentChatFriend = document.createElement('p');
 	currentChatFriend.innerText = friendName;
 	currentChatFriend.setAttribute("id", "friendNameUpperBar");
+	currentChatFriend.setAttribute("style", "cursor:pointer;");
 	currentChatFriend.setAttribute("data-username", friendName);
 	friendBox.appendChild(currentChatFriend);
+	currentChatFriend.addEventListener("click", () => goToUserProfileChat(friendName));		
+}
+
+function goToUserProfileChat(friendName){
+	console.log("holaaaaaaaaaaaaaaaaaaaaaaaa ", friendName);
+	const $token = sessionStorage.getItem('pongToken');
+    const $getIdUser = `${apiUrl}get_user_id/?userName=${encodeURIComponent(friendName)}`;
+
+	fetch($getIdUser, {
+        method: "GET",
+        headers: {
+            "Authorization": $token,
+            "Content-Type": 'application/json'
+        }
+    })
+    .then(response => {
+        console.log("Response Status:", response.status);
+        if (!response.ok) {
+            return response.json().then(err => {
+                console.error('Error response from server:', err);
+                throw new Error(`Server error: ${err.error || 'Unknown error'}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data) {
+            const userId = data.userId;
+			goToUserProfile(userId);
+        } else {
+            console.error('API error:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        console.error('Error details:', error.message);
+    });
 }
 
 // Retrieves the list of friends from the server and prints them.

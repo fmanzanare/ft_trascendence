@@ -15,6 +15,7 @@ urlpatterns = [
 	path("api/check_jwt/", views.check_jwt, name="check_jwt"),
 	path("api/profile/", views.profile, name="profile"),
 	path("api/profile_id/", views.profile_id, name="profile_id"),
+	path("api/get_user_id/", views.get_user_id, name="get_user_id"),
 	path("api/get2fa/", views.get2fa, name="get2fa"),
 	path("api/user_status/", views.user_status, name="user_status"),
 	path("api/ranking/", views.ranking, name="ranking"),
