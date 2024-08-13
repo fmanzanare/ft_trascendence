@@ -135,13 +135,13 @@ function deleteFriendshipRequestButtons(friendList) {
 			console.log("Removing node: ", nodeToRemove);
 			nodeToRemove.remove();
 		}
-		const plusBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#plusBtn`);
+		const plusBtnToRemove = chatPeople.querySelector(`button.plusBtn[data-username="${name}"]`);
 		if (plusBtnToRemove && !friendList.some(friend => friend.username === name
 			&& friend.status === "PENDING")) {
 			console.log("Removing plus button: ", plusBtnToRemove);
 			plusBtnToRemove.remove();
 		}
-		const lessBtnToRemove = chatPeople.querySelector(`button[data-username="${name}"]#lessBtn`);
+		const lessBtnToRemove = chatPeople.querySelector(`button.lessBtn[data-username="${name}"]`);
 		if (lessBtnToRemove && !friendList.some(friend => friend.username === name
 			&& friend.status === "PENDING")) {
 			console.log("Removing less button: ", lessBtnToRemove);
@@ -209,6 +209,7 @@ function printFriends(friendList) {
 	let plusBtnNode;
 	let lessBtnNode;
 	
+	console.log("antes de borrar botones");
 	deleteFriendshipRequestButtons(friendList);
 	for (let i = 0; i < friendList.length; i++) {
 		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {
@@ -227,7 +228,8 @@ function printFriends(friendList) {
 				nameNode.style.cursor = "pointer";
 			}
 			newFriendCont.appendChild(nameNode);
-			if (friendList[i].status === 'PENDING' || friendList[i].status === 'REJECTED') {
+			if (friendList[i].status === 'PENDING') {
+				console.log("Colocando botones");
 				plusBtnNode = document.createElement('button');
 				plusBtnNode.setAttribute("class", "plusBtn");
 				plusBtnNode.setAttribute("data-username", friendList[i].username);

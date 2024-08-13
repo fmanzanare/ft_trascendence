@@ -62,4 +62,4 @@ django/remote/migrations/*
 !./django/pongue/migrations/__init__.py
 
 # Caddy
-caddy/*
+caddy/
