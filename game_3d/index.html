@@ -6,7 +6,7 @@
 	<title>Pongue</title>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-	<link rel="stylesheet" href="./dev/frontend/assets/style.css">
+	<link rel="stylesheet" href="/dev/frontend/assets/style.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -73,13 +73,12 @@
 			</div>
 		</div>
 	</nav>
-	<div id="chat" class="position-absolute bottom-0 end-0 z-3 rounded-end d-flex d-none">
-		<div id="left-bar-chat" class="border-end border-start border-primary-subtle" style="width: 35%; height: 100%;">
-			<div class="search-friend-justify">
-				<input type="text" id="searchFriend" placeholder="Friend Name" class="form-control form-control-lg"
-					style="width: 70%; font-size: 15px;" />
-				<button type="button" class="btn" id="addFriend">
-					<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+	<div id="chat" class="position-absolute bottom-0 end-0 z-3 rounded-start d-flex d-none pe-1">
+		<div id="left-bar-chat" class="border-end border-start border-primary-subtle p-2 d-flex flex-column align-items-start" style="width: 35%; height: 100%;">
+			<div class="search-friend-justify d-flex align-items-center w-100">
+				<input type="text" id="searchFriend" placeholder="Name" class="form-control form-control-sm me-2"/>
+				<button type="button" class="btn btn-sm" id="addFriend">
+					<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="18px" fill="#000000">
 						<path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
 					</svg>
 				</button>
@@ -93,9 +92,8 @@
 			<div class="border-end border-start border-primary-subtle flex-grow-1">
 				<textarea id="chat-log" cols="38" rows="16" readonly></textarea>
 			</div>
-			<div class="border border-5" style="height: 10%; overflow: hidden; background-color: white;">
-				<input type="text" id="chatInput" placeholder="Write Message" class="form-control form-control-lg"
-					style="font-size: 15px;" />
+			<div class="border border-5 d-flex align-items-center" style="height: 10%; overflow: hidden; background-color: white;">
+				<input type="text" id="chatInput" placeholder="Write Message" class="form-control form-control-lg" style="font-size: 15px;" />
 			</div>
 		</div>
 	</div>
@@ -106,6 +104,6 @@
 				class="visually-hidden">unread messages</span></span>
 	</button>
 	<div id="app" class="h-80"></div>
-	<script type="module" src="./dev/frontend/index.js"></script>
+	<script type="module" src="/dev/frontend/index.js"></script>
 </body>
 </html>
