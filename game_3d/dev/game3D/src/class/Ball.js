@@ -14,6 +14,7 @@ export class Ball {
 	gameLimitX = 0;
 	ball = null
 	scene = null
+	onScene = false;
 
 	constructor(scene, sizes) {
 		this.yPos = ((sizes.height / 2) * 0.12 / 2);
@@ -30,7 +31,7 @@ export class Ball {
 		this.ball = new THREE.Mesh(geometry, material);
 		this.ball.position.set(0, this.yPos, this.zPos);
 		this.ball.castShadow = true;
-		this.scene.add(this.ball);
+		this.ball.name = 'ball';
 	}
 
 	getBall() {
@@ -43,6 +44,17 @@ export class Ball {
 
 	getGameLimitX() {
 		return this.gameLimitX;
+	}
+
+	removeBallFromScene() {
+		let ballObj = this.scene.getObjectByName('ball');
+		this.scene.remove(ballObj);
+		this.onScene = false;
+	}
+
+	addBallToScene() {
+		this.scene.add(this.ball);
+		this.onScene = true;
 	}
 
 }

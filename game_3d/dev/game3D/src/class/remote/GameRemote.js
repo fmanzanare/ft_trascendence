@@ -8,6 +8,7 @@ import { Spotlight } from "../Spotlight.js"
 import { Camera } from '../Camera.js';
 import { GameSizes } from '../Sizes.js';
 import { PlayersNames } from '../PlayersNames.js';
+import { Countdown } from '../Countdown.js';
 
 export class GameRemote {
 
@@ -23,6 +24,7 @@ export class GameRemote {
 	playerOne = new Player(true, this.scene, this.sizes);
 	playerTwo = new Player(false, this.scene, this.sizes);
 	ball = new Ball(this.scene, this.sizes);
+    countdown = new Countdown(this.scene, this.sizes);
 	score = new Score(this.scene);
     names = new PlayersNames(this.scene, '', '');
 	animation = null;
@@ -50,6 +52,9 @@ export class GameRemote {
         this.socket = socket;
         this.userId = userId;
         this.host = host;
+
+        this.keyDownMovements = this.keyDownMovements.bind(this)
+        this.keyReleaseMovements = this.keyReleaseMovements.bind(this)
     }
 
     addGameToDOM() {
@@ -121,16 +126,23 @@ export class GameRemote {
             this.renderer.getRenderer().render(this.scene, this.camera.getCamera());
         })
 
-		window.addEventListener('keydown', (e) => {
-            this.keyDownMovements(e);
-		});
-		window.addEventListener('keyup', (e) => {
-			this.keyReleaseMovements(e);
-		});
+		window.addEventListener('keydown', this.keyDownMovements);
+		window.addEventListener('keyup', this.keyReleaseMovements);
+    }
+
+    removeEventListeners() {
+        window.removeEventListener('keydown', this.keyDownMovements);
+        window.removeEventListener('keyup', this.keyReleaseMovements);
     }
 
     getReceivedDataFromWS(data) {
         if (data.gameData) {
+            if (this.countdown.onScene) {
+                this.countdown.deleteCountdown();
+            }
+            if (!this.ball.onScene && !this.countdown.onScene) {
+                this.ball.addBallToScene();
+            }
             this.ball.getBall().position.x = data.ballPosX;
             this.ball.getBall().position.y = data.ballPosY;
             this.playerOne.getPlayer().position.x = data.pOnePosX;
@@ -142,6 +154,21 @@ export class GameRemote {
             this.score.pOneScore = data.pOneScore
             this.score.pTwoScore = data.pTwoScore
             this.score.redrawScore()
+            new Audio('../../../../frontend/assets/doh_r4RZcVw.mp3').play().then(() =>{
+                console.log("Audio played successfully")
+            }).catch(error => {
+                console.log('Error playing audio ', error);
+            });
+        }
+    }
+
+    drawCountdown(data) {
+        if (data.status != null) {
+            if (this.ball.onScene) {
+                this.ball.removeBallFromScene();
+            }
+            this.countdown.countdown = data.status;
+            this.countdown.redrawCountdown();
         }
     }
 

@@ -23,7 +23,12 @@ def generate_jwt(user_obj):
     return jwt_token
 
 def decode_jwt(jwt_token):
-    encoded_payload, encoded_signature = jwt_token.split('.')
+    try:
+        encoded_payload, encoded_signature = jwt_token.split('.')
+    except:
+        return {
+            'error': 'Invalid token signature'
+        }
 
     payload = json.loads(base64.urlsafe_b64decode(encoded_payload.encode('utf-8')).decode('utf-8'))
 
