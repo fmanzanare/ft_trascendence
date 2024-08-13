@@ -50,7 +50,7 @@ class ChatMessage(models.Model):
 
 	@classmethod
 	def getMessages(cls, chat_id):
-		return cls.objects.filter(chat_id=chat_id).order_by("-id")[:30]
+		return cls.objects.filter(chat_id=chat_id).order_by("id")[:30]
 
 	@classmethod
 	def createMessage(cls, chat_id, senderId, message):

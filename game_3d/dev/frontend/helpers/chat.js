@@ -4,7 +4,7 @@ import { openChatWebSockets } from "../index.js";
  * Shows the current chat friend's name in the upper chat bar and clears the chat log.
  * @function showCurrentChatFriendName
  */
-function showCurrentChatFriendName(friendName) {
+function showCurrentChatFriendName(friendName, friendshipId) {
 	// Remove the previous chat log
 	let chatLog = document.getElementById('chat-log');
 	chatLog.value = '';
@@ -27,10 +27,37 @@ function showCurrentChatFriendName(friendName) {
 	// Set the button's style
 	playButton.setAttribute("class", "start-0 position-absolute");
 	playButton.setAttribute("style", "margin-left: 5px;");
+	playButton.setAttribute("data-friendship-id", friendshipId);
+	console.log("friendshipId:", friendshipId);
+	playButton.onclick = gameInvitation;
 
 	// Append the button to the upperChatBar
 	upperChatBar.appendChild(playButton);
 	upperChatBar.appendChild(currentChatFriend);
+}
+
+function gameInvitation() {
+	console.log("openChatWebSockets:", openChatWebSockets);
+	const friendshipId = this.getAttribute("data-friendship-id");
+	if (openChatWebSockets[friendshipId].gameInvitationReceived) {
+		console.log("gameInvitationReceived");
+		return;
+	} else {
+		const userId = sessionStorage.getItem('userId');
+		const messageInputDom = document.querySelector('#chatInput');
+		const chatSocket = openChatWebSockets[friendshipId].chatSocket;
+		if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+			chatSocket.send(JSON.stringify({
+				message: "",
+				chatId: friendshipId,
+				senderId: userId,
+				gameInvitation: true
+			}));
+			messageInputDom.value = ''; // Clean input before send
+			document.querySelector('#chat-log').value += "Game invitation sent\n";
+		}
+		console.log("gameInvitationSent");
+	}
 }
 
 // Retrieves the list of friends from the server and prints them.
@@ -58,6 +85,7 @@ function getChatMessages(friendshipId) {
 		} else {
 			console.error('Error: data.messages no es un array');
 		}
+		console.log("data.messages:", data.messages);
 
 		// Actualizar el chat-log con los mensajes recibidos
 		const chatLog = document.querySelector('#chat-log');
@@ -84,7 +112,7 @@ function getChatMessages(friendshipId) {
  */
 export function handleChatInput(friendship, friendName) {
 
-	showCurrentChatFriendName(friendName);
+	showCurrentChatFriendName(friendName, friendship.friendshipId);
 
 	console.log("muestro openChatWebSockets", openChatWebSockets);
 	openChatWebSockets[friendship.friendshipId]?.chatMessages?.forEach(element => {
@@ -101,18 +129,23 @@ export function handleChatInput(friendship, friendName) {
 		openChatWebSockets[friendship.friendshipId] = {};
 		openChatWebSockets[friendship.friendshipId].chatSocket = chatSocket;
 		openChatWebSockets[friendship.friendshipId].chatMessages = [];
+		openChatWebSockets[friendship.friendshipId].gameInvitationReceived = false;
+		openChatWebSockets[friendship.friendshipId].chatNotification = false;
 		
 		// Assign event handlers here to ensure they are applied to the new WebSocket
 		openChatWebSockets[friendship.friendshipId].chatSocket.onmessage = function (e) {
 			const data = JSON.parse(e.data);
-			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
+			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')
+				&& data.message.trim() !== '') {
 				document.querySelector('#chat-log').value += data.message;
 			}
-			openChatWebSockets[friendship.friendshipId].chatMessages.push({
-				senderId: sessionStorage.getItem('userId'),
-				isRead: false,
-				message: data.message
-				});
+			if (data.message.trim() !== '') {
+				openChatWebSockets[friendship.friendshipId].chatMessages.push({
+					senderId: sessionStorage.getItem('userId'),
+					isRead: false,
+					message: data.message
+					});
+			}
 		};
 
 		openChatWebSockets[friendship.friendshipId].chatSocket.onclose = function (e) {
@@ -136,11 +169,12 @@ export function handleChatInput(friendship, friendName) {
 				console.log(friendship.friendUserId)
 				// Recuperar el WebSocket correcto del mapa antes de enviar el mensaje
 				const chatSocket = openChatWebSockets[friendship.friendshipId].chatSocket;
-				if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+				if (message.trim() !== '' && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 					chatSocket.send(JSON.stringify({
 						message: message,
 						chatId: friendship.friendshipId,
 						senderId: userId,
+						gameInvitation: false
 					}));
 					messageInputDom.value = ''; // Clean input before send
 				}
