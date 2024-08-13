@@ -26,7 +26,10 @@ def get_user_from_jwt(request):
 			return None
 		user = json.loads(payload['user'])[0]['fields']
 		if user and payload['exp'] > datetime.timestamp(datetime.utcnow()):
-			user_django = PongueUser.objects.get(username=user['username'])
+			try:
+				user_django = PongueUser.objects.get(username=user['username'])
+			except PongueUser.DoesNotExist:
+				return None
 			if user_django:
 				response = user_django
 			else:

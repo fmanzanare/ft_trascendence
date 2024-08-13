@@ -154,6 +154,11 @@ export class GameRemote {
             this.score.pOneScore = data.pOneScore
             this.score.pTwoScore = data.pTwoScore
             this.score.redrawScore()
+            new Audio('../../../../frontend/assets/doh_r4RZcVw.mp3').play().then(() =>{
+                console.log("Audio played successfully")
+            }).catch(error => {
+                console.log('Error playing audio ', error);
+            });
         }
     }
 

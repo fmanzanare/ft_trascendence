@@ -132,7 +132,7 @@ class Game:
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
         if (type(self.sockets["player2"]) != 'int'):
             await self.sockets["player2"].send(text_data=json.dumps(startingGame))
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(2)
 
         startingGame = {
             "type": "starting.game",
