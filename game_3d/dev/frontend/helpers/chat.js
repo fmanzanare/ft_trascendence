@@ -5,8 +5,8 @@ import { acceptGameInvitation } from "./gameMode.js";
  * Shows the current chat friend's name in the upper chat bar and clears the chat log.
  * @function showCurrentChatFriendName
  */
-function showCurrentChatFriendName(friendName) {
-	chatLog.value = '';
+function showCurrentChatFriendName(friendName, friendshipId) {
+	removeAllMessagesInChatLog();
 	let upperChatBar = document.getElementById('upper-bar');
 	if (upperChatBar.querySelector('p[data-username]')) {
 		upperChatBar.querySelector('p[data-username]').remove();
