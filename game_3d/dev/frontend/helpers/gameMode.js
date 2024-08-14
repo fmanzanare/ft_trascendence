@@ -44,7 +44,11 @@ export async function playOnline()
 		const $errorMessage = document.getElementById("errorMessage");
 		if (isEmptyOrSpaces($nickName.value))
 		{
-			$errorMessage.textContent = "campo obligatorio";
+			$errorMessage.textContent = "Required field";
+			return ;
+		}
+		if ($nickName.value.length > 8){
+			$errorMessage.textContent = "Nick must be less than 9 characters long";
 			return ;
 		}
 		const $token = sessionStorage.getItem('pongToken');

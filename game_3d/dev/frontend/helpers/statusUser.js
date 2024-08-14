@@ -1,7 +1,9 @@
 export function changeState(status){
 	const $userStatus = document.getElementById("userStatus");
-	const $chat = document.getElementById("displayChat");
+	const $chat = document.getElementById("chat");
+	const $chatDisplay = document.getElementById("displayChat");
 	$chat.classList.add("d-none");
+	$chatDisplay.classList.add("d-none");
 	$userStatus.style.color = "blue"
 	switch (status) {
         case "Searching game":
@@ -23,8 +25,8 @@ export function changeState(status){
 			$userStatus.style.color = "gray"
         default:
             $userStatus.textContent = "Online"
-			if ($chat.classList.contains("d-none"))
-				$chat.classList.remove("d-none");
+			if ($chatDisplay.classList.contains("d-none"))
+				$chatDisplay.classList.remove("d-none")
 			$userStatus.style.color = "#56ba6f"
             break;
     }

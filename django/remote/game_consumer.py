@@ -44,11 +44,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             if (self.rooms[self.room_group_name]["players"]["player1"] == -1):
                 self.rooms[self.room_group_name]["players"]["player1"] = player
                 self.game.pOne.playerId = data["userId"]
-                self.game.pOne.playerName = player.display_name
+                self.game.pOne.playerName = player.username
             else:
                 self.rooms[self.room_group_name]["players"]["player2"] = player 
                 self.game.pTwo.playerId = data["userId"]
-                self.game.pTwo.playerName = player.display_name
+                self.game.pTwo.playerName = player.username
                 await self.channel_layer.group_send(
                     self.room_group_name, {
                         "type": "game.ready",

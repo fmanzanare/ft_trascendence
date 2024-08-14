@@ -88,7 +88,11 @@ export default class extends AbstractView {
 											if (data.context.user.avatar_base64 == "")
 												page += ` <img src="./dev/frontend/assets/homerSimpson.webp" class="rounded max-width-75" alt="profile picture">`
 											else
-												page += ` <img src="${data.context.user.avatar_base64}" class="rounded max-width-75" alt="profile picture">`
+												page += ` 
+											<div style="width: 500px; height: 500px; overflow: hidden;">
+											<img src="${data.context.user.avatar_base64}" class="img-fluid rounded" alt="profile picture">
+											</div>
+											`
 											page +=
 											`
 											</div>
@@ -137,7 +141,7 @@ export default class extends AbstractView {
 											</div>
 											<div class="form-outline form-white mb-4" style="color:white">
 												<label for="profilePictureChange">New profile picture:</label>
-												<input type="file" class="form-control-file" id="profilePictureChange" name="profilePicture">
+												<input type="file" accept=".jpg,.png,.jpeg,.webp" class="form-control-file" id="profilePictureChange" name="profilePicture">
 											</div>
 											<div class="form-check form-switch">
 			`
