@@ -1,4 +1,5 @@
 import { handleChatInput } from "./chat.js";
+import { openChatWebSockets } from "../index.js";
 
 
 export function displayChat()
