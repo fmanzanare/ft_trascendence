@@ -124,13 +124,19 @@ function gameInvitation() {
 }
 
 function rejectGameInvitation() {
-	const friendshipId = this.getAttribute("data-friendship-id");
+	const friendshipId = document.querySelector('#upper-bar button.rejectButton').getAttribute("data-friendship-id");
+	console.log("friendshipId reject game invitation:", friendshipId);
 	const chatSocket = openChatWebSockets[friendshipId].chatSocket;
+	const rejectButton = document.querySelector('#upper-bar button.rejectButton[data-friendship-id]');
+	if (rejectButton) {
+		rejectButton.remove();
+	}
 	if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 		chatSocket.send(JSON.stringify({
 			message: "Game invitation rejected",
 			chatId: friendshipId,
 			senderId: sessionStorage.getItem('userId'),
+			gameInvitation: false,
 			gameInvitationResponse: false
 		}));
 	}
@@ -217,6 +223,7 @@ export function handleChatInput(friendship, friendName) {
 				const $notification = document.getElementById("notificationMsg");
 				$notification.classList.remove('d-none');
 				openChatWebSockets[friendship.friendshipId].chatNotification = true;
+
 				addMessageToChatLog(data.message);
 			} else {
 				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
