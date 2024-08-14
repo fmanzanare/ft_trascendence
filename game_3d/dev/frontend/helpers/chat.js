@@ -178,8 +178,14 @@ export function handleChatInput(friendship, friendName) {
 			console.log('Received message:', data);
 			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')
 				&& data.message.trim() !== '') {
-				console.log('message received to chat log:', data.message);
+				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
+				console.log('chatNotification: true');
+				openChatWebSockets[friendship.friendshipId].chatNotification = true;
 				addMessageToChatLog(data.message);
+			} else {
+				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
+				console.log('chatNotification: false');
+				openChatWebSockets[friendship.friendshipId].chatNotification = false;
 			}
 			if (data.message.trim() !== '' && data.gameInvitation === false) {
 				openChatWebSockets[friendship.friendshipId].chatMessages.push({
@@ -288,4 +294,17 @@ function addMessageToChatLog(message) {
 	paragraph.setAttribute("style", "margin: 0;");
 	paragraph.textContent = message;
 	chatLog.appendChild(paragraph);
+}
+
+function nonHtml(){
+    return    this.replace(/[&<>"'`]/g, function (char){
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&apos;',
+            '`': '&#96;'
+        }
+    });
 }
