@@ -22,7 +22,6 @@ function showCurrentChatFriendName(friendName) {
 }
 
 function goToUserProfileChat(friendName){
-	console.log("holaaaaaaaaaaaaaaaaaaaaaaaa ", friendName);
 	const $token = sessionStorage.getItem('pongToken');
     const $getIdUser = `${apiUrl}get_user_id/?userName=${encodeURIComponent(friendName)}`;
 

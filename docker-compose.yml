@@ -5,7 +5,7 @@ services:
     image: redis:7.4-alpine
     container_name: redis
     ports:
-      - "6379:6379"
+      - "9999:9999"
     depends_on:
       - db
       - backend
