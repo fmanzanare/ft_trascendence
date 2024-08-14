@@ -8,6 +8,9 @@ export function openNewSocket(data) {
 	const userId = data.userId;
 	const host = id == userId;
 
+	console.log(`UserId: ${userId}`)
+	console.log(`HostId: ${id}`)
+
 	const $loading = document.getElementById("loading");
 	const $divSelect = document.getElementById("blackDiv");
 	const $instructionsOne = document.getElementById("instructions");

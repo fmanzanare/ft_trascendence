@@ -6,9 +6,7 @@ import { acceptGameInvitation } from "./gameMode.js";
  * @function showCurrentChatFriendName
  */
 function showCurrentChatFriendName(friendName, friendshipId) {
-	// Remove the previous chat log
 	removeAllMessagesInChatLog();
-	// Remove the previous friend name from the upperChatBar
 	let upperChatBar = document.getElementById('upper-bar');
 	if (upperChatBar.querySelector('p[data-username]')) {
 		upperChatBar.querySelector('p[data-username]').remove();
@@ -17,7 +15,7 @@ function showCurrentChatFriendName(friendName, friendshipId) {
 	let currentChatFriend = document.createElement('p');
 	currentChatFriend.innerText = friendName;
 	currentChatFriend.setAttribute("id", "friendNameUpperBar");
-	currentChatFriend.setAttribute("style", "display: flex; justify-content: center; align-items: center; margin: 0;");
+	currentChatFriend.setAttribute("style", "display: flex; justify-content: center; align-items: center; margin: 0; cursor:pointer;");
 	currentChatFriend.setAttribute("data-username", friendName);
 
 	// Create a button element
@@ -34,6 +32,42 @@ function showCurrentChatFriendName(friendName, friendshipId) {
 	// Append the button to the upperChatBar
 	upperChatBar.appendChild(playButton);
 	upperChatBar.appendChild(currentChatFriend);
+	currentChatFriend.addEventListener("click", () => goToUserProfileChat(friendName));		
+}
+
+function goToUserProfileChat(friendName){
+	const $token = sessionStorage.getItem('pongToken');
+    const $getIdUser = `${apiUrl}get_user_id/?userName=${encodeURIComponent(friendName)}`;
+
+	fetch($getIdUser, {
+        method: "GET",
+        headers: {
+            "Authorization": $token,
+            "Content-Type": 'application/json'
+        }
+    })
+    .then(response => {
+        console.log("Response Status:", response.status);
+        if (!response.ok) {
+            return response.json().then(err => {
+                console.error('Error response from server:', err);
+                throw new Error(`Server error: ${err.error || 'Unknown error'}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data) {
+            const userId = data.userId;
+			goToUserProfile(userId);
+        } else {
+            console.error('API error:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        console.error('Error details:', error.message);
+    });
 }
 
 function gameInvitation() {
@@ -226,7 +260,7 @@ export function handleChatInput(friendship, friendName) {
 				
 				console.log("hostGameId:", sessionStorage.getItem('userId'), "guestGameId:", data.senderId);
 				addMessageToChatLog('Game invitation accepted. Starting Game\n');
-				acceptGameInvitation(sessionStorage.getItem('userId'), data.senderId);
+				acceptGameInvitation(sessionStorage.getItem('userId'), sessionStorage.getItem('userId'));
 			} else if (data.gameInvitationResponse === false
 				&& data.senderUsername !== sessionStorage.getItem('userName')
 				&& data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {

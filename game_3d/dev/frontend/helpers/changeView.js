@@ -167,15 +167,18 @@ function blockFriendButton(friendList) {
 	}
 	const existingNames = Array.from(chatPeople.querySelectorAll('p')).map(node => node.innerText);
 	existingNames.forEach(name => {
-		const friendName = chatPeople.querySelector(`p[data-username="${name}"]`);
-		if (friendName && friendList.some(friend => friend.username === name
+		const friendDiv = chatPeople.querySelector(`div[data-username="${name}"]`);
+		if (friendDiv && friendList.some(friend => friend.username === name
 			&& friend.status === "ACCEPTED")) {
 			const blockBtn = document.createElement('button');
-			blockBtn.setAttribute("class", "blockBtn");
+			blockBtn.setAttribute("class", "blockBtn btn btn-sm");
 			blockBtn.setAttribute("data-username", name);
 			blockBtn.onclick = handleButtonClick;
-			blockBtn.innerText = "Block";
-			friendName.appendChild(blockBtn);
+			blockBtn.innerHTML = 	`<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-ban' viewBox='0 0 16 16'>
+										<path d='M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0'/>
+									</svg>`;
+
+			friendDiv.appendChild(blockBtn);
 			console.log("Adding block button: ", blockBtn);
 		}
 	});
@@ -227,11 +230,14 @@ function printFriends(friendList) {
 			&& friendList[i].friendUsername !== friendList[i].username)
 			|| friendList[i].status === 'ACCEPTED') {
 				newFriendCont = document.createElement('div');
-			newFriendCont.setAttribute("style", "display: flex; justify-content: space-between;");
+			newFriendCont.classList.add('d-flex', 'w-100', 'justify-content-between', 'align-items-center', 'mb-2');
+			newFriendCont.setAttribute("id", "friendDiv");
+			newFriendCont.setAttribute("data-username", friendList[i].username);
 			nameNode = document.createElement('p');
 			nameNode.innerText = friendList[i].username;
 			nameNode.setAttribute("id", "friendName");
 			nameNode.setAttribute("data-username", friendList[i].username);
+			nameNode.classList.add('m-0');
 			if (friendList[i].status === 'ACCEPTED') {
 				handleChatInput(friendList[i], friendList[i].username)
 				nameNode.onclick = () => handleChatInput(friendList[i], friendList[i].username);
@@ -241,14 +247,14 @@ function printFriends(friendList) {
 			if (friendList[i].status === 'PENDING') {
 				console.log("Colocando botones");
 				plusBtnNode = document.createElement('button');
-				plusBtnNode.setAttribute("class", "plusBtn");
+				plusBtnNode.classList.add("plusBtn", "btn", "btn-sm", "btn-success");
 				plusBtnNode.setAttribute("data-username", friendList[i].username);
 				plusBtnNode.onclick = handleButtonClick;
 				plusBtnNode.innerText = "+";
-				Object.assign(plusBtnNode, { type: "button", style: "margin-left: auto;" });
+				Object.assign(plusBtnNode, { type: "button", style: "margin-left: 3rem;--bs-btn-bg: rgb(86, 186, 111);--bs-btn-border-color: rgb(86, 186, 111)" });
 				
 				lessBtnNode = document.createElement('button');
-				lessBtnNode.setAttribute("class", "lessBtn");
+				lessBtnNode.classList.add("lessBtn", "btn", "btn-sm", "btn-danger");
 				lessBtnNode.setAttribute("data-username", friendList[i].username);
 				lessBtnNode.setAttribute("type", "button");
 				lessBtnNode.onclick = handleButtonClick;

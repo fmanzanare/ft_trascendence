@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 import requests
 import os
 from django.db.models import Q
@@ -382,8 +383,18 @@ def auth(request):
 				"redirect_uri": "https://localhost:4000/home",
 			}
 			auth_response = requests.post("https://api.intra.42.fr/oauth/token", data=data)
-			print(f"API RESPONSE!!!! - {auth_response.json()}")
-			access_token = auth_response.json()["access_token"]
+			try:
+				print(f"API RESPONSE!!!! - {auth_response.json()}")
+				access_token = auth_response.json()["access_token"]
+			except:
+				return JsonResponse({
+					"success": False,
+					"message": "Invalid method",
+					"redirect": True,
+					"redirect_url": "login",
+					"context": {}
+				})
+
 			user_response = requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": f"Bearer {access_token}"})
 			username = user_response.json()["login"]
 			display_name = user_response.json()["displayname"]
@@ -637,25 +648,40 @@ def profile(request):
 #Profile other user
 @jwt_required
 def profile_id(request):
-    user_id = request.GET.get("userId")
-    user = PongueUser.objects.get(id=user_id)
-    userProfile = UserProfile.toUseUserProfile(user)
-    return JsonResponse({
+	user = None
+	user_id = request.GET.get("userId")
+	try:
+		if user_id:
+			user = PongueUser.objects.get(id=user_id)
+		else:
+			return JsonResponse({"success": False, "error": "userId is required"}, status=400)
+	except ObjectDoesNotExist:
+		return JsonResponse({"success": False, "error": "User not found"}, status=404)
+	userProfile = UserProfile.toUseUserProfile(user)
+	return JsonResponse({
         "success": True,
         "context": {
             "user": {
                 "display_name": userProfile.nick,
                 "puntos": userProfile.points,
                 "avatar_base64": userProfile.avatar,
-				"status": userProfile.status,
-				"games": userProfile.games,
-				"wins": userProfile.wins,
-				"tournament": userProfile.tournaments,
-				"tournaments_win": userProfile.tournamentsWin
+                "status": userProfile.status,
+                "games": userProfile.games,
+                "wins": userProfile.wins,
+                "tournament": userProfile.tournaments,
+                "tournaments_win": userProfile.tournamentsWin
             }
         }
     })
 
+@jwt_required
+def get_user_id(request):
+	user_name = request.GET.get("userName")
+	user = PongueUser.objects.get(username=user_name)
+	return JsonResponse(status=HTTPStatus.OK, data={
+		"userId": user.id
+	})
+	
 @jwt_required
 def user_status(request):
 	user = get_user_from_jwt(request)

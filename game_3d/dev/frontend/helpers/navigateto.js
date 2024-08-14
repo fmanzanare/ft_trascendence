@@ -90,6 +90,14 @@ async function  tokenFalse(url)
 	hideLoading();
 }
 
+export function navigateToWhenInvitationAccepted(url) {
+	let promise = new Promise(async (resolve, reject) => {
+		await tokenTrue(url);
+		resolve(true);
+	})
+	return promise;
+}
+
 export function navigateTo(url) {
 	const $token = sessionStorage.getItem('pongToken');
 	if ($token)
