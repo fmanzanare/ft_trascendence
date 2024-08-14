@@ -382,8 +382,18 @@ def auth(request):
 				"redirect_uri": "https://localhost:4000/home",
 			}
 			auth_response = requests.post("https://api.intra.42.fr/oauth/token", data=data)
-			print(f"API RESPONSE!!!! - {auth_response.json()}")
-			access_token = auth_response.json()["access_token"]
+			try:
+				print(f"API RESPONSE!!!! - {auth_response.json()}")
+				access_token = auth_response.json()["access_token"]
+			except:
+				return JsonResponse({
+					"success": False,
+					"message": "Invalid method",
+					"redirect": True,
+					"redirect_url": "login",
+					"context": {}
+				})
+
 			user_response = requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": f"Bearer {access_token}"})
 			username = user_response.json()["login"]
 			display_name = user_response.json()["displayname"]

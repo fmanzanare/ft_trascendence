@@ -226,7 +226,7 @@ export function handleChatInput(friendship, friendName) {
 				
 				console.log("hostGameId:", sessionStorage.getItem('userId'), "guestGameId:", data.senderId);
 				addMessageToChatLog('Game invitation accepted. Starting Game\n');
-				acceptGameInvitation(sessionStorage.getItem('userId'), data.senderId);
+				acceptGameInvitation(sessionStorage.getItem('userId'), sessionStorage.getItem('userId'));
 			} else if (data.gameInvitationResponse === false
 				&& data.senderUsername !== sessionStorage.getItem('userName')
 				&& data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
