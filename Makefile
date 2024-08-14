@@ -41,11 +41,11 @@ build:
 
 .PHONY: makemigrations
 makemigrations:
-	docker exec -it ft_transcendence_backend_1 python manage.py makemigrations
+	docker exec -it ft_trascendence-backend-1 python manage.py makemigrations
 	
 .PHONY: migrate
 migrate:
-	docker exec -it ft_transcendence_backend_1 python manage.py migrate
+	docker exec -it ft_trascendence-backend-1 python manage.py migrate
 
 .PHONY: help
 help:

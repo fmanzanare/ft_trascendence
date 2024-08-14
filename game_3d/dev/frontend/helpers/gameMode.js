@@ -1,5 +1,5 @@
 import { Game } from "../../game3D/src/class/Game.js";
-import { navigateTo } from "./navigateto.js";
+import { navigateTo, navigateToWhenInvitationAccepted } from "./navigateto.js";
 import { openNewSocket, openNewSocketTournament } from "./socketsMng.js";
 import { changeState } from "./statusUser.js";
 
@@ -134,11 +134,12 @@ export function playLocal()
 
 export function acceptGameInvitation(hostId, userId) {
 	// TODO - Check if it works when user is in playing status.
-	navigateTo('home')
-	changeState('In game')
-	const data = {
-		roomId: hostId,
-		userId: userId
-	}
-	openNewSocket(data)
+	navigateToWhenInvitationAccepted('home').then((res) => {
+		const data = {
+			roomId: hostId,
+			userId: userId
+		}
+		changeState('In game')
+		openNewSocket(data)
+	})
 }

@@ -70,6 +70,10 @@ function requestFriendship(e){
 	const friendInputDom = document.querySelector('#searchFriend');
 	const $token = sessionStorage.getItem('pongToken');
 	const friend = friendInputDom.value;
+	if (friend === sessionStorage.getItem('userName')) {
+		alert('You cannot add yourself as a friend');
+		return;
+	}
 	friendInputDom.value = '';
 	const $friendsUrl = apiUrl + 'friends/';
 	const $loginUrl = apiUrl + 'login/';
@@ -136,7 +140,7 @@ function deleteFriendshipRequestButtons(friendList) {
 	existingNames.forEach(name => {
 		const nodeToRemove = chatPeople.querySelector(`p[data-username="${name}"]`);
 		if (nodeToRemove && !friendList.some(friend => friend.username === name
-			&& friend.status === "PENDING")) {
+			&& (friend.status === "PENDING"))) {
 			console.log("Removing node: ", nodeToRemove);
 			nodeToRemove.remove();
 		}
@@ -224,7 +228,7 @@ function printFriends(friendList) {
 			continue;
 		} else if((friendList[i].status === 'PENDING'
 			&& friendList[i].friendUsername !== friendList[i].username)
-			|| friendList[i].status === 'ACCEPTED' || friendList[i].status === 'REJECTED') {
+			|| friendList[i].status === 'ACCEPTED') {
 				newFriendCont = document.createElement('div');
 			newFriendCont.classList.add('d-flex', 'w-100', 'justify-content-between', 'align-items-center', 'mb-2');
 			newFriendCont.setAttribute("id", "friendDiv");

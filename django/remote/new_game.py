@@ -128,9 +128,9 @@ class Game:
             "startingGame": True,
             "status": "3"
         }
-        if (type(self.sockets["player1"]) != 'int'):
+        if (type(self.sockets["player1"]) != int):
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
-        if (type(self.sockets["player2"]) != 'int'):
+        if (type(self.sockets["player2"]) != int):
             await self.sockets["player2"].send(text_data=json.dumps(startingGame))
         await asyncio.sleep(2)
 
@@ -139,9 +139,9 @@ class Game:
             "startingGame": True,
             "status": "2"
         }
-        if (type(self.sockets["player1"]) != 'int'):
+        if (type(self.sockets["player1"]) != int):
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
-        if (type(self.sockets["player2"]) != 'int'):
+        if (type(self.sockets["player2"]) != int):
             await self.sockets["player2"].send(text_data=json.dumps(startingGame))
         await asyncio.sleep(1.5)
 
@@ -150,9 +150,9 @@ class Game:
             "startingGame": True,
             "status": "1"
         }
-        if (type(self.sockets["player1"]) != 'int'):
+        if (type(self.sockets["player1"]) != int):
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
-        if (type(self.sockets["player2"]) != 'int'):
+        if (type(self.sockets["player2"]) != int):
             await self.sockets["player2"].send(text_data=json.dumps(startingGame))
         await asyncio.sleep(1.5)
 
@@ -176,9 +176,9 @@ class Game:
                 "pTwoPosY": self.pTwo.yPos,
                 "matchId": self.matchId
             }
-            if (type(self.sockets["player1"]) != 'int'):
+            if (type(self.sockets["player1"]) != int):
                 await self.sockets["player1"].send(text_data=json.dumps(gamePositions))
-            if (type(self.sockets["player2"]) != 'int'):
+            if (type(self.sockets["player2"]) != int):
                 await self.sockets["player2"].send(text_data=json.dumps(gamePositions))
 
             self.checkGameLimitsCollisions()
@@ -215,9 +215,9 @@ class Game:
                 "matchId": self.matchId
             }
 
-            if (type(self.sockets["player1"]) != 'int'):
+            if (type(self.sockets["player1"]) != int):
                 await self.sockets["player1"].send(text_data=json.dumps(finishedGame))
-            if (type(self.sockets["player2"]) != 'int'):
+            if (type(self.sockets["player2"]) != int):
                 await self.sockets["player2"].send(text_data=json.dumps(finishedGame))
         else:
             playerOneScore = 0 if self.disFlags["player1"] else 11
