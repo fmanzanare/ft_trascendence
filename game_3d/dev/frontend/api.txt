@@ -1,3 +1,0 @@
-Para despues (Chat) -> Desbordabiendo vertical del div de mensajes para hacer scroll y ubicacion de mensajes (derecha / izquierda)
-
-Endpoint de datos del perfil -> Pendiente Fernando.

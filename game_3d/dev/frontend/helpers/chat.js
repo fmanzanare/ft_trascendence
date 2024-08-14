@@ -214,6 +214,8 @@ export function handleChatInput(friendship, friendName) {
 				&& data.message.trim() !== '') {
 				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
 				console.log('chatNotification: true');
+				const $notification = document.getElementById("notificationMsg");
+				$notification.classList.remove('d-none');
 				openChatWebSockets[friendship.friendshipId].chatNotification = true;
 				addMessageToChatLog(data.message);
 			} else {

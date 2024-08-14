@@ -6,8 +6,12 @@ export function displayChat()
 {
 	const $chatButton = document.getElementById("displayChat");
 	const $chat = document.getElementById("chat");
+	const $notification = document.getElementById("notificationMsg");
 	if($chat.classList.contains('d-none'))
 	{
+		if (!$notification.classList.contains('d-none')){
+			$notification.classList.add('d-none');
+		}
 		$chatButton.classList.add('d-none');
 		$chat.classList.remove('d-none');
 		document.querySelector("#addFriend").onclick = requestFriendship;
@@ -169,17 +173,19 @@ function blockFriendButton(friendList) {
 	existingNames.forEach(name => {
 		const friendDiv = chatPeople.querySelector(`div[data-username="${name}"]`);
 		if (friendDiv && friendList.some(friend => friend.username === name
-			&& friend.status === "ACCEPTED")) {
-			const blockBtn = document.createElement('button');
-			blockBtn.setAttribute("class", "blockBtn btn btn-sm");
-			blockBtn.setAttribute("data-username", name);
-			blockBtn.onclick = handleButtonClick;
-			blockBtn.innerHTML = 	`<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-ban' viewBox='0 0 16 16'>
+			&& friend.status === "ACCEPTED" )) {
+			const existingBlockBtn = friendDiv.querySelector('.blockBtn');
+            if (!existingBlockBtn) {
+				const blockBtn = document.createElement('button');
+				blockBtn.setAttribute("class", "blockBtn btn btn-sm");
+				blockBtn.setAttribute("data-username", name);
+				blockBtn.onclick = handleButtonClick;
+				blockBtn.innerHTML = 	`<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-ban' viewBox='0 0 16 16'>
 										<path d='M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0'/>
 									</svg>`;
-
-			friendDiv.appendChild(blockBtn);
-			console.log("Adding block button: ", blockBtn);
+				friendDiv.appendChild(blockBtn);
+				console.log("Adding block button: ", blockBtn);
+			}
 		}
 	});
 }
@@ -209,67 +215,70 @@ function deleteBlockedFriend(friendList) {
 		}
 	});
 }
-// Prints the list of friends in the chat
 function printFriends(friendList) {
-	let chatPeople = document.getElementById('left-bar-chat');
+	let chatPeople = document.getElementById('friend-list-container');
 	if (!chatPeople || !friendList) {
 		return;
 	}
-	// let newFriendCont = document.createElement('div');
-	let newFriendCont;
-	let nameNode;
-	let plusBtnNode;
-	let lessBtnNode;
-	
 	console.log("Friend list: ", friendList);
 	deleteFriendshipRequestButtons(friendList);
+	chatPeople.innerHTML = '';
+
 	for (let i = 0; i < friendList.length; i++) {
 		if (chatPeople.querySelector(`p[data-username="${friendList[i].username}"]`)) {
 			continue;
-		} else if((friendList[i].status === 'PENDING'
-			&& friendList[i].friendUsername !== friendList[i].username)
+		}
+
+		if((friendList[i].status === 'PENDING' && friendList[i].friendUsername !== friendList[i].username)
 			|| friendList[i].status === 'ACCEPTED') {
-				newFriendCont = document.createElement('div');
+
+			let newFriendCont = document.createElement('div');
 			newFriendCont.classList.add('d-flex', 'w-100', 'justify-content-between', 'align-items-center', 'mb-2');
-			newFriendCont.setAttribute("id", "friendDiv");
 			newFriendCont.setAttribute("data-username", friendList[i].username);
-			nameNode = document.createElement('p');
+
+			let nameNode = document.createElement('p');
 			nameNode.innerText = friendList[i].username;
-			nameNode.setAttribute("id", "friendName");
 			nameNode.setAttribute("data-username", friendList[i].username);
 			nameNode.classList.add('m-0');
+
 			if (friendList[i].status === 'ACCEPTED') {
 				handleChatInput(friendList[i], friendList[i].username)
 				nameNode.onclick = () => handleChatInput(friendList[i], friendList[i].username);
 				nameNode.style.cursor = "pointer";
 			}
+
 			newFriendCont.appendChild(nameNode);
+
 			if (friendList[i].status === 'PENDING') {
 				console.log("Colocando botones");
-				plusBtnNode = document.createElement('button');
+
+				let plusBtnNode = document.createElement('button');
 				plusBtnNode.classList.add("plusBtn", "btn", "btn-sm", "btn-success");
 				plusBtnNode.setAttribute("data-username", friendList[i].username);
 				plusBtnNode.onclick = handleButtonClick;
 				plusBtnNode.innerText = "+";
-				Object.assign(plusBtnNode, { type: "button", style: "margin-left: 3rem;--bs-btn-bg: rgb(86, 186, 111);--bs-btn-border-color: rgb(86, 186, 111)" });
-				
-				lessBtnNode = document.createElement('button');
+				Object.assign(plusBtnNode, { 
+					type: "button", 
+					style: "margin-left: 5rem;--bs-btn-bg: rgb(86, 186, 111);--bs-btn-border-color: rgb(86, 186, 111)" 
+				});
+
+				let lessBtnNode = document.createElement('button');
 				lessBtnNode.classList.add("lessBtn", "btn", "btn-sm", "btn-danger");
 				lessBtnNode.setAttribute("data-username", friendList[i].username);
 				lessBtnNode.setAttribute("type", "button");
 				lessBtnNode.onclick = handleButtonClick;
 				lessBtnNode.innerText = "-";
-				newFriendCont.appendChild(nameNode);
+
 				newFriendCont.appendChild(plusBtnNode);
 				newFriendCont.appendChild(lessBtnNode);
-			}
-			else {
+			} else {
 				console.log("Friend accepted");
-				newFriendCont.appendChild(nameNode);
 			}
+
 			chatPeople.appendChild(newFriendCont);
 		}
 	}
+
 	blockFriendButton(friendList);
 	deleteBlockedFriend(friendList);
 }
