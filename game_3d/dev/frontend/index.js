@@ -4,6 +4,11 @@ import { changeState, putOnline} from "./helpers/statusUser.js";
 import { getFriends } from "./helpers/changeView.js";
 
 // Global variables
+const DEBUG = false;
+if (DEBUG) {
+    console.log = () => {}
+}
+
 export const openChatWebSockets = {};
 
 window.apiUrl = 'https://localhost:4000/api/';

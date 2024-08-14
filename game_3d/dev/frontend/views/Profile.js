@@ -97,6 +97,7 @@ export default class extends AbstractView {
 											`
 											</div>
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
+											<h2>${data.context.user.display_name}</h2>
 											<h2>${data.context.user.username}</h2>
 											<p>points: ${data.context.points}</p>
 											`
@@ -104,8 +105,8 @@ export default class extends AbstractView {
 												page += `
 												<p>Games win:</p>
 												<div class="progress">
-													<div class="progress-bar" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100"></div>
 													<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+													<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100">${100 - porGamesWins}%</div>
 												</div> `
 											}
 											if (data.context.user.tournaments > 0){
@@ -113,7 +114,7 @@ export default class extends AbstractView {
 													<p>Tournaments win:</p>
 													<div class="progress">
 														<div class="progress-bar bg-success" role="progressbar" style="width: ${porTournamentsWins}%" aria-valuenow="${porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${porTournamentsWins}%</div>
-														<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porTournamentsWins}%" aria-valuenow="${100 - porTournamentsWins}" aria-valuemin="0" aria-valuemax="100"></div>
+														<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porTournamentsWins}%" aria-valuenow="${100 - porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${100 - porTournamentsWins}%</div>
 													</div> `
 											}
 											page +=

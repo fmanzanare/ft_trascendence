@@ -82,6 +82,10 @@ Juego contra IA.
 - 2FA and JWT - 1
 - Use of advanced 3D Techniques - 1
 - Server-side PONG - 1 (not done completely)
+- Microservices - 1
+- User statistics - 0.5
+
+- TOTAL = 10.5 puntos
 
 
 - AI (not done) - 1
