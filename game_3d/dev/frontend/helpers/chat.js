@@ -1,11 +1,11 @@
 import { openChatWebSockets } from "../index.js";
+import { acceptGameInvitation } from "./gameMode.js";
 
 /**
  * Shows the current chat friend's name in the upper chat bar and clears the chat log.
  * @function showCurrentChatFriendName
  */
 function showCurrentChatFriendName(friendName) {
-	let chatLog = document.getElementById('chat-log');
 	chatLog.value = '';
 	let upperChatBar = document.getElementById('upper-bar');
 	if (upperChatBar.querySelector('p[data-username]')) {
@@ -17,6 +17,20 @@ function showCurrentChatFriendName(friendName) {
 	currentChatFriend.setAttribute("id", "friendNameUpperBar");
 	currentChatFriend.setAttribute("style", "display: flex; justify-content: center; align-items: center; margin: 0; cursor:pointer;");
 	currentChatFriend.setAttribute("data-username", friendName);
+
+	// Create a button element
+	const playButton = document.createElement('button');
+	playButton.innerText = 'Play';
+
+	// Set the button's style
+	playButton.setAttribute("class", "start-0 position-absolute");
+	playButton.setAttribute("style", "margin-left: 5px;");
+	playButton.setAttribute("data-friendship-id", friendshipId);
+	console.log("friendshipId:", friendshipId);
+	playButton.onclick = gameInvitation;
+
+	// Append the button to the upperChatBar
+	upperChatBar.appendChild(playButton);
 	upperChatBar.appendChild(currentChatFriend);
 	currentChatFriend.addEventListener("click", () => goToUserProfileChat(friendName));		
 }
@@ -56,6 +70,71 @@ function goToUserProfileChat(friendName){
     });
 }
 
+function gameInvitation() {
+	const friendshipId = this.getAttribute("data-friendship-id");
+	console.log("friendshipId game invitation:", friendshipId);
+	const chatSocket = openChatWebSockets[friendshipId].chatSocket;
+
+	
+	if (openChatWebSockets[friendshipId].gameInvitationReceived) {
+		console.log("Game invitation accepted");
+		if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+			chatSocket.send(JSON.stringify({
+				message: "",
+				chatId: friendshipId,
+				senderId: sessionStorage.getItem('userId'),
+				gameInvitation: false,
+				gameInvitationResponse: true
+		}))};
+
+		openChatWebSockets[friendshipId].gameInvitationReceived = false;
+		const hostGameId = openChatWebSockets[friendshipId].hostGameId;
+		const guestGameId = openChatWebSockets[friendshipId].guestGameId;
+
+		console.log("hostGameId:", hostGameId, "guestGameId:", guestGameId);
+		// Remove the 'Reject' button from the upperChatBar
+		const rejectButton = document.querySelector('#upper-bar button.rejectButton[data-friendship-id]');
+		if (rejectButton) {
+			rejectButton.remove();
+		}
+		addMessageToChatLog("Game invitation accepted. Starting Game\n");
+		acceptGameInvitation(hostGameId, guestGameId);
+		openChatWebSockets[friendshipId].gameInvitationReceived = false;
+		openChatWebSockets[friendshipId].gameInvitationResponse = false;
+		openChatWebSockets[friendshipId].hostGameId = null;
+		openChatWebSockets[friendshipId].guestGameId = null;
+		return;
+	} else {
+		const userId = sessionStorage.getItem('userId');
+		const chatSocket = openChatWebSockets[friendshipId].chatSocket;
+		if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+			chatSocket.send(JSON.stringify({
+				message: "",
+				chatId: friendshipId,
+				senderId: userId,
+				gameInvitation: true,
+				gameInvitationResponse: false,
+				hostGameId: userId,
+			}));
+			openChatWebSockets[friendshipId].hostGameId = userId;
+			addMessageToChatLog("Game invitation sent\n");
+		}
+		console.log("gameInvitationSent");
+	}
+}
+
+function rejectGameInvitation() {
+	const friendshipId = this.getAttribute("data-friendship-id");
+	const chatSocket = openChatWebSockets[friendshipId].chatSocket;
+	if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+		chatSocket.send(JSON.stringify({
+			message: "Game invitation rejected",
+			chatId: friendshipId,
+			senderId: sessionStorage.getItem('userId'),
+			gameInvitationResponse: false
+		}));
+	}
+}
 // Retrieves the list of friends from the server and prints them.
 function getChatMessages(friendshipId) {
 
@@ -81,15 +160,12 @@ function getChatMessages(friendshipId) {
 		} else {
 			console.error('Error: data.messages no es un array');
 		}
+		console.log("data.messages:", data.messages);
 
 		// Actualizar el chat-log con los mensajes recibidos
-		const chatLog = document.querySelector('#chat-log');
-		chatLog.innerHTML = ''; // Limpiar el chat-log antes de agregar los nuevos mensajes
+		removeAllMessagesInChatLog();	
 		openChatWebSockets[friendshipId].chatMessages.forEach(message => {
-			chatLog.value += message.message;
-			// const newMessageElement = document.createElement('div');
-			// newMessageElement.textContent = message;
-			// chatLog.appendChild(newMessageElement);
+			addMessageToChatLog(message.message);
 		});
 	})
 	.catch(error => {
@@ -107,11 +183,11 @@ function getChatMessages(friendshipId) {
  */
 export function handleChatInput(friendship, friendName) {
 
-	showCurrentChatFriendName(friendName);
+	showCurrentChatFriendName(friendName, friendship.friendshipId);
 
 	console.log("muestro openChatWebSockets", openChatWebSockets);
 	openChatWebSockets[friendship.friendshipId]?.chatMessages?.forEach(element => {
-		document.querySelector('#chat-log').value += (element.message);
+		addMessageToChatLog(element.message);
 	});
 	// Create new WebSocket and set its name
 	if (!openChatWebSockets[friendship.friendshipId]?.chatSocket) {
@@ -124,28 +200,89 @@ export function handleChatInput(friendship, friendName) {
 		openChatWebSockets[friendship.friendshipId] = {};
 		openChatWebSockets[friendship.friendshipId].chatSocket = chatSocket;
 		openChatWebSockets[friendship.friendshipId].chatMessages = [];
+		openChatWebSockets[friendship.friendshipId].gameInvitationReceived = false;
+		openChatWebSockets[friendship.friendshipId].gameInvitationResponse = false;
+		openChatWebSockets[friendship.friendshipId].hostGameId = null;
+		openChatWebSockets[friendship.friendshipId].guestGameId = null;
+		openChatWebSockets[friendship.friendshipId].chatNotification = false;
 		
-		// Assign event handlers here to ensure they are applied to the new WebSocket
+		// Receive messages from the server
 		openChatWebSockets[friendship.friendshipId].chatSocket.onmessage = function (e) {
 			const data = JSON.parse(e.data);
-			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
-				document.querySelector('#chat-log').value += data.message;
+			console.log('Received message:', data);
+			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')
+				&& data.message.trim() !== '') {
+				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
+				console.log('chatNotification: true');
+				openChatWebSockets[friendship.friendshipId].chatNotification = true;
+				addMessageToChatLog(data.message);
+			} else {
+				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
+				console.log('chatNotification: false');
+				openChatWebSockets[friendship.friendshipId].chatNotification = false;
 			}
-			openChatWebSockets[friendship.friendshipId].chatMessages.push({
-				senderId: sessionStorage.getItem('userId'),
-				isRead: false,
-				message: data.message
+			if (data.message.trim() !== '' && data.gameInvitation === false) {
+				openChatWebSockets[friendship.friendshipId].chatMessages.push({
+					senderId: sessionStorage.getItem('userId'),
+					isRead: false,
+					message: data.message,
+					chatId: friendship.friendshipId,
 				});
+			} // the user receives a game invitation
+			else if (data.gameInvitation === true 
+				&& data.senderUsername !== sessionStorage.getItem('userName')
+				&& data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
+				openChatWebSockets[friendship.friendshipId].gameInvitationReceived = true;
+				openChatWebSockets[friendship.friendshipId].hostGameId = data.senderId;
+				openChatWebSockets[friendship.friendshipId].guestGameId = sessionStorage.getItem('userId');
+
+				addMessageToChatLog('Game invitation received. Click on "Play" button, or "Reject" button\n');
+				let upperChatBar = document.getElementById('upper-bar');
+				// Create a button element for rejecting the game invitation
+				const rejectButton = document.createElement('button');
+				rejectButton.innerText = 'Reject';
+
+				// Set the button's style
+				rejectButton.setAttribute("class", "rejectButton start-0 position-absolute");
+				rejectButton.setAttribute("style", "margin-left: 55px;");
+				rejectButton.setAttribute("data-friendship-id", friendship.friendshipId);
+				rejectButton.onclick = rejectGameInvitation;
+
+				// Append the button to the upperChatBar
+				upperChatBar.appendChild(rejectButton);
+			} else if (data.gameInvitationResponse === true
+				&& data.senderUsername !== sessionStorage.getItem('userName')
+				&& data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
+				openChatWebSockets[friendship.friendshipId].gameInvitationReceived = false;
+				openChatWebSockets[friendship.friendshipId].gameInvitationResponse = false;
+				openChatWebSockets[friendship.friendshipId].hostGameId = null;
+				openChatWebSockets[friendship.friendshipId].guestGameId = null;
+				
+				console.log("hostGameId:", sessionStorage.getItem('userId'), "guestGameId:", data.senderId);
+				addMessageToChatLog('Game invitation accepted. Starting Game\n');
+				acceptGameInvitation(sessionStorage.getItem('userId'), data.senderId);
+			} else if (data.gameInvitationResponse === false
+				&& data.senderUsername !== sessionStorage.getItem('userName')
+				&& data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
+				openChatWebSockets[friendship.friendshipId].gameInvitationReceived = false;
+				openChatWebSockets[friendship.friendshipId].gameInvitationResponse = false;
+				openChatWebSockets[friendship.friendshipId].hostGameId = null;
+				openChatWebSockets[friendship.friendshipId].guestGameId = null;
+
+				addMessageToChatLog('Game invitation rejected\n');
+			}
 		};
 
+		// Handle unexpected closing of the WebSocket
 		openChatWebSockets[friendship.friendshipId].chatSocket.onclose = function (e) {
 			console.error('chat socket closed unexpectedly');
 		};
 
+		// Handle the opening of the WebSocket
 		openChatWebSockets[friendship.friendshipId].chatSocket.onopen = function (e) {
 			getChatMessages(friendship.friendshipId);
 		};
-		console.log(openChatWebSockets[friendship.friendshipId]);
+
 		// Focus on the chatInput
 		document.querySelector('#chatInput').focus();
 		document.querySelector('#chatInput').onkeyup = function (e) {
@@ -160,17 +297,48 @@ export function handleChatInput(friendship, friendName) {
 				console.log(friendship.friendUserId)
 				// Recuperar el WebSocket correcto del mapa antes de enviar el mensaje
 				const chatSocket = openChatWebSockets[friendship.friendshipId].chatSocket;
-				if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+				if (message.trim() !== '' && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 					chatSocket.send(JSON.stringify({
 						message: message,
 						chatId: friendship.friendshipId,
 						senderId: userId,
+						gameInvitation: false,
+						gameInvitationResponse: false
 					}));
 					messageInputDom.value = ''; // Clean input before send
 				}
-				document.querySelector('#chat-log').value += message;
+				addMessageToChatLog(message);
 			}
 		};
 		console.log("mostrando contenido de openChatWebSockets:", openChatWebSockets);
 	}
+}
+
+function removeAllMessagesInChatLog() {
+	const chatLog = document.querySelector('#chat-log');
+	const paragraphs = chatLog.querySelectorAll('p');
+	paragraphs.forEach(paragraph => {
+		chatLog.removeChild(paragraph);
+	});
+}
+
+function addMessageToChatLog(message) {
+	const chatLog = document.querySelector('#chat-log');
+	const paragraph = document.createElement('p');
+	paragraph.setAttribute("style", "margin: 0;");
+	paragraph.textContent = message;
+	chatLog.appendChild(paragraph);
+}
+
+function nonHtml(){
+    return    this.replace(/[&<>"'`]/g, function (char){
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&apos;',
+            '`': '&#96;'
+        }
+    });
 }

@@ -26,17 +26,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		if "message" in text_data_json.keys() and \
 			"chatId" in text_data_json.keys() and \
-			"senderId" in text_data_json.keys():
+			"senderId" in text_data_json.keys() and \
+			"gameInvitation" in text_data_json.keys() and \
+			"gameInvitationResponse" in text_data_json.keys():
 
 			message = text_data_json["message"]
 			chatId: PlayerFriend = await sync_to_async(PlayerFriend.objects.get)(id=text_data_json["chatId"])
 			senderId: PongueUser = await sync_to_async(PongueUser.objects.get)(id=text_data_json["senderId"])
 
 			# Save message to database
-			await sync_to_async(ChatMessage.createMessage)(chatId.id, senderId, message)
+			if message:
+				await sync_to_async(ChatMessage.createMessage)(chatId.id, senderId, message)
 
+			# await self.channel_layer.group_send(
+			# 	self.room_group_name, {"type": "chat.message", "message": message, "senderUsername": senderId.username}
+			# )
 			await self.channel_layer.group_send(
-				self.room_group_name, {"type": "chat.message", "message": message, "senderUsername": senderId.username}
+				self.room_group_name, {
+					"type": "chat.message",
+					"message": message,
+					"senderUsername": senderId.username,
+					"senderId": senderId.id,
+					"gameInvitation": text_data_json["gameInvitation"],
+					"gameInvitationResponse": text_data_json.get("gameInvitationResponse")
+				}
 			)
 			return 
 
@@ -46,4 +59,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			message = event["message"]
 
 			# Send message to WebSocket
-			await self.send(text_data=json.dumps({"message": message, "senderUsername": event["senderUsername"]}))
+			await self.send(text_data=json.dumps({
+				"message": message,
+				"senderUsername": event["senderUsername"],
+				"senderId": event["senderId"],
+				"gameInvitation": event.get("gameInvitation"),
+				"gameInvitationResponse": event.get("gameInvitationResponse")
+			}))

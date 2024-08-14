@@ -86,9 +86,21 @@ export class AnimationLoop {
 		if (this.ball.getBall().position.x >= this.limits.x) {
 			this.score.addPOnePoint();
 			this.restartPositions();
+			const audio = new Audio('../../../frontend/assets/doh_r4RZcVw.mp3');
+            audio.play().then(() => {
+				console.log('Audio file playing');
+			}).catch(error => {
+				console.log('Error playing audio ', error);
+			});
 		} else if (this.ball.getBall().position.x <= -this.limits.x) {
 			this.score.addPTwoPoint();
 			this.restartPositions();
+			const audio = new Audio('../../../frontend/assets/doh_r4RZcVw.mp3');
+            audio.play().then(() => {
+				console.log('Audio file playing');
+			}).catch(error => {
+				console.log('Error playing audio ', error);
+			});
 		}
 	}
 

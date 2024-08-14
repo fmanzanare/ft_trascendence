@@ -48,6 +48,9 @@ export function openNewSocket(data) {
 			game.getReceivedDataFromWS(data);
 			console.log(data);
 		}
+		if (data.startingGame) {
+			game.drawCountdown(data)
+		}
 		if (data.disconnection) {
 			sessionStorage.setItem('winner', "You");
 			changeState('Online');
@@ -81,6 +84,8 @@ export function openNewSocket(data) {
 	}
 
 	remoteSocket.onclose = function (e) {
+		console.log("Connection closed")
+		game.removeEventListeners();
 		const $token = sessionStorage.getItem('pongToken')
 		fetch(`${apiUrl}online-status/`, {
 			method: "POST",
@@ -158,6 +163,10 @@ export function openNewSocketTournament(data) {
 			}
 		}
 
+		if (data.startingGame) {
+			game.drawCountdown(data)
+		}
+
 		if (data.semifinalWinners) {
 			$blackDiv.classList.add("d-none")
 			if (gameCanva)
@@ -221,6 +230,7 @@ export function openNewSocketTournament(data) {
 
 	remoteSocket.onclose = function (e) {
 		console.log("Connection closed")
+		game.removeEventListeners()
 		const $token = sessionStorage.getItem('pongToken')
 		fetch(`${apiUrl}online-status/`, {
 			method: "POST",
