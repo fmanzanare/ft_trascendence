@@ -10,16 +10,14 @@ function showCurrentChatFriendName(friendName) {
 	let upperChatBar = document.getElementById('upper-bar');
 	if (upperChatBar.querySelector('p[data-username]')) {
 		upperChatBar.querySelector('p[data-username]').remove();
+
 	}
-	let friendBox = document.createElement('div');
-	friendBox.setAttribute("style", "display: flex; justify-content: space-between;");
-	upperChatBar.appendChild(friendBox);
 	let currentChatFriend = document.createElement('p');
 	currentChatFriend.innerText = friendName;
 	currentChatFriend.setAttribute("id", "friendNameUpperBar");
-	currentChatFriend.setAttribute("style", "cursor:pointer;");
+	currentChatFriend.setAttribute("style", "display: flex; justify-content: center; align-items: center; margin: 0; cursor:pointer;");
 	currentChatFriend.setAttribute("data-username", friendName);
-	friendBox.appendChild(currentChatFriend);
+	upperChatBar.appendChild(currentChatFriend);
 	currentChatFriend.addEventListener("click", () => goToUserProfileChat(friendName));		
 }
 
