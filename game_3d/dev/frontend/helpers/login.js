@@ -1,3 +1,4 @@
+import { getFriends } from "./changeView.js";
 import { navigateTo } from "./navigateto.js";
 import { changeUserName } from "./utils.js";
 
@@ -52,6 +53,7 @@ export async function loginPushButton() {
             } else {
                 sessionStorage.setItem('pongToken', data.context.jwt);
                 changeUserName();
+                getFriends();
                 navigateTo("/home");
             }
         } else {
@@ -96,6 +98,7 @@ export function twoFactorPushButton()
 		if (data.success) {
 			sessionStorage.setItem('pongToken', data.context.jwt);
 			sessionStorage.setItem('userId', data.userId);
+            getFriends();
 			navigateTo("/home");
 		}
 	})
@@ -126,6 +129,7 @@ export function login42(code){
                 sessionStorage.setItem('pongToken', data.context.jwt);
                 sessionStorage.setItem('userId', data.userId);
 			    changeUserName();
+                getFriends();
                 navigateTo("/home");
             }
         } else {
