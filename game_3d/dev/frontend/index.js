@@ -4,7 +4,7 @@ import { changeState, putOnline} from "./helpers/statusUser.js";
 import { getFriends } from "./helpers/changeView.js";
 
 // Global variables
-const DEBUG = false;
+const DEBUG = true;
 if (DEBUG) {
     console.log = () => {}
 }

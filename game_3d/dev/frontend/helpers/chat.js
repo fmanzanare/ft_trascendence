@@ -133,7 +133,7 @@ function rejectGameInvitation() {
 	}
 	if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 		chatSocket.send(JSON.stringify({
-			message: "Game invitation rejected",
+			message: "",
 			chatId: friendshipId,
 			senderId: sessionStorage.getItem('userId'),
 			gameInvitation: false,
