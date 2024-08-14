@@ -102,7 +102,7 @@ function requestFriendship(e){
 }
 
 // Retrieves the list of friends from the server and prints them.
-function getFriends() {
+export function getFriends() {
 
 	const $token = sessionStorage.getItem('pongToken');
 	const $friendsUrl = apiUrl + 'friends/';
@@ -233,6 +233,7 @@ function printFriends(friendList) {
 			nameNode.setAttribute("id", "friendName");
 			nameNode.setAttribute("data-username", friendList[i].username);
 			if (friendList[i].status === 'ACCEPTED') {
+				handleChatInput(friendList[i], friendList[i].username)
 				nameNode.onclick = () => handleChatInput(friendList[i], friendList[i].username);
 				nameNode.style.cursor = "pointer";
 			}
