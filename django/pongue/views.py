@@ -497,8 +497,12 @@ def friends(request):
 						"success": False,
 						"message": "Friendship not found"
 						}, status=404)
-				friendship.status = PlayerFriend.Status.ACCEPTED if action == "accept" else PlayerFriend.Status.REJECTED
-				friendship.save()
+				if action == "reject":
+					friendship.delete()
+				else:
+					friendship.status = PlayerFriend.Status.ACCEPTED if action == "accept" else PlayerFriend.Status.REJECTED
+					friendship.save()
+
 			else:
 				return JsonResponse({
 					"success": False,
