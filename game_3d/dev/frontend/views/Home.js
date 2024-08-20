@@ -18,13 +18,13 @@ export default class extends AbstractView {
                         <div id="gameDiv">
                             <div class="rounded" id="blackDiv" style="Height:${$Height}px;width:${$width}px">
                                 <div class="d-flex justify-content-around align-items-center" id="selectMode" style="height:100%">
-                                    <div class="fs-3 p-2 h-50 bd-highlight" id="playOnline" role="button" style="width:25%;">
+                                    <div class="fs-3 p-2 h-50 bd-highlight button" id="playOnline" role="button" style="width:25%;">
                                         <div class="rounded d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                             <h1>1 vs 1</h1>
                                             <p>Online</p>
                                         </div>
                                     </div>
-                                    <div class="fs-3 p-2 h-50 bd-highlight" id="playLocal" role="button" style="width:25%;">
+                                    <div class="fs-3 p-2 h-50 bd-highlight button" id="playLocal" role="button" style="width:25%;">
                                         <div class="rounded d-flex flex-column justify-content-center p-3 h-100 text-center" style="background-color: #5272c1;">
                                             <h1>Local</h1>
                                             <p>One vs one</p>

@@ -73,6 +73,13 @@ body
 	max-width: 75%;
 }
 
+.button:hover {
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
 .material-symbols-outlined {
   font-variation-settings:
   'FILL' 0,

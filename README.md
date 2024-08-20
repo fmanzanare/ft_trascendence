@@ -24,7 +24,7 @@ This project is something you've never done before. Think back to the beginning 
 - [ ] Gestionar el registro por API 42 cuando ya existe un usuario con ese nombre (agregar #42 al final del username) {Antonio}
 - [X] Agregar espacio entre "Do you have an account? Sing up" y API 42 {Antonio}
 - [ ] Página de callback con API de 42 {Antonio}
-- [ ] Hover effects sobre los botones principales de la interfaz {Antonio}
+- [X] Hover effects sobre los botones principales de la interfaz {Antonio}
 - [X] Cross button en modales - ELIMINADO {Antonio}
 - [ ] Gráficos circulares para mostrar las estadísticas del usuario (Opcional) {Antonio}
 - [ ] Refactor del Chat {Victor + Fernando}
