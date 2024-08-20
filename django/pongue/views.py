@@ -385,7 +385,7 @@ def auth(request):
 				})
 
 			user_response = requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": f"Bearer {access_token}"})
-			username = user_response.json()["login"]
+			username = user_response.json()["login"] + "#42"
 			display_name = user_response.json()["displayname"]
 
 			try:

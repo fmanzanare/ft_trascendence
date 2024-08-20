@@ -32,6 +32,12 @@ export async function singPushButton() {
         return;
     }
 
+    if ($username.value.includes('#')) {
+        $username.classList.add("border-danger");
+        $errorMessage.textContent = "The username cannot contain #";
+        return;
+    }
+
     if ($pass.value !== $passTwo.value) {
         $pass.classList.add("border-danger");
         $passTwo.classList.add("border-danger");
