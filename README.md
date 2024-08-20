@@ -21,14 +21,14 @@ This project is something you've never done before. Think back to the beginning 
 - [ ] Tamaño del juego local cuando se hace resize de la pantalla {Fernando}
 - [ ] Menú responsive con botón desplegable Bootstrap (Opcional) {Antonio}
 - [X] Modificar el placeholder del cambio de "Username" del perfil {Antonio}
-- [ ] Gestionar el registro por API 42 cuando ya existe un usuario con ese nombre (agregar #42 al final del username) {Antonio}
+- [X] Gestionar el registro por API 42 cuando ya existe un usuario con ese nombre (agregar #42 al final del username) {Antonio}
 - [X] Agregar espacio entre "Do you have an account? Sing up" y API 42 {Antonio}
 - [ ] Página de callback con API de 42 {Antonio}
 - [X] Hover effects sobre los botones principales de la interfaz {Antonio}
 - [X] Cross button en modales - ELIMINADO {Antonio}
 - [ ] Gráficos circulares para mostrar las estadísticas del usuario (Opcional) {Antonio}
 - [ ] Refactor del Chat {Victor + Fernando}
-- [ ] Actualizar el estado del front a "In Game" cuando está en partida Online. Verificar en Tournament {Antonio}
+- [X] Actualizar el estado del front a "In Game" cuando está en partida Online. Verificar en Tournament {Antonio}
 ### BACKEND
 - [ ] Eliminar prints de Django {Fernando}
 - [ ] Redirección http a https en caddy {Antonio}

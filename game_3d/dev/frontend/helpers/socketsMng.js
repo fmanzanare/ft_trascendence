@@ -43,6 +43,7 @@ export function openNewSocket(data) {
 			$loading.classList.add('d-none');
 			$divSelect.classList.add('d-none');
 			$instructionsOne.classList.add('d-none');
+			changeState("In game");
 			game.names.pOneName = data["pOneName"];
 			game.names.pTwoName = data["pTwoName"];
 			game.startRemoteGame()
