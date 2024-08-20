@@ -1,4 +1,8 @@
-localhost {
+http://localhost:4000 {
+	redir https://localhost:443
+}
+
+https://localhost:443 {
 	handle /api/* {
 		reverse_proxy backend:8000
 	}

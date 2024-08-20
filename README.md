@@ -31,7 +31,7 @@ This project is something you've never done before. Think back to the beginning 
 - [X] Actualizar el estado del front a "In Game" cuando está en partida Online. Verificar en Tournament {Antonio}
 ### BACKEND
 - [ ] Eliminar prints de Django {Fernando}
-- [ ] Redirección http a https en caddy {Antonio}
+- [X] Redirección http a https en caddy {Antonio}
 - [ ] Limitar que un mismo usuario haga login dos veces {Fernando}
 - [ ] Usar "salt" para la encriptación de contraseñas (Opcional) {Fernando}
 - [ ] Velocidad del juego remoto {Fernando}
