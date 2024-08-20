@@ -9,8 +9,8 @@ export async function loginPushButton() {
     const $loginUrl = apiUrl + 'login/';
     const $elements = [$name, $pass];
     const $loginData = new URLSearchParams();
-    $loginData.append('username', encodeURIComponent($name.value));
-    $loginData.append('password', encodeURIComponent($pass.value));
+    $loginData.append('username', $name.value);
+    $loginData.append('password', $pass.value);
     $elements.forEach(element => {
         element.classList.remove("border-danger");
     });
