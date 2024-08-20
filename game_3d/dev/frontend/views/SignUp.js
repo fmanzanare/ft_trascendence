@@ -36,7 +36,7 @@ export default class extends AbstractView {
 											<button class="btn btn-primary btn-dark" id="singUpButton" type="submit">Sing up</button>
 										</div>
 										<div>
-											<p class="mb-0">Already have an account?<a href="/login" class="text-white-50 fw-bold" data-link>Log In</a></p>
+											<p class="mb-0">Already have an account? <a href="/login" class="text-white-50 fw-bold" data-link>Log In</a></p>
 										</div>
 									</div>    
 								</div>
