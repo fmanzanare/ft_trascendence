@@ -46,12 +46,12 @@ export function putOnline(value)
 		})
 		.then(response => {
 			if (!response.ok) {
-				throw new Error(`Error en la solicitud: ${response.status}`);
+				throw new Error(`Request error: ${response.status}`);
 			}
 			return response.json()
 		})
 		.catch(error => {
-			console.error('Error en la solicitud:', error);
+			console.error('Request error:', error);
 		});
 	} else {
 		const $Url = apiUrl + 'offline-status/';
@@ -64,12 +64,12 @@ export function putOnline(value)
 		})
 		.then(response => {
 			if (!response.ok) {
-				throw new Error(`Error en la solicitud: ${response.status}`);
+				throw new Error(`Request error: ${response.status}`);
 			}
 			return response.json()
 		})
 		.catch(error => {
-			console.error('Error en la solicitud:', error);
+			console.error('Request error:', error);
 		});
 	}
 	

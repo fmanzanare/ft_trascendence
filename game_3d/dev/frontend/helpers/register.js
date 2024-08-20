@@ -49,7 +49,7 @@ export async function singPushButton() {
     const $registerButton = document.getElementById("singUpButton");
     if ($registerButton) {
         $registerButton.disabled = true;
-        $registerButton.textContent = "Registrando...";
+        $registerButton.textContent = "Signing up...";
     }
 
     try {
@@ -62,7 +62,7 @@ export async function singPushButton() {
         });
 
         if (!response.ok) {
-            throw new Error(`Error en la solicitud: ${response.status}`);
+            throw new Error(`Request error: ${response.status}`);
         }
 
         const data = await response.json();
@@ -75,12 +75,12 @@ export async function singPushButton() {
         }
 
     } catch (error) {
-        console.error('Error in the request:', error);
+        console.error('Request error:', error);
         $errorMessage.textContent = 'An error occurred. Please try again later.'
     } finally {
         if ($registerButton) {
             $registerButton.disabled = false;
-            $registerButton.textContent = "Registrar";
+            $registerButton.textContent = "Register";
         }
     }
 }

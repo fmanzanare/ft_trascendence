@@ -17,7 +17,7 @@ export async function loginPushButton() {
     $errorMessage.textContent = "";
     const $loginButton = document.getElementById("loginButton");
     $loginButton.disabled = true;
-    $loginButton.textContent = "Iniciando sesión...";
+    $loginButton.textContent = "Login in...";
 
     try {
         const response = await fetch($loginUrl, {
@@ -36,7 +36,7 @@ export async function loginPushButton() {
                     });
                     $errorMessage.textContent = "Username or password is incorrect";
                 } else {
-                    $errorMessage.textContent = errorData.message || "Error desconocido.";
+                    $errorMessage.textContent = errorData.message || "Unkown error.";
                 }
             } else {
                 throw new Error(`Error en la solicitud: ${response.status}`);
@@ -65,10 +65,10 @@ export async function loginPushButton() {
 
     } catch (error) {
         console.error('Error en la solicitud:', error);
-        $errorMessage.textContent = 'Ocurrió un error al procesar la solicitud. Inténtalo de nuevo más tarde.';
+        $errorMessage.textContent = 'Unexpected error. Please try again.';
     } finally {
         $loginButton.disabled = false;
-        $loginButton.textContent = "Iniciar Sesión";
+        $loginButton.textContent = "Log in";
     }
 }
 
@@ -89,7 +89,7 @@ export function twoFactorPushButton()
 	})
 	.then(response => {
 		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
+			throw new Error(`Request error: ${response.status}`);
 		}
 		return response.json()
 	})
@@ -103,7 +103,7 @@ export function twoFactorPushButton()
 		}
 	})
 	.catch(error => {
-		console.error('Error en la solicitud:', error);
+		console.error('Request error:', error);
 	});
 }
 

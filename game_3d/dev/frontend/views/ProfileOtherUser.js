@@ -20,7 +20,7 @@ export default class extends AbstractView {
             });
 
             if (!response.ok) {
-                throw new Error('Hubo un problema al realizar la solicitud.');
+                throw new Error('Unexpected error.');
             }
             const data = await response.json();
             return data;
@@ -36,7 +36,7 @@ export default class extends AbstractView {
             });
 
             if (!response.ok) {
-                throw new Error('Hubo un problema al realizar la solicitud.');
+                throw new Error('Unexpected error.');
             }
             const data = await response.json();
             return data.history;

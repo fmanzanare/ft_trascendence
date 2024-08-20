@@ -80,7 +80,7 @@ export function openNewSocket(data) {
 			})
 			.then(response => {
 				if (!response.ok) {
-					throw new Error('Hubo un problema al realizar la solicitud.');
+					throw new Error('Unexpected error.');
 				}
 			})
 		}
@@ -98,7 +98,7 @@ export function openNewSocket(data) {
 		})
 		.then(response => {
 			if (!response.ok) {
-				throw new Error('Hubo un problema al realizar la solicitud.');
+				throw new Error('Unexpected error.');
 			}
 		})
 	}

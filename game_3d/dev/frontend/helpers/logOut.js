@@ -10,7 +10,7 @@ export function logOut()
 	})
 	.then(response => {
 		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
+			throw new Error(`Request error: ${response.status}`);
 		}
 		return response.json()
 	})
@@ -21,6 +21,6 @@ export function logOut()
 		window.location.reload();
 	})
 	.catch(error => {
-		console.error('Error en la solicitud:', error);
+		console.error('Request error:', error);
 	});
 }

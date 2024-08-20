@@ -61,8 +61,6 @@ def jwt_required(function):
 				})
 	return wrap
 
-# /
-# For the moment, only returns the 2FA key mientras no encontramos un mejor lugar para ponerlo
 @jwt_required
 def index(request):
 	hashed_secret = hashlib.sha512((get_user_from_jwt(request).username + os.environ.get("OTP_SECRET")).encode("utf-8")).digest()
@@ -86,7 +84,6 @@ def index(request):
 # Format: application/x-www-form-urlencoded
 @csrf_exempt
 def register(request):
-    # Comprobar si el usuario ya está autenticado
     if get_user_from_jwt(request):
         return JsonResponse({
             "success": True,
@@ -117,7 +114,6 @@ def register(request):
                 "context": {"errors": form.errors.as_json()},
             })
 
-    # Para solicitudes GET, se envía el formulario inicial
     form = CreateUserForm()
     form_html = '<form method="POST" action="" class="row row-cols-1">' \
                 '<div class="col">Display name <input type="text" name="display_name" maxlength="50" required id="id_display_name"></div>' \
@@ -184,13 +180,10 @@ def pass2fa(request, user_obj):
 			"redirect_url": "pass2fa",
 			"context": {
 				"user": user_obj.username,
-				# "key": encoded_secret.decode("utf-8")
 			},
 		})
 	else:
-		# auth_login(request, user_obj)
 		user_obj.status = PongueUser.Status.ONLINE
-		# user_obj.status = "online"
 		user_obj.save()
 		# WAS: return redirect("index")
 		return JsonResponse({
@@ -344,10 +337,6 @@ def get2fa(request):
 # GET: Logs out the logged-in user
 @jwt_required
 def logout(request):
-	# user = PongueUser.objects.get(username=get_user_from_jwt(request))
-	# user.status = "offline"
-	# user.save()
-	# WAS: return redirect("login")
 	user = PongueUser.objects.get(username=get_user_from_jwt(request))
 	user.status = PongueUser.Status.OFFLINE
 	user.save()
@@ -525,21 +514,17 @@ def friends(request):
 				"message": "Invalid JSON",
 			}, status=400)
 		except Exception as e:
-			# En un entorno de producción, sería mejor no devolver el mensaje de error interno directamente al cliente
 			return JsonResponse({
 				"success": False,
 				"message": "An unexpected error occurred"
 			}, status=404)
 	elif request.method == "GET":
 		try:
-			# Asumiendo que get_user_from_jwt(request) devuelve un objeto de usuario válido
 			current_user = get_user_from_jwt(request)
-			# Obtener todos los objetos de amistad donde el usuario actual es el usuario o el amigo
 			friendships = PlayerFriend.objects.filter(
 				Q(myUser__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED, PlayerFriend.Status.REJECTED, PlayerFriend.Status.BLOCKED]) |
 				Q(myFriend__username=current_user.username, status__in=[PlayerFriend.Status.PENDING, PlayerFriend.Status.ACCEPTED, PlayerFriend.Status.REJECTED, PlayerFriend.Status.BLOCKED])
 			).distinct()
-			# Preparar la lista de amigos para la respuesta
 			friends_list = [
 				{
 					"username": friendship.myFriend.username if friendship.myUser == current_user else friendship.myUser.username,
@@ -572,46 +557,6 @@ def friends(request):
 			"redirect_url": "login",
 			"context": {}
 		})
-
-# /add_game_result
-# POST: Adds a game result to the database¡
-# Parameters: "player_1", "player_2", "player_1_score", "player_2_score"
-# Format: application/x-www-form-urlencoded
-# def add_game_result(request):
-# 	if request.method == "POST":
-# 		player_1 = PongueUser.objects.get(username=request.POST.get("player_1"))
-# 		player_2 = PongueUser.objects.get(username=request.POST.get("player_2"))
-# 		player_1_score = request.POST.get("player_1_score")
-# 		player_2_score = request.POST.get("player_2_score")
-# 		game = GameResults(player_1=player_1, player_2=player_2, player_1_score=player_1_score, player_2_score=player_2_score)
-# 		game.save()
-# 		player_1.games_played += 1
-# 		player_2.games_played += 1
-# 		if player_1_score > player_2_score:
-# 			player_1.games_won += 1
-# 			player_2.games_lost += 1
-# 		elif player_1_score < player_2_score:
-# 			player_1.games_lost += 1
-# 			player_2.games_won += 1
-# 		player_1.status = PongueUser.Status.ONLINE
-# 		player_2.status = PongueUser.Status.ONLINE
-# 		player_1.save()
-# 		player_2.save()
-# 		return JsonResponse({
-# 			"success": True,
-# 			"message": "",
-# 			"redirect": True,
-# 			"redirect_url": "index",
-# 			"context": {},
-# 		})
-# 	else:
-# 		return JsonResponse({
-# 			"success": False,
-# 			"message": "Invalid method",
-# 			"redirect": True,
-# 			"redirect_url": "login",
-# 			"context": {}
-# 		})
 
 # /profile
 # GET: Returns the profile object

@@ -13,7 +13,6 @@ export async function playOnline()
 {
 	if (document.getElementById("selectMode"))
 	{
-		// Se ejecuta si se clicka el botón de buscar partida online
 		const $selectMode = document.getElementById("selectMode");
 		$selectMode.classList.add('d-none');
 		changeState("Searching game")
@@ -38,7 +37,6 @@ export async function playOnline()
 	}
 	else
 	{
-		// Se ejecuta si se clicka el botón de buscar torneo
 		const $joinTournament = document.getElementById("joinTournament");
 		const $nickName = document.getElementById("nickTournament");
 		const $errorMessage = document.getElementById("errorMessage");
@@ -137,7 +135,6 @@ export function playLocal()
 }
 
 export function acceptGameInvitation(hostId, userId) {
-	// TODO - Check if it works when user is in playing status.
 	navigateToWhenInvitationAccepted('home').then((res) => {
 		const data = {
 			roomId: hostId,

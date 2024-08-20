@@ -17,7 +17,7 @@ export default class extends AbstractView {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Hubo un problema al realizar la solicitud.');
+                throw new Error('Unexpected error.');
             }
             return response.json();
         })

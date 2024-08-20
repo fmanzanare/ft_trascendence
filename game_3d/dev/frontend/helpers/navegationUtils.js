@@ -23,19 +23,11 @@ export function acceptNav()
 	navigateTo($url);
 	if (sockets.gameSocket != null) {
 		console.log("closing game socket");
-		// sockets.gameSocket.send(JSON.stringify({
-		// 	"disconnection": true,
-		// 	"userId": sessionStorage.getItem("userId")
-		// }))
 		sockets.gameSocket.close();
 		sockets.gameSocket = null;
 	}
 	if (sockets.tournamentSocket != null) {
 		console.log("closing tournament socket");
-		// sockets.tournamentSocket.send(JSON.stringify({
-		// 	"disconnection": true,
-		// 	"userId": sessionStorage.getItem("userId")
-		// }))
 		sockets.tournamentSocket.close();
 		sockets.tournamentSocket = null;
 	}

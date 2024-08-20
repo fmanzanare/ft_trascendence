@@ -160,7 +160,6 @@ function getChatMessages(friendshipId) {
 		return response.json()
 	})
 	.then(data => {
-		// Asignar los mensajes recibidos al array global
 		if (Array.isArray(data.messages)) {
 			openChatWebSockets[friendshipId].chatMessages = data.messages;
 		} else {
@@ -168,7 +167,6 @@ function getChatMessages(friendshipId) {
 		}
 		console.log("data.messages:", data.messages);
 
-		// Actualizar el chat-log con los mensajes recibidos
 		removeAllMessagesInChatLog();	
 		openChatWebSockets[friendshipId].chatMessages.forEach(message => {
 			addMessageToChatLog(message.message);
@@ -304,7 +302,6 @@ export function handleChatInput(friendship, friendName) {
 				const message = userName + ': ' + messageInputDom.value + '\n';
 	
 				console.log(friendship.friendUserId)
-				// Recuperar el WebSocket correcto del mapa antes de enviar el mensaje
 				const chatSocket = openChatWebSockets[friendship.friendshipId].chatSocket;
 				if (message.trim() !== '' && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 					chatSocket.send(JSON.stringify({

@@ -99,7 +99,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                 )
                 self.rooms[self.room_group_name]["players"].pop(await self.findPlayerSocket())
                 self.rooms[self.room_group_name]["sockets"].pop(await self.findPlayerSocket())
-                # TODO - Check if this is need:
                 self.rooms.pop(self.room_group_name)
             else:
                 if ("onProgress" in self.rooms[self.room_group_name]):
