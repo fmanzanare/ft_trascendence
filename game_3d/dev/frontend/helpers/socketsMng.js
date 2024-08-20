@@ -155,6 +155,7 @@ export function openNewSocketTournament(data) {
 			console.log(data)
 			if (data.ids.gameReady && (data.ids.pOneId == userId || data.ids.pTwoId == userId)) {
 				$loading.classList.add('d-none');
+				changeState("In game");
 				game.names.pOneName = data.ids.pOneName;
 				game.names.pTwoName = data.ids.pTwoName;
 				game.startRemoteGame()
