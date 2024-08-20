@@ -20,7 +20,7 @@ This project is something you've never done before. Think back to the beginning 
 - [X] Eliminar encodeURI de los formularios del front {Antonio}
 - [ ] Tamaño del juego local cuando se hace resize de la pantalla {Fernando}
 - [ ] Menú responsive con botón desplegable Bootstrap (Opcional) {Antonio}
-- [ ] Modificar el placeholder del cambio de "Username" del perfil {Antonio}
+- [X] Modificar el placeholder del cambio de "Username" del perfil {Antonio}
 - [ ] Gestionar el registro por API 42 cuando ya existe un usuario con ese nombre (agregar #42 al final del username) {Antonio}
 - [X] Agregar espacio entre "Do you have an account? Sing up" y API 42 {Antonio}
 - [ ] Página de callback con API de 42 {Antonio}

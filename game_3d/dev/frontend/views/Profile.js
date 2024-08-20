@@ -138,7 +138,7 @@ export default class extends AbstractView {
 										</div>
 										<div class="d-none col-md-6" id="dataUserChange" style="color:white">
 											<div class="form-outline form-white mb-4">
-												<input type="text" id="UserNameChange" placeholder="Username" class="inputSingUp form-control form-control-lg"/>
+												<input type="text" id="UserNameChange" placeholder="Name" class="inputSingUp form-control form-control-lg"/>
 											</div>
 											<div class="form-outline form-white mb-4" style="color:white">
 												<label for="profilePictureChange">New profile picture:</label>
