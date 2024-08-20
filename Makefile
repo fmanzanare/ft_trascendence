@@ -2,9 +2,9 @@
 DOCKER_COMPOSE = docker-compose
 
 # Base operations
-.PHONY: up
-up:
-	$(DOCKER_COMPOSE) up -d --build
+.PHONY: all
+all:
+	$(DOCKER_COMPOSE) up --build
 
 .PHONY: down
 down:

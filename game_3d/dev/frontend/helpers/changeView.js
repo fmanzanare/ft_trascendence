@@ -80,7 +80,6 @@ function requestFriendship(e){
 	}
 	friendInputDom.value = '';
 	const $friendsUrl = apiUrl + 'friends/';
-	const $loginUrl = apiUrl + 'login/';
 
 	if (friend.trim() === '') {
 		alert('Please enter a friend username');

@@ -128,12 +128,17 @@ function rejectGameInvitation() {
 	console.log("friendshipId reject game invitation:", friendshipId);
 	const chatSocket = openChatWebSockets[friendshipId].chatSocket;
 	const rejectButton = document.querySelector('#upper-bar button.rejectButton[data-friendship-id]');
+	openChatWebSockets[friendshipId].gameInvitationReceived = false;
+	openChatWebSockets[friendshipId].gameInvitationResponse = false;
+	openChatWebSockets[friendshipId].hostGameId = null;
+	openChatWebSockets[friendshipId].guestGameId = null;
+
 	if (rejectButton) {
 		rejectButton.remove();
 	}
 	if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 		chatSocket.send(JSON.stringify({
-			message: "Game invitation rejected",
+			message: "",
 			chatId: friendshipId,
 			senderId: sessionStorage.getItem('userId'),
 			gameInvitation: false,
@@ -223,7 +228,6 @@ export function handleChatInput(friendship, friendName) {
 				const $notification = document.getElementById("notificationMsg");
 				$notification.classList.remove('d-none');
 				openChatWebSockets[friendship.friendshipId].chatNotification = true;
-
 				addMessageToChatLog(data.message);
 			} else {
 				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
