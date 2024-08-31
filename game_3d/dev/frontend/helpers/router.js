@@ -8,6 +8,7 @@ import ProfileOtherUser from "../views/ProfileOtherUser.js";
 import TwoFactor from "../views/TwoFactor.js";
 import Page404 from "../views/page404.js";
 import { routerFunctions } from "./routerFunctions.js";
+import ViewApi from "../views/ViewApi.js";
 
 function pathToRegex(path) {
     return new RegExp(
@@ -37,7 +38,8 @@ export async function router() {
 		{ path: "/tournaments", view: Tournaments },
 		{ path: "/ranking", view: Ranking },
 		{ path: "/profile", view: Profile },
-		{ path: "/profile/:userId", view: ProfileOtherUser }
+		{ path: "/profile/:userId", view: ProfileOtherUser },
+		{ path: "/api", view: ViewApi}
 	];
 
 	$navLinks.forEach(link => {

@@ -69,7 +69,8 @@ async function  tokenFalse(url)
 		const $user = sessionStorage.getItem('user');
 		if (!$user){
 			console.log("hola42 - Inicio de sesion");
-			login42(code);
+			history.pushState(null, null, "/api")
+			//login42(code);
 			return;
 		}
 	}
