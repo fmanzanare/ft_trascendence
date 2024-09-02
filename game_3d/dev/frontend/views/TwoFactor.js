@@ -20,6 +20,9 @@ export default class extends AbstractView {
 										<div class="form-outline form-white mb-4">
 											<input type="text" id="doubleFK" placeholder="double factor key" class="form-control form-control-lg"/>
 										</div>
+										<div id="errorDiv">
+											<p class="text-danger" id="errorMessage"></p>
+										</div>
 										<div class="d-grid gap-2">
 											<button id="twoFactorButton" class="btn btn-primary btn-dark" type="submit">Login</button>
 										</div>
