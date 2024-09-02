@@ -76,6 +76,7 @@ export function twoFactorPushButton()
 {
 	const $key = document.getElementById("doubleFK");
 	const $userName = sessionStorage.getItem("user");
+    const $errorMessage = document.getElementById("errorMessage")
 	const $doubleFactorUrl = apiUrl + 'submit2fa/';
 	const $doubleFactorData = new URLSearchParams();
 	$doubleFactorData.append('code', $key.value);
@@ -101,6 +102,10 @@ export function twoFactorPushButton()
             getFriends();
 			navigateTo("/home");
 		}
+        else {
+            $key.classList.add("border-danger");
+            $errorMessage.textContent = 'Wrong code';
+        }
 	})
 	.catch(error => {
 		console.error('Request error:', error);
@@ -121,6 +126,7 @@ export function login42(code){
     .then(data => {
         console.log('Success:', data);
         if(data.success) {
+            navigateTo("/api");
             if (data.redirect_url === "pass2fa"){
                 sessionStorage.setItem('user', data.context.user);
                 navigateTo("/twofactor");
@@ -130,10 +136,16 @@ export function login42(code){
                 sessionStorage.setItem('userId', data.userId);
 			    changeUserName();
                 getFriends();
-                navigateTo("/home");
+                navigateTo("/home")
             }
         } else {
-            console.error('Error');
+            const $modal = document.getElementById("myAlert");
+            const $textModalMessage = document.getElementById("textAlert");
+            $textModalMessage.textContent = "42 API connection error";
+            $modal.classList.add("show");
+            $modal.style.display = "block";
+            $modal.setAttribute("aria-modal", "accept");
+            $modal.setAttribute("role", "dialog");
         }
     })
     .catch(error => console.error('Error:', error));

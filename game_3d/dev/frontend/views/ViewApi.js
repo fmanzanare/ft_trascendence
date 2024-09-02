@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { login42 } from "../helpers/login.js";
 
 export default class extends AbstractView {
     constructor(params) {

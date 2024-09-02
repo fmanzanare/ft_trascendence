@@ -66,11 +66,12 @@ async function  tokenFalse(url)
 	let pippo = new URL(window.location.href);
 	let code = pippo.searchParams.get("code")
 	if (code) {
+		pippo.searchParams.delete("code");
+        window.history.replaceState({}, document.title, pippo.toString());
 		const $user = sessionStorage.getItem('user');
 		if (!$user){
 			console.log("hola42 - Inicio de sesion");
-			history.pushState(null, null, "/api")
-			//login42(code);
+			login42(code);
 			return;
 		}
 	}

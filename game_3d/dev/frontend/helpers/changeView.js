@@ -1,5 +1,6 @@
 import { handleChatInput } from "./chat.js";
 import { openChatWebSockets } from "../index.js";
+import { navigateTo } from "./navigateto.js";
 
 
 export function displayChat()
@@ -23,6 +24,13 @@ export function displayChat()
 		$chatButton.classList.remove('d-none');
 		$chat.classList.add('d-none');
 	}
+}
+
+export function quitAlert(){
+	const $modal = document.getElementById("myAlert");
+	$modal.classList.remove("show");
+    $modal.style.display = "none";
+	navigateTo("/login");
 }
 
 // Function to handle the button click event

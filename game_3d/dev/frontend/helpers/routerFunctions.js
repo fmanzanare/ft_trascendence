@@ -4,7 +4,7 @@ import { generateQr, changeDataUser } from "./profile.js";
 import { logOut } from "./logOut.js";
 import { loginPushButton, twoFactorPushButton } from "./login.js";
 import { addKeyPressListener, closeWinnerMsg } from "./utils.js";
-import { changeViewProfile, changeViewData, displayChat } from "./changeView.js";
+import { changeViewProfile, changeViewData, displayChat, quitAlert } from "./changeView.js";
 import { cancelNav, acceptNav, showModal, closeTournament } from "./navegationUtils.js";
 import { navigateTo } from "./navigateto.js";
 
@@ -27,7 +27,8 @@ export async function routerFunctions(){
 		{ id: "confirmNav", event: 'click', handler: acceptNav },
 		{ id: "cancelTournament", event: 'click', handler:showModal},
 		{ id: "cancelGame", event: 'click', handler:showModal},
-		{ id: "btnCloseWinnerTournament", event: 'click', handler:closeTournament}
+		{ id: "btnCloseWinnerTournament", event: 'click', handler:closeTournament},
+		{ id: "btnQuitAlert", event: 'click', handler:quitAlert}
 	];
 	
 	buttons.forEach(button => {
