@@ -291,27 +291,45 @@ function printFriends(friendList) {
 	deleteBlockedFriend(friendList);
 }
 
-export function changeViewProfile()
+export function changeViewProfile(element)
 {
+	console.log(element);
 	const $infoProfile = document.getElementById('infoProfile');
 	const $historyProfile = document.getElementById('historyProfile');
+	const $statisticsProfile = document.getElementById('statisticsProfile');
 	const $infoTab = document.getElementById('infoTab');
 	const $historyTab = document.getElementById('historyTab');
-	if ($infoProfile.classList.contains('show', 'active'))
-		{
-			$infoProfile.classList.remove('show', 'active');
+	const $statisticsTab = document.getElementById('statisticsTab');
+	if (element == "history"){
+		$infoProfile.classList.remove('show', 'active');
 		$historyProfile.classList.add('show', 'active');
 		$historyProfile.classList.remove('d-none');
+		$infoProfile.classList.add('d-none');
+		$statisticsProfile.classList.add('d-none');
+		$statisticsProfile.classList.remove('show', 'active');
 		$infoTab.classList.remove('active');
+		$statisticsTab.classList.remove('active');
 		$historyTab.classList.add('active');
-	}
-	else
-	{
+	} else if (element == "info") {
 		$infoProfile.classList.add('show', 'active');
 		$historyProfile.classList.remove('show', 'active');
+		$statisticsProfile.classList.remove('show', 'active');
 		$historyProfile.classList.add('d-none');
+		$infoProfile.classList.remove('d-none');
+		$statisticsProfile.classList.add('d-none');
 		$infoTab.classList.add('active');
+		$statisticsTab.classList.remove('active');
 		$historyTab.classList.remove('active');
+	} else {
+		$statisticsProfile.classList.add('show', 'active');
+		$historyProfile.classList.remove('show', 'active');
+		$historyProfile.classList.add('d-none');
+		$infoProfile.classList.add('d-none');
+		$statisticsProfile.classList.remove('d-none');
+		$infoProfile.classList.remove('show', 'active');
+		$statisticsTab.classList.add('active');
+		$historyTab.classList.remove('active');
+		$infoTab.classList.remove('active');
 	}
 }
 

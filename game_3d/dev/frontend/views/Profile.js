@@ -78,6 +78,9 @@ export default class extends AbstractView {
 								<li class="nav-item">
 									<a class="nav-link" id="historyTab" data-toggle="tab" role="button" aria-controls="history" aria-selected="false">History</a>
 								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="statisticsTab" data-toggle="tab" role="button" aria-controls="statistics" aria-selected="false">Statistics</a>
+								</li>
 							</ul>
 							<div class="tab-content" id="myTabContent">
 								<div class="tab-pane fade show active" id="infoProfile" role="tabpanel" aria-labelledby="infoTab">
@@ -100,25 +103,6 @@ export default class extends AbstractView {
 											<h2>${data.context.user.display_name}</h2>
 											<h2>${data.context.user.username}</h2>
 											<p>points: ${data.context.points}</p>
-											`
-											if (data.context.user.games_played > 0){
-												page += `
-												<p>Games win:</p>
-												<div class="progress">
-													<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
-													<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100">${100 - porGamesWins}%</div>
-												</div> `
-											}
-											if (data.context.user.tournaments > 0){
-												page += `
-													<p>Tournaments win:</p>
-													<div class="progress">
-														<div class="progress-bar bg-success" role="progressbar" style="width: ${porTournamentsWins}%" aria-valuenow="${porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${porTournamentsWins}%</div>
-														<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porTournamentsWins}%" aria-valuenow="${100 - porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${100 - porTournamentsWins}%</div>
-													</div> `
-											}
-											page +=
-											`
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
@@ -185,6 +169,51 @@ export default class extends AbstractView {
 										</ol>
 									</div>
 								</div>
+							</div>
+						</div>
+						<div class="d-none tab-pane fade" id="statisticsProfile" role="tabpanel" aria-labelledby="statics-tab">
+							<div class="m-3">
+							`
+							if (data.context.user.games_played > 0 || data.context.user.tournaments > 0){
+								if (data.context.user.games_played > 0) {
+									page += `
+									<p class="mt-4" style="color:white">Games win:</p>
+									<div class="progress">
+										<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+										<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100">${100 - porGamesWins}%</div>
+									</div>
+									`
+								} else {
+									page += `
+									<p class="mt-4" style="color:white">Games win:</p>
+									<div class="progress">
+										<div class="progress-bar" role="progressbar" style="width:100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">No games played</div>
+									</div>
+									`
+								}
+								if (data.context.user.tournaments > 0) {
+									page += `
+									<p class="mt-4" style="color:white">Tournaments win:</p>
+									<div class="progress">
+										<div class="progress-bar bg-success" role="progressbar" style="width: ${porTournamentsWins}%" aria-valuenow="${porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${porTournamentsWins}%</div>
+										<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porTournamentsWins}%" aria-valuenow="${100 - porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${100 - porTournamentsWins}%</div>
+									</div> `
+								} else {
+									page += `
+									<p class="mt-4" style="color:white">Tournaments win:</p>
+									<div class="progress">
+										<div class="progress-bar" role="progressbar" style="width:100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">No tournaments played</div>
+									</div>
+									`
+								}
+							} else {
+								page +=
+								`
+									<h1 class="display-5 fw-bold text-uppercase text-center" style="color:#80dbef;">No statistics available</h1>
+								`
+							}
+							page += 
+							`
 							</div>
 						</div>
     				</div>
