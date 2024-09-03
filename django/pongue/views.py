@@ -611,10 +611,10 @@ def profile_id(request):
                 "puntos": userProfile.points,
                 "avatar_base64": userProfile.avatar,
                 "status": userProfile.status,
-                "games": userProfile.games,
-                "wins": userProfile.wins,
-                "tournament": userProfile.tournaments,
-                "tournaments_win": userProfile.tournamentsWin
+                "games_played": userProfile.games,
+                "games_won": userProfile.wins,
+                "tournaments": userProfile.tournaments,
+                "tournaments_won": userProfile.tournamentsWin
             }
         }
     })

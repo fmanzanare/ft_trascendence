@@ -102,7 +102,7 @@ export default class extends AbstractView {
 										<div class="col-md-6 d-flex flex-column" style="color:white" id="dataUserShow">
 											<h2>${data.context.user.display_name}</h2>
 											<h2>${data.context.user.username}</h2>
-											<p>points: ${data.context.points}</p>
+											<h5>points: ${data.context.points}</h5>
 											<div class="form-check form-switch">
 			`
 			if (data.context.user.has_2fa)
@@ -171,49 +171,69 @@ export default class extends AbstractView {
 								</div>
 							</div>
 						</div>
-						<div class="d-none tab-pane fade" id="statisticsProfile" role="tabpanel" aria-labelledby="statics-tab">
-							<div class="m-3">
+						<div class="d-none tab-pane fade h-100" id="statisticsProfile" role="tabpanel" aria-labelledby="statics-tab" style="color:white">
+							<div class="container h-100 m-3">
 							`
-							if (data.context.user.games_played > 0 || data.context.user.tournaments > 0){
-								if (data.context.user.games_played > 0) {
+								if (data.context.user.games_played > 0 || data.context.user.tournaments > 0) {
 									page += `
-									<p class="mt-4" style="color:white">Games win:</p>
-									<div class="progress">
-										<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
-										<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100">${100 - porGamesWins}%</div>
+								<div class="row h-100">
+									<div class="col-md-6 d-flex flex-column justify-content-start align-items-start">
+										<div class="w-100 mt-4">
+											<h5>Games played: ${data.context.user.games_played}</h5>
+											<h5>Games win: ${data.context.user.games_won}</h5>
+											<h5>Games loss: ${data.context.user.games_played - data.context.user.games_won} </h5>
+											<h5>Tournaments played: ${data.context.user.tournaments}</h5>
+											<h5>Tournaments win: ${data.context.user.tournaments_won}</h5>
+											<h5>Tournaments loss: ${data.context.user.tournaments - data.context.user.tournaments_won} </h5>
+										</div>
 									</div>
-									`
+									<div class="col-md-6 d-flex flex-column justify-content-start align-items-center">
+                						<div class="w-100 mt-4">
+											`
+											if (data.context.user.games_played > 0) {
+												page += `
+												<h5>Games win:</h5>
+												<div class="progress">
+													<div class="progress-bar bg-success" role="progressbar" style="width: ${porGamesWins}%" aria-valuenow="${porGamesWins}" aria-valuemin="0" aria-valuemax="100">${porGamesWins}%</div>
+													<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porGamesWins}%" aria-valuenow="${100 - porGamesWins}" aria-valuemin="0" aria-valuemax="100">${100 - porGamesWins}%</div>
+												</div>
+												`
+											} else {
+												page += `
+												<h5>Games win:</h5>
+												<div class="progress">
+													<div class="progress-bar" role="progressbar" style="width:100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">No games played</div>
+												</div>
+												`
+											}
+											if (data.context.user.tournaments > 0) {
+												page += `
+												<h5 class="mt-4">Tournaments win:</h5>
+												<div class="progress">
+													<div class="progress-bar bg-success" role="progressbar" style="width: ${porTournamentsWins}%" aria-valuenow="${porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${porTournamentsWins}%</div>
+													<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porTournamentsWins}%" aria-valuenow="${100 - porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${100 - porTournamentsWins}%</div>
+												</div> `
+											} else {
+												page += `
+												<h5 class="mt-4">Tournaments win:</h5>
+												<div class="progress">
+													<div class="progress-bar" role="progressbar" style="width:100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">No tournaments played</div>
+												</div>
+												`
+											}
+											page += 
+											`
+										</div>
+									</div>
+								</div>
+								`
 								} else {
-									page += `
-									<p class="mt-4" style="color:white">Games win:</p>
-									<div class="progress">
-										<div class="progress-bar" role="progressbar" style="width:100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">No games played</div>
-									</div>
+									page +=
+									`
+										<h1 class="display-5 fw-bold text-uppercase text-center" style="color:#80dbef;">No statistics available</h1>
 									`
 								}
-								if (data.context.user.tournaments > 0) {
-									page += `
-									<p class="mt-4" style="color:white">Tournaments win:</p>
-									<div class="progress">
-										<div class="progress-bar bg-success" role="progressbar" style="width: ${porTournamentsWins}%" aria-valuenow="${porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${porTournamentsWins}%</div>
-										<div class="progress-bar bg-danger" role="progressbar" style="width: ${100 - porTournamentsWins}%" aria-valuenow="${100 - porTournamentsWins}" aria-valuemin="0" aria-valuemax="100">${100 - porTournamentsWins}%</div>
-									</div> `
-								} else {
-									page += `
-									<p class="mt-4" style="color:white">Tournaments win:</p>
-									<div class="progress">
-										<div class="progress-bar" role="progressbar" style="width:100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">No tournaments played</div>
-									</div>
-									`
-								}
-							} else {
-								page +=
-								`
-									<h1 class="display-5 fw-bold text-uppercase text-center" style="color:#80dbef;">No statistics available</h1>
-								`
-							}
-							page += 
-							`
+								page += `
 							</div>
 						</div>
     				</div>
