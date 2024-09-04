@@ -90,6 +90,7 @@ class UserHistoryDTO:
 	rival = ""
 	isWin = False
 	myScore = 0
+	date =""
 	myRivalScore = 0
 
 	def toUserHistoryDTO(user: PongueUser, gameResult: GameResults):
@@ -102,6 +103,7 @@ class UserHistoryDTO:
 		historyDTO.id = gameResultPlayer.id
 		historyDTO.idRival = gameResultRival.id
 		historyDTO.rival = gameResultRival.username
+		historyDTO.date = gameResult["created_at"]
 		if (gameResultPlayer.id == gameResult["player_1_id"]):
 			historyDTO.isWin = True if gameResult["player_1_score"] > gameResult["player_2_score"] else False
 			historyDTO.myScore = gameResult["player_1_score"]

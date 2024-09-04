@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime, timezone
 import requests
 import os
 from django.db.models import Q
@@ -603,6 +604,58 @@ def profile_id(request):
 	except ObjectDoesNotExist:
 		return JsonResponse({"success": False, "error": "User not found"}, status=404)
 	userProfile = UserProfile.toUseUserProfile(user)
+	gameResults: list[GameResults] = GameResults.objects.filter(player_1=user).values() | GameResults.objects.filter(player_2=user).values()
+	historyDtos = []
+	for gameResult in gameResults:
+		historyDto: UserHistoryDTO = UserHistoryDTO.toUserHistoryDTO(user, gameResult)
+		historyDtos.append({
+			"id": historyDto.id,
+			"idRival": historyDto.idRival,
+			"rival": historyDto.rival,
+			"isWin": historyDto.isWin,
+			"date": historyDto.date,
+			"myScore": historyDto.myScore,
+			"myRivalScore": historyDto.myRivalScore
+		})
+	total_myScore = sum(item['myScore'] for item in historyDtos)
+	total_rivalScore = sum(item['myRivalScore'] for item in historyDtos)
+	rival_count = {}
+
+	for item in historyDtos:
+		rival = item['rival']
+		if rival in rival_count:
+			rival_count[rival] += 1
+		else:
+			rival_count[rival] = 1
+	
+	wins_count = {}
+	for item in historyDtos:
+		rival = item['rival']
+		if item['isWin']:
+			if rival in wins_count:
+				wins_count[rival] += 1
+			else:
+				wins_count[rival] = 1
+
+	losses_count = {}
+	for item in historyDtos:
+		rival = item['rival']
+		if not item['isWin']:
+			if rival in losses_count:
+				losses_count[rival] += 1
+			else:
+				losses_count[rival] = 1
+
+	last_game = max(historyDtos, key=lambda x: x['date'])
+	current_date = datetime.now(timezone.utc)
+	if last_game['date'].date() == current_date.date():
+		formatted_date = last_game['date'].strftime('%H:%M')
+	else:
+		formatted_date = last_game['date'].strftime('%d/%m/%Y')
+
+	most_losses_rival = max(losses_count, key=losses_count.get, default="You have no defeats")
+	most_wins_rival = max(wins_count, key=wins_count.get, default="You have no victories")
+	most_played_rival = max(rival_count, key=rival_count.get)
 	return JsonResponse({
         "success": True,
         "context": {
@@ -613,6 +666,12 @@ def profile_id(request):
                 "status": userProfile.status,
                 "games_played": userProfile.games,
                 "games_won": userProfile.wins,
+				"my_total_score": total_myScore,
+				"rival_score": total_rivalScore,
+				"favorite_opponent": most_played_rival,
+				"most_won_opponent": most_wins_rival,
+				"most_loss_opponent": most_losses_rival,
+				"last_day_date": formatted_date,
                 "tournaments": userProfile.tournaments,
                 "tournaments_won": userProfile.tournamentsWin
             }

@@ -23,6 +23,23 @@ export default class extends AbstractView {
             return data.context.key;
         };
 
+		const fetchProfileUser = async () => {
+			const $userId = sessionStorage.getItem("userId");
+			const $profileUrl = `${apiUrl}profile_id/?userId=${encodeURIComponent($userId)}`
+            const response = await fetch($profileUrl, {
+                method: "GET",
+                headers: { "Authorization": $token,
+					"content-type": 'application/json'
+				 }
+            });
+
+            if (!response.ok) {
+                throw new Error('Unexpected error.');
+            }
+            const data = await response.json();
+            return data;
+        };
+
         const fetchHistory = async () => {
 			const $userId = sessionStorage.getItem("userId")
 			const $historyUrl = `${apiUrl}user_history/?userId=${encodeURIComponent($userId)}`
@@ -56,11 +73,12 @@ export default class extends AbstractView {
             const twoFactor = await fetchTwoFactor();
             const historyData = await fetchHistory();
             const data = await fetchProfile();
+			const statistics = await fetchProfileUser();
 			if (!sessionStorage.getItem('user')){
 				console.log("cambiando el user de session storage");
 				sessionStorage.setItem('user', data.context.user.username);
 			}
-			console.log(data);
+			console.log("DATOS: ", data);
 			const porGamesWins = data.context.user.games_won / data.context.user.games_played * 100
 			const porTournamentsWins = data.context.user.tournaments_won / data.context.user.tournaments * 100
 			let page =
@@ -177,17 +195,27 @@ export default class extends AbstractView {
 								if (data.context.user.games_played > 0 || data.context.user.tournaments > 0) {
 									page += `
 								<div class="row h-100">
-									<div class="col-md-6 d-flex flex-column justify-content-start align-items-start">
-										<div class="w-100 mt-4">
-											<h5>Games played: ${data.context.user.games_played}</h5>
-											<h5>Games win: ${data.context.user.games_won}</h5>
-											<h5>Games loss: ${data.context.user.games_played - data.context.user.games_won} </h5>
-											<h5>Tournaments played: ${data.context.user.tournaments}</h5>
-											<h5>Tournaments win: ${data.context.user.tournaments_won}</h5>
-											<h5>Tournaments loss: ${data.context.user.tournaments - data.context.user.tournaments_won} </h5>
+										<div class="col-md-7 d-flex flex-column justify-content-start align-items-start">
+											<div class="d-flex flex-row w-100 mt-4">
+												<div class="me-4">
+													<h5>Games played: ${statistics.context.user.games_played}</h5>
+													<h5>Games win: ${statistics.context.user.games_won}</h5>
+													<h5>Games loss: ${statistics.context.user.games_played - statistics.context.user.games_won} </h5>
+													<h5>Tournaments played: ${statistics.context.user.tournaments}</h5>
+													<h5>Tournaments win: ${statistics.context.user.tournaments_won}</h5>
+													<h5>Tournaments loss: ${statistics.context.user.tournaments - statistics.context.user.tournaments_won} </h5>
+												</div>
+												<div class="ms-4">
+													<h5>Total points scored: ${statistics.context.user.my_total_score} </h5>
+													<h5>Total points conceded: ${statistics.context.user.rival_score} </h5>
+													<h5>Favorite opponent: ${statistics.context.user.favorite_opponent} </h5>
+													<h5>Most win oponent: ${statistics.context.user.most_won_opponent} </h5>
+													<h5>Most loss oponent: ${statistics.context.user.most_loss_opponent} </h5>
+													<h5>Last game: ${statistics.context.user.last_day_date} </h5>
+												</div>
+											</div>
 										</div>
-									</div>
-									<div class="col-md-6 d-flex flex-column justify-content-start align-items-center">
+										<div class="col-md-5 d-flex flex-column justify-content-start align-items-center">
                 						<div class="w-100 mt-4">
 											`
 											if (data.context.user.games_played > 0) {

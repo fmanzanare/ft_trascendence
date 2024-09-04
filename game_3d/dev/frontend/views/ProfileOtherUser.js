@@ -131,17 +131,27 @@ export default class extends AbstractView {
 									if (data.context.user.games_played > 0 || data.context.user.tournaments > 0) {
 										page += `
 									<div class="row h-100">
-										<div class="col-md-6 d-flex flex-column justify-content-start align-items-start">
-											<div class="w-100 mt-4">
-												<h5>Games played: ${data.context.user.games_played}</h5>
-												<h5>Games win: ${data.context.user.games_won}</h5>
-												<h5>Games loss: ${data.context.user.games_played - data.context.user.games_won} </h5>
-												<h5>Tournaments played: ${data.context.user.tournaments}</h5>
-												<h5>Tournaments win: ${data.context.user.tournaments_won}</h5>
-												<h5>Tournaments loss: ${data.context.user.tournaments - data.context.user.tournaments_won} </h5>
+										<div class="col-md-7 d-flex flex-column justify-content-start align-items-start">
+											<div class="d-flex flex-row w-100 mt-4">
+												<div class="me-4">
+													<h5>Games played: ${data.context.user.games_played}</h5>
+													<h5>Games win: ${data.context.user.games_won}</h5>
+													<h5>Games loss: ${data.context.user.games_played - data.context.user.games_won} </h5>
+													<h5>Tournaments played: ${data.context.user.tournaments}</h5>
+													<h5>Tournaments win: ${data.context.user.tournaments_won}</h5>
+													<h5>Tournaments loss: ${data.context.user.tournaments - data.context.user.tournaments_won} </h5>
+												</div>
+												<div class="ms-4">
+													<h5>Total points scored: ${data.context.user.my_total_score} </h5>
+													<h5>Total points conceded: ${data.context.user.rival_score} </h5>
+													<h5>Favorite opponent: ${data.context.user.favorite_opponent} </h5>
+													<h5>Most win oponent: ${data.context.user.most_won_opponent} </h5>
+													<h5>Most loss oponent: ${data.context.user.most_loss_opponent} </h5>
+													<h5>Last game: ${data.context.user.last_day_date} </h5>
+												</div>
 											</div>
 										</div>
-										<div class="col-md-6 d-flex flex-column justify-content-start align-items-center">
+										<div class="col-md-5 d-flex flex-column justify-content-start align-items-center">
 											<div class="w-100 mt-4">
 												`
 												if (data.context.user.games_played > 0) {
