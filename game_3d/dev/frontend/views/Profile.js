@@ -258,7 +258,7 @@ export default class extends AbstractView {
 								} else {
 									page +=
 									`
-										<h1 class="display-5 fw-bold text-uppercase text-center" style="color:#80dbef;">No statistics available</h1>
+										<h1 class="display-10 fw-bold text-uppercase text-center mt-5" style="color:#80dbef;">No statistics available</h1>
 									`
 								}
 								page += `

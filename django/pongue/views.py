@@ -617,45 +617,53 @@ def profile_id(request):
 			"myScore": historyDto.myScore,
 			"myRivalScore": historyDto.myRivalScore
 		})
-	total_myScore = sum(item['myScore'] for item in historyDtos)
-	total_rivalScore = sum(item['myRivalScore'] for item in historyDtos)
-	rival_count = {}
+	if len(historyDtos) > 0:
+		total_myScore = sum(item['myScore'] for item in historyDtos)
+		total_rivalScore = sum(item['myRivalScore'] for item in historyDtos)
+		rival_count = {}
 
-	for item in historyDtos:
-		rival = item['rival']
-		if rival in rival_count:
-			rival_count[rival] += 1
-		else:
-			rival_count[rival] = 1
+		for item in historyDtos:
+			rival = item['rival']
+			if rival in rival_count:
+				rival_count[rival] += 1
+			else:
+				rival_count[rival] = 1
 	
-	wins_count = {}
-	for item in historyDtos:
-		rival = item['rival']
-		if item['isWin']:
-			if rival in wins_count:
-				wins_count[rival] += 1
-			else:
-				wins_count[rival] = 1
+		wins_count = {}
+		for item in historyDtos:
+			rival = item['rival']
+			if item['isWin']:
+				if rival in wins_count:
+					wins_count[rival] += 1
+				else:
+					wins_count[rival] = 1
 
-	losses_count = {}
-	for item in historyDtos:
-		rival = item['rival']
-		if not item['isWin']:
-			if rival in losses_count:
-				losses_count[rival] += 1
-			else:
-				losses_count[rival] = 1
+		losses_count = {}
+		for item in historyDtos:
+			rival = item['rival']
+			if not item['isWin']:
+				if rival in losses_count:
+					losses_count[rival] += 1
+				else:
+					losses_count[rival] = 1
 
-	last_game = max(historyDtos, key=lambda x: x['date'])
-	current_date = datetime.now(timezone.utc)
-	if last_game['date'].date() == current_date.date():
-		formatted_date = last_game['date'].strftime('%H:%M')
+		last_game = max(historyDtos, key=lambda x: x['date'])
+		current_date = datetime.now(timezone.utc)
+		if last_game['date'].date() == current_date.date():
+			formatted_date = last_game['date'].strftime('%H:%M')
+		else:
+			formatted_date = last_game['date'].strftime('%d/%m/%Y')
+
+		most_losses_rival = max(losses_count, key=losses_count.get, default="You have no defeats")
+		most_wins_rival = max(wins_count, key=wins_count.get, default="You have no victories")
+		most_played_rival = max(rival_count, key=rival_count.get)
 	else:
-		formatted_date = last_game['date'].strftime('%d/%m/%Y')
-
-	most_losses_rival = max(losses_count, key=losses_count.get, default="You have no defeats")
-	most_wins_rival = max(wins_count, key=wins_count.get, default="You have no victories")
-	most_played_rival = max(rival_count, key=rival_count.get)
+		total_myScore = 0
+		total_rivalScore = 0
+		most_played_rival = "No opponents played"
+		most_wins_rival = "No victories"
+		most_losses_rival = "No defeats"
+		formatted_date = "No games played"
 	return JsonResponse({
         "success": True,
         "context": {
