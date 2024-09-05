@@ -55,35 +55,39 @@
 				</div>
 			</div>
 		</div>
-	<nav class="navbar navbar-expand-lg nav d-none fs-3" id="nav">
+	<nav class="navbar navbar-expand-lg d-none fs-3" id="nav">
 		<div class="container-fluid">
-			<div class="collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
-					<ul class="navbar-nav">
-						<li class="nav-item ms-3">
-							<a class="nav-link nav__link active" href="/home" data-link>Home</a>
-						</li>
-						<li class="nav-item ms-3">
-							<a class="nav-link nav__link" href="/tournaments" data-link>Tournaments</a>
-						</li>
-						<li class="nav-item ms-3">
-							<a class="nav-link nav__link" href="/ranking" data-link>Ranking</a>
-						</li>
-						<li class="nav-item ms-3 dropdown">
-							<a class="nav-link dropdown-toggle small" role="button" data-bs-toggle="dropdown"
-							aria-expanded="false" id="userNameNavBar">User name</a>
-							<ul class="dropdown-menu" style="background-color: #5272c1;">
-								<li><a class="dropdown-item small fs-3" href="/profile" data-link
-									style="background-color: #5272c1;">Profile</a></li>
-								<li><a class="dropdown-item small fs-3" role="button" id="logOut"
-									style="background-color: #5272c1;">Logout</a></li>
-							</ul>
-						</li>
-					</ul>
-					<ul class="navbar-nav">
-						<li class="nav-item ms-3">
-							<a id="userStatus" class="nav-link" style="cursor: default;">Online</a>
-						</li>
-					</ul>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav me-auto">
+					<li class="nav-item ms-3">
+						<a class="nav-link nav__link active" href="/home" data-link>Home</a>
+					</li>
+					<li class="nav-item ms-3">
+						<a class="nav-link nav__link" href="/tournaments" data-link>Tournaments</a>
+					</li>
+					<li class="nav-item ms-3">
+						<a class="nav-link nav__link" href="/ranking" data-link>Ranking</a>
+					</li>
+					<li class="nav-item ms-3 dropdown">
+						<a class="nav-link dropdown-toggle small" role="button" data-bs-toggle="dropdown"
+						aria-expanded="false" id="userNameNavBar">User name</a>
+						<ul class="dropdown-menu" style="background-color: #5272c1;">
+							<li><a class="dropdown-item small fs-3" href="/profile" data-link
+								style="background-color: #5272c1;">Profile</a></li>
+							<li><a class="dropdown-item small fs-3" role="button" id="logOut"
+								style="background-color: #5272c1;">Logout</a></li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item ms-3">
+						<a id="userStatus" class="nav-link" style="cursor: default;">Online</a>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</nav>
