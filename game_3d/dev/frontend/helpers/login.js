@@ -53,7 +53,7 @@ export async function loginPushButton() {
             } else {
                 sessionStorage.setItem('pongToken', data.context.jwt);
                 changeUserName();
-                getFriends();
+                // getFriends();
                 navigateTo("/home");
             }
         } else {
@@ -98,7 +98,7 @@ export function twoFactorPushButton()
 		if (data.success) {
 			sessionStorage.setItem('pongToken', data.context.jwt);
 			sessionStorage.setItem('userId', data.userId);
-            getFriends();
+            // getFriends();
 			navigateTo("/home");
 		}
 	})
@@ -129,7 +129,7 @@ export function login42(code){
                 sessionStorage.setItem('pongToken', data.context.jwt);
                 sessionStorage.setItem('userId', data.userId);
 			    changeUserName();
-                getFriends();
+                // getFriends();
                 navigateTo("/home");
             }
         } else {

@@ -4,7 +4,7 @@ import { changeState, putOnline} from "./helpers/statusUser.js";
 import { getFriends } from "./helpers/changeView.js";
 
 // Global variables
-const DEBUG = true;
+const DEBUG = false;
 if (DEBUG) {
     console.log = () => {}
 }
@@ -23,7 +23,7 @@ window.onload = function() {
     if ($token){
         putOnline(true);
         changeState("Online");
-        getFriends();
+        // getFriends();
     }
 	if ($winner)
 	{

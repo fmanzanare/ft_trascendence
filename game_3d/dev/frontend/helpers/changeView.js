@@ -242,7 +242,7 @@ function printFriends(friendList) {
 			nameNode.classList.add('m-0');
 
 			if (friendList[i].status === 'ACCEPTED') {
-				handleChatInput(friendList[i], friendList[i].username)
+				// handleChatInput(friendList[i], friendList[i].username)
 				nameNode.onclick = () => handleChatInput(friendList[i], friendList[i].username);
 				nameNode.style.cursor = "pointer";
 			}
