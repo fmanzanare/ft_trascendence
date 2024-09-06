@@ -38,18 +38,18 @@ This project is something you've never done before. Think back to the beginning 
 - [ ] Añadir validación en Backend de la longitud del nombre de usuario (permitir un máximo de 3 caracteres más que en el front para la API de 42) {Fernando}
 - [ ] Cambiar los nombres a las migraciones que genera Django. Evitar que salgan dos con "init" {Fernando}
 ### DOCKER
-- [ ] Cambiar "docker-compose" por "docker compose" {Fernando}
-- [ ] En Makefile cambiar "docker compose logs -f" por "docker compose logs -f --tail=1000" {Fernando}
-- [ ] En Makefile, la regla "clean" debería usar "docer system prune" {Fernando}
-- [ ] Eliminar la versión de docker-compose.yml {Fernando}
-- [ ] Corregir las dependencias, de forma que backend dependa de todas, y las demás sin dependencias {Fernando}
-- [ ] No exponer puertos de ningún servicio, salvo el de Caddy. La conexión entre contenedores debe hacerse desde la network de docker {Fernando}
-- [ ] Poner versión mínima de la imagen "postgresql" y usar binami/postgre como imagen {Fernando}
+- [º] Cambiar "docker-compose" por "docker compose" {Fernando}
+- [º] En Makefile cambiar "docker compose logs -f" por "docker compose logs -f --tail=1000" {Fernando}
+- [º] En Makefile, la regla "clean" debería usar "docer system prune" {Fernando}
+- [º] Eliminar la versión de docker-compose.yml {Fernando}
+- [º] Corregir las dependencias, de forma que backend dependa de todas, y las demás sin dependencias {Fernando}
+- [º] No exponer puertos de ningún servicio, salvo el de Caddy. La conexión entre contenedores debe hacerse desde la network de docker {Fernando}
+- [º] Poner versión mínima de la imagen "postgresql" y usar binami/postgre como imagen {Fernando}
 - [ ] Añadir un fichero .env.example sólo con keys, pero sin values {Fernando}
-- [ ] Poner versión mínima de la imagen de "caddy" {Fernando}
+- [º] Poner versión mínima de la imagen de "caddy" {Fernando}
 - [ ] Corregir volúmenes. Eliminar los driver y binds {Fernando}
-- [ ] Crear usuario en Dockerfile para no hacerlo con root y evitar el escalado de privilegios {Fernando}
-- [ ] Eliminar la instalación de netcat en el Dockerfile de Django {Fernando}
+- [º] Crear usuario en Dockerfile para no hacerlo con root y evitar el escalado de privilegios {Fernando}
+- [NO] Eliminar la instalación de netcat en el Dockerfile de Django {Fernando} - Usamos Netcat para comprobar la conexión del backend con postgres
 - [ ] Corregir conexión desde Caddy con dominio. Crear certificados ssl, enlazados al dominio (Opcional) {Fernando}
 ### EXTRAS / MEJORAS:
 - [ ] Documentar en README.md {Fernando + Victor}

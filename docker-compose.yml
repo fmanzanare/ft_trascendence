@@ -1,32 +1,25 @@
-version: '3.8'
-
 services:
   redis:
     image: redis:7.4-alpine
     container_name: redis
-    ports:
-      - "9999:6379"
-    depends_on:
-      - db
-      - backend
 
   backend:
+    container_name: backend
     build:
       context: ./django
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - django:/usr/src/django/
-    ports:
-      - "8000:8000"
+      - ./django:/home/nonroot/django
     env_file:
       - ./.env
     depends_on:
+      - caddy
       - db
+      - redis
 
   db:
-    image: postgres:15
-    ports:
-      - 5432:5432 # expose the port for debugging
+    container_name: postgre
+    image: bitnami/postgresql:14.13.0
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
@@ -35,10 +28,8 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     
   caddy:
-    image: caddy:alpine
+    image: caddy:2.8.4-alpine
     container_name: caddy
-    depends_on:
-      - backend
     cap_add:
       - NET_ADMIN
     ports:
@@ -49,21 +40,11 @@ services:
       - ./caddy/data:/data
       - ./caddy/conf:/config
       - ./caddy/https:/https
-      - game_3d:/usr/src/game_3d
-      - django:/usr/src/django
+      - ./game_3d:/usr/src/game_3d
+      - ./django:/usr/src/django
 
 volumes:
   django:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${PWD}/django/'
   game_3d:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${PWD}/game_3d/'
   redis:
   db_data:
