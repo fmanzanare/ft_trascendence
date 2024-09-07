@@ -56,5 +56,5 @@ This project is something you've never done before. Think back to the beginning 
 - [ ] Módulo de IA {Fernando}
 ### PRUEBAS / TESTEO:
 - [ ] PNG bomba
-- [X] Envío de una petición enorme desde CURL - biblia
+- [X] Envío de una petición enorme desde CURL - biblia (curl --cacert ./caddy/data/caddy/pki/authorities/local/intermediate.crt -X POST -d @bible.txt https://localhost:4000/api/login/)
 - [ ] Testeo con compañeros (Jarre, Sergio, Ruzafa, Pablo, etc.)
