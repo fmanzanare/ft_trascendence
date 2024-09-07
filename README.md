@@ -2,14 +2,14 @@
 This project is something you've never done before. Think back to the beginning of your programming journey. Look at yourself, now is your time to shine!
 
 ## Módulos completados.
-- [ ] Conexión con API 42
+- [X] Conexión con API 42
 - [X] JWT + 2FA
 - [X] Microservicios
 - [X] Framework Backend (Django)
 - [X] Bootstrap + DB (PostgreSQL)
 - [X] Graphics / 3D
-- [ ] Remote
-- [ ] User Statistics
+- [X] Remote
+- [X] User Statistics
 - [ ] Server-side PONG
 - [ ] User Management (agregar amigos se hace desde el chat)
 - [ ] Live Chat
@@ -32,7 +32,7 @@ This project is something you've never done before. Think back to the beginning 
 ### BACKEND
 - [X] Eliminar prints de Django {Fernando}
 - [X] Redirección http a https en caddy {Antonio}
-- [ ] Limitar que un mismo usuario haga login dos veces {Fernando}
+- [º] Limitar que un mismo usuario haga login dos veces {Fernando} - Pendiente de Revisar error con ANTONIO
 - [ ] Usar "salt" para la encriptación de contraseñas (Opcional) {Fernando}
 - [X] Velocidad del juego remoto {Fernando}
 - [ ] Añadir validación en Backend de la longitud del nombre de usuario (permitir un máximo de 3 caracteres más que en el front para la API de 42) {Fernando}
@@ -56,5 +56,5 @@ This project is something you've never done before. Think back to the beginning 
 - [ ] Módulo de IA {Fernando}
 ### PRUEBAS / TESTEO:
 - [ ] PNG bomba
-- [ ] Envío de una petición enorme desde CURL - biblia
+- [X] Envío de una petición enorme desde CURL - biblia
 - [ ] Testeo con compañeros (Jarre, Sergio, Ruzafa, Pablo, etc.)

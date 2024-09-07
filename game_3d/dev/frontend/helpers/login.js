@@ -141,7 +141,8 @@ export function login42(code){
         } else {
             const $modal = document.getElementById("myAlert");
             const $textModalMessage = document.getElementById("textAlert");
-            $textModalMessage.textContent = "42 API connection error";
+            // $textModalMessage.textContent = "42 API connection error";
+            $textModalMessage.textContent = data.message;
             $modal.classList.add("show");
             $modal.style.display = "block";
             $modal.setAttribute("aria-modal", "accept");
