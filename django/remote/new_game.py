@@ -262,7 +262,6 @@ class Game:
     @database_sync_to_async
     def saveUserChanges(self, user: PongueUser):
         close_old_connections()
-        print(f"user: {user.games_won}, {user.games_lost}, {user.points}")
         user.save()
 
     @database_sync_to_async

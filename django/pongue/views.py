@@ -374,7 +374,6 @@ def auth(request):
 			}
 			auth_response = requests.post("https://api.intra.42.fr/oauth/token", data=data)
 			try:
-				print(f"API RESPONSE!!!! - {auth_response.json()}")
 				access_token = auth_response.json()["access_token"]
 			except:
 				return JsonResponse({
@@ -474,7 +473,6 @@ def friends(request):
 						"message": "Friendship not found"
 						}, status=404)
 				else:
-					print("friendship", friendship)
 					friendship.blockFriend()
 			elif action == "add":
 				PlayerFriend.searchOrCreate(get_user_from_jwt(request), username)
@@ -751,8 +749,6 @@ def nickname(request):
 					"error": "Nickname is already in use"
 				})
 			else:
-				print(nickname)
-				print(user)
 				user.nickname = nickname
 				user.save()
 				return JsonResponse({

@@ -19,14 +19,14 @@ This project is something you've never done before. Think back to the beginning 
 ### FRONTEND
 - [X] Eliminar encodeURI de los formularios del front {Antonio}
 - [ ] Tamaño del juego local cuando se hace resize de la pantalla {Fernando}
-- [ ] Menú responsive con botón desplegable Bootstrap (Opcional) {Antonio}
+- [X] Menú responsive con botón desplegable Bootstrap (Opcional) {Antonio}
 - [X] Modificar el placeholder del cambio de "Username" del perfil {Antonio}
 - [X] Gestionar el registro por API 42 cuando ya existe un usuario con ese nombre (agregar #42 al final del username) {Antonio}
 - [X] Agregar espacio entre "Do you have an account? Sing up" y API 42 {Antonio}
 - [X] Página de callback con API de 42 {Antonio}
 - [X] Hover effects sobre los botones principales de la interfaz {Antonio}
 - [X] Cross button en modales - ELIMINADO {Antonio}
-- [ ] Gráficos circulares para mostrar las estadísticas del usuario (Opcional) {Antonio}
+- [NO] Gráficos circulares para mostrar las estadísticas del usuario (Opcional) {Antonio}
 - [ ] Refactor del Chat {Victor + Fernando}
 - [X] Actualizar el estado del front a "In Game" cuando está en partida Online. Verificar en Tournament {Antonio}
 ### BACKEND
@@ -45,9 +45,9 @@ This project is something you've never done before. Think back to the beginning 
 - [º] Corregir las dependencias, de forma que backend dependa de todas, y las demás sin dependencias {Fernando}
 - [º] No exponer puertos de ningún servicio, salvo el de Caddy. La conexión entre contenedores debe hacerse desde la network de docker {Fernando}
 - [º] Poner versión mínima de la imagen "postgresql" y usar binami/postgre como imagen {Fernando}
-- [ ] Añadir un fichero .env.example sólo con keys, pero sin values {Fernando}
+- [X] Añadir un fichero .env.example sólo con keys, pero sin values {Fernando}
 - [º] Poner versión mínima de la imagen de "caddy" {Fernando}
-- [ ] Corregir volúmenes. Eliminar los driver y binds {Fernando}
+- [º] Corregir volúmenes. Eliminar los driver y binds {Fernando}
 - [º] Crear usuario en Dockerfile para no hacerlo con root y evitar el escalado de privilegios {Fernando}
 - [NO] Eliminar la instalación de netcat en el Dockerfile de Django {Fernando} - Usamos Netcat para comprobar la conexión del backend con postgres
 - [ ] Corregir conexión desde Caddy con dominio. Crear certificados ssl, enlazados al dominio (Opcional) {Fernando}

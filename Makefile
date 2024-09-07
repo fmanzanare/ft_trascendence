@@ -3,7 +3,7 @@ DOCKER_COMPOSE = docker compose
 # Base operations
 .PHONY: all
 all:
-	$(DOCKER_COMPOSE) up -d --build
+	$(DOCKER_COMPOSE) up --build
 
 .PHONY: build
 build:
@@ -39,7 +39,7 @@ migrate:
 	docker exec -it backend python manage.py migrate
 
 .PHONY: backend_debug
-backend_shell:
+backend_debug:
 	docker exec -it backend sh
 
 .PHONY: postgre_debug

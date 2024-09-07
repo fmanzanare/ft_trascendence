@@ -5,14 +5,14 @@ RUN apt-get update && \
     groupadd -r nonroot && \
     useradd -r -g nonroot nonroot
 
-RUN mkdir -p /home/nonroot/django && chown -R nonroot:nonroot /home/nonroot
+RUN mkdir -p /home/nonroot/django
 
-COPY ./entrypoint.sh .
+WORKDIR /home/nonroot/django
+
+RUN chown -R nonroot:nonroot /home/nonroot
 RUN chown -R nonroot:nonroot /home/nonroot/django
 
 USER nonroot
-
-WORKDIR /home/nonroot/django
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -20,7 +20,5 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-
-COPY . .
 
 ENTRYPOINT ["sh", "/home/nonroot/django/entrypoint.sh"]
