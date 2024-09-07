@@ -18,7 +18,7 @@ This project is something you've never done before. Think back to the beginning 
 
 ### FRONTEND
 - [X] Eliminar encodeURI de los formularios del front {Antonio}
-- [ ] Tamaño del juego local cuando se hace resize de la pantalla {Fernando}
+- [X] Tamaño del juego local cuando se hace resize de la pantalla {Fernando}
 - [X] Menú responsive con botón desplegable Bootstrap (Opcional) {Antonio}
 - [X] Modificar el placeholder del cambio de "Username" del perfil {Antonio}
 - [X] Gestionar el registro por API 42 cuando ya existe un usuario con ese nombre (agregar #42 al final del username) {Antonio}

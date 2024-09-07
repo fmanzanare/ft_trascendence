@@ -12,7 +12,7 @@ import { GameSizes } from './Sizes.js';
 
 export class Game {
 
-	sizes = new GameSizes(false);
+	sizes = new GameSizes(true);
 	container = document.getElementById('gameDiv');
 	scene = new THREE.Scene();
 	renderer = new Renderer(this.sizes);
