@@ -30,13 +30,13 @@ This project is something you've never done before. Think back to the beginning 
 - [ ] Refactor del Chat {Victor + Fernando}
 - [X] Actualizar el estado del front a "In Game" cuando está en partida Online. Verificar en Tournament {Antonio}
 ### BACKEND
-- [ ] Eliminar prints de Django {Fernando}
+- [X] Eliminar prints de Django {Fernando}
 - [X] Redirección http a https en caddy {Antonio}
 - [ ] Limitar que un mismo usuario haga login dos veces {Fernando}
 - [ ] Usar "salt" para la encriptación de contraseñas (Opcional) {Fernando}
-- [ ] Velocidad del juego remoto {Fernando}
+- [X] Velocidad del juego remoto {Fernando}
 - [ ] Añadir validación en Backend de la longitud del nombre de usuario (permitir un máximo de 3 caracteres más que en el front para la API de 42) {Fernando}
-- [ ] Cambiar los nombres a las migraciones que genera Django. Evitar que salgan dos con "init" {Fernando}
+- [º] Cambiar los nombres a las migraciones que genera Django. Evitar que salgan dos con "init" {Fernando}
 ### DOCKER
 - [º] Cambiar "docker-compose" por "docker compose" {Fernando}
 - [º] En Makefile cambiar "docker compose logs -f" por "docker compose logs -f --tail=1000" {Fernando}

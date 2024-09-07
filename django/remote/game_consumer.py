@@ -59,7 +59,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                         "pTwoName": self.game.pTwo.playerName
                     }
 			    )
-            self.game_task = asyncio.create_task(self.game.runGame())
+                self.game_task = asyncio.create_task(self.game.runGame())
             return
             
         if ("playerMovement" in data.keys()):
