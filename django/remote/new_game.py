@@ -132,7 +132,7 @@ class Game:
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
         if (type(self.sockets["player2"]) != int):
             await self.sockets["player2"].send(text_data=json.dumps(startingGame))
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
 
         startingGame = {
             "type": "starting.game",
@@ -143,7 +143,7 @@ class Game:
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
         if (type(self.sockets["player2"]) != int):
             await self.sockets["player2"].send(text_data=json.dumps(startingGame))
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(1)
 
         startingGame = {
             "type": "starting.game",
@@ -154,7 +154,7 @@ class Game:
             await self.sockets["player1"].send(text_data=json.dumps(startingGame))
         if (type(self.sockets["player2"]) != int):
             await self.sockets["player2"].send(text_data=json.dumps(startingGame))
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(1)
 
 
     async def runGame(self):
@@ -190,7 +190,7 @@ class Game:
             self.ball.xPos += self.ball.xDir * self.ball.speed
             self.ball.yPos += self.ball.yDir * self.ball.speed
 
-            await asyncio.sleep(0.033)
+            await asyncio.sleep(0.01667)
 
         finishTime = time.time()
         userPlayerOne: PongueUser = await self.getUser(self.pOne.playerId)
@@ -262,7 +262,6 @@ class Game:
     @database_sync_to_async
     def saveUserChanges(self, user: PongueUser):
         close_old_connections()
-        print(f"user: {user.games_won}, {user.games_lost}, {user.points}")
         user.save()
 
     @database_sync_to_async

@@ -94,7 +94,6 @@ class UserHistoryDTO:
 	myRivalScore = 0
 
 	def toUserHistoryDTO(user: PongueUser, gameResult: GameResults):
-		print(gameResult)
 		gameResultPlayer1 = PongueUser.objects.get(id=gameResult["player_1_id"])
 		gameResultPlayer2 = PongueUser.objects.get(id=gameResult["player_2_id"])
 		gameResultPlayer = gameResultPlayer1 if gameResultPlayer1.id == user.id else gameResultPlayer2

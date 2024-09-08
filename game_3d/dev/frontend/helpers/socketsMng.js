@@ -198,7 +198,6 @@ export function openNewSocketTournament(data) {
 			if (gameCanva)
 				gameCanva.remove();
 			if (userId == data.tournamentWinner) {
-				// TODO - Show a message on the screen.
 				$btnDiv.classList.remove("d-none")
 				$titleDiv.textContent = "YOU WIN"
 				$textDiv.textContent = "Congratulation! You won the tournament!"
@@ -206,7 +205,6 @@ export function openNewSocketTournament(data) {
 				remoteSocket.close()
 				sockets.tournamentSocket = null;
 			} else {
-				// TODO - Show a message on the screen.
 				$btnDiv.classList.remove("d-none")
 				$titleDiv.textContent = "YOU LOST"
 				$textDiv.textContent = "Ups! You lost the tournamnet"
@@ -217,7 +215,6 @@ export function openNewSocketTournament(data) {
 		}
 
 		if (data.disconnection) {
-			// TODO - Show a message on the screen.
 			gameCanva.remove();
 			$blackDiv.classList.remove("d-none")
 			$titleDiv.textContent = "YOU WIN"

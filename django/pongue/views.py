@@ -140,19 +140,23 @@ def login(request):
 	message = "User not logged in"
 	if get_user_from_jwt(request):
 		# WAS: return redirect("index")
+		message = "User already logged in"
 		return JsonResponse({
-			"success": True,
-			"message": "User already logged in",
-			"redirect": True,
-			"redirect_url": "index",
+			"success": False,
+			"message": message,
+			"redirect": False,
+			"redirect_url": "",
 			"context": {},
 		})
 	if request.method == "POST":
 		username = request.POST.get("username")
 		password = request.POST.get("password")
 		user = authenticate(request, username=username, password=password)
+		pongueUser: PongueUser = PongueUser.objects.get(username=username)
 
-		if user is not None:
+		if pongueUser is not None and pongueUser.status == PongueUser.Status.ONLINE:
+			message = "User already logged in"
+		elif user is not None:
 			return pass2fa(request, user)
 		else:
 			# WAS: messages.info(request, "Username or password is incorrect")
@@ -374,7 +378,6 @@ def auth(request):
 			}
 			auth_response = requests.post("https://api.intra.42.fr/oauth/token", data=data)
 			try:
-				print(f"API RESPONSE!!!! - {auth_response.json()}")
 				access_token = auth_response.json()["access_token"]
 			except:
 				return JsonResponse({
@@ -390,8 +393,16 @@ def auth(request):
 			display_name = user_response.json()["displayname"]
 
 			try:
-				user = PongueUser.objects.get(username=username)
-				if (user.from_42):
+				user: PongueUser = PongueUser.objects.get(username=username)
+				if user is not None and user.status == PongueUser.Status.ONLINE:
+					return JsonResponse({
+						"success": False,
+						"message": "User already logged in",
+						"redirect": True,
+						"redirect_url": "login",
+						"context": {}
+					})
+				elif (user.from_42):
 					return pass2fa(request, user)
 				else:
 					# WAS:
@@ -474,7 +485,6 @@ def friends(request):
 						"message": "Friendship not found"
 						}, status=404)
 				else:
-					print("friendship", friendship)
 					friendship.blockFriend()
 			elif action == "add":
 				PlayerFriend.searchOrCreate(get_user_from_jwt(request), username)
@@ -751,8 +761,6 @@ def nickname(request):
 					"error": "Nickname is already in use"
 				})
 			else:
-				print(nickname)
-				print(user)
 				user.nickname = nickname
 				user.save()
 				return JsonResponse({
