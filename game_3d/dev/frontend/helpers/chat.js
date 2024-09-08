@@ -331,7 +331,7 @@ function removeAllMessagesInChatLog() {
 function addMessageToChatLog(message) {
 	const chatLog = document.querySelector('#chat-log');
 	const messageNode = document.createElement('div');
-	messageNode.style.wordWrap = "break-word";
+	messageNode.style.overflowWrap = "break-word";
 	// paragraph.setAttribute("style", "margin: 0;");
 	messageNode.innerText = message;
 	chatLog.appendChild(messageNode);

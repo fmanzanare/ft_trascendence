@@ -17,10 +17,11 @@ body
 }
 
 #chat-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    overflow: hidden; /* Evita que el contenido desborde el contenedor */
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	overflow: hidden; /* Evita que el contenido desborde el contenedor */
+	width: 25rem; /* Ancho fijo */
 }
 
 #chat-log {
