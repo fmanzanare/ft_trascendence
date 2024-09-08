@@ -1,18 +1,21 @@
-# ft_transcendence
+# PONGUE (ft_transcendence)
 This project is something you've never done before. Think back to the beginning of your programming journey. Look at yourself, now is your time to shine!
 
-## Módulos completados.
-- [X] Conexión con API 42
-- [X] JWT + 2FA
-- [X] Microservicios
-- [X] Framework Backend (Django)
-- [X] Bootstrap + DB (PostgreSQL)
-- [X] Graphics / 3D
-- [X] Remote
-- [X] User Statistics
-- [ ] Server-side PONG
-- [ ] User Management (agregar amigos se hace desde el chat)
-- [ ] Live Chat
+## Project arquitecture diagram
+![Alt text](./ft_transcendence-pongue.png "Project arquitecture diagram")
+
+## Completed modules.
+- Conexión con API 42
+- JWT + 2FA
+- Microservicios
+- Framework Backend (Django)
+- Bootstrap + DB (PostgreSQL)
+- Graphics / 3D
+- Remote
+- User Statistics
+- Server-side PONG
+- User Management (agregar amigos se hace desde el chat)
+- Live Chat
 
 ## Tareas Pendientes
 
@@ -33,7 +36,6 @@ This project is something you've never done before. Think back to the beginning 
 - [X] Eliminar prints de Django {Fernando}
 - [X] Redirección http a https en caddy {Antonio}
 - [X] Limitar que un mismo usuario haga login dos veces {Fernando}
-- [ ] Usar "salt" para la encriptación de contraseñas (Opcional) {Fernando}
 - [X] Velocidad del juego remoto {Fernando}
 - [X] Añadir validación en Backend de la longitud del nombre de usuario (permitir un máximo de 3 caracteres más que en el front para la API de 42) {Fernando}
 - [X] Cambiar los nombres a las migraciones que genera Django. Evitar que salgan dos con "init" {Fernando}
