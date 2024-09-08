@@ -16,6 +16,45 @@ body
 	overflow: hidden;
 }
 
+#chat-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden; /* Evita que el contenido desborde el contenedor */
+}
+
+#chat-log {
+    flex-grow: 1;
+    overflow-y: auto; /* Permite el scroll vertical */
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+#chat-input {
+    height: 50px; /* Altura fija para el input */
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+#upper-bar {
+    height: 40px; /* Altura fija para la barra superior */
+    background-color: #8da3d9;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* Evita que el elemento se reduzca */
+}
+
+#hideChat {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 #gameDiv
 {
 	position: absolute;
