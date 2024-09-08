@@ -32,23 +32,23 @@ This project is something you've never done before. Think back to the beginning 
 ### BACKEND
 - [X] Eliminar prints de Django {Fernando}
 - [X] Redirección http a https en caddy {Antonio}
-- [º] Limitar que un mismo usuario haga login dos veces {Fernando} - Pendiente de Revisar error con ANTONIO
+- [X] Limitar que un mismo usuario haga login dos veces {Fernando}
 - [ ] Usar "salt" para la encriptación de contraseñas (Opcional) {Fernando}
 - [X] Velocidad del juego remoto {Fernando}
-- [ ] Añadir validación en Backend de la longitud del nombre de usuario (permitir un máximo de 3 caracteres más que en el front para la API de 42) {Fernando}
-- [º] Cambiar los nombres a las migraciones que genera Django. Evitar que salgan dos con "init" {Fernando}
+- [X] Añadir validación en Backend de la longitud del nombre de usuario (permitir un máximo de 3 caracteres más que en el front para la API de 42) {Fernando}
+- [X] Cambiar los nombres a las migraciones que genera Django. Evitar que salgan dos con "init" {Fernando}
 ### DOCKER
-- [º] Cambiar "docker-compose" por "docker compose" {Fernando}
-- [º] En Makefile cambiar "docker compose logs -f" por "docker compose logs -f --tail=1000" {Fernando}
-- [º] En Makefile, la regla "clean" debería usar "docer system prune" {Fernando}
-- [º] Eliminar la versión de docker-compose.yml {Fernando}
-- [º] Corregir las dependencias, de forma que backend dependa de todas, y las demás sin dependencias {Fernando}
-- [º] No exponer puertos de ningún servicio, salvo el de Caddy. La conexión entre contenedores debe hacerse desde la network de docker {Fernando}
-- [º] Poner versión mínima de la imagen "postgresql" y usar binami/postgre como imagen {Fernando}
+- [X] Cambiar "docker-compose" por "docker compose" {Fernando}
+- [X] En Makefile cambiar "docker compose logs -f" por "docker compose logs -f --tail=1000" {Fernando}
+- [X] En Makefile, la regla "clean" debería usar "docer system prune" {Fernando}
+- [X] Eliminar la versión de docker-compose.yml {Fernando}
+- [X] Corregir las dependencias, de forma que backend dependa de todas, y las demás sin dependencias {Fernando}
+- [X] No exponer puertos de ningún servicio, salvo el de Caddy. La conexión entre contenedores debe hacerse desde la network de docker {Fernando}
+- [X] Poner versión mínima de la imagen "postgresql" y usar binami/postgre como imagen {Fernando}
 - [X] Añadir un fichero .env.example sólo con keys, pero sin values {Fernando}
-- [º] Poner versión mínima de la imagen de "caddy" {Fernando}
-- [º] Corregir volúmenes. Eliminar los driver y binds {Fernando}
-- [º] Crear usuario en Dockerfile para no hacerlo con root y evitar el escalado de privilegios {Fernando}
+- [X] Poner versión mínima de la imagen de "caddy" {Fernando}
+- [X] Corregir volúmenes. Eliminar los driver y binds {Fernando}
+- [X] Crear usuario en Dockerfile para no hacerlo con root y evitar el escalado de privilegios {Fernando}
 - [NO] Eliminar la instalación de netcat en el Dockerfile de Django {Fernando} - Usamos Netcat para comprobar la conexión del backend con postgres
 - [ ] Corregir conexión desde Caddy con dominio. Crear certificados ssl, enlazados al dominio (Opcional) {Fernando}
 ### EXTRAS / MEJORAS:

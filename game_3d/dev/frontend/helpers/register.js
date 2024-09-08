@@ -26,7 +26,7 @@ export async function singPushButton() {
         return;
     }
 
-    if ($username.value.length > 8){
+   if ($username.value.length > 8){
         $username.classList.add("border-danger");
         $errorMessage.textContent = "Username must be less than 9 characters long";
         return;
@@ -77,6 +77,7 @@ export async function singPushButton() {
             navigateTo("/home");
         } else {
 			const $dataError = data.context.errors
+            console.log(data)
             handleRegistrationError($username, $pass, $dataError, $errorMessage);
         }
 

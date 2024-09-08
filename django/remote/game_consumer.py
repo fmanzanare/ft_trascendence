@@ -94,7 +94,10 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         if (self.room_group_name in self.rooms):
             playerFromRoom: PongueUser = self.rooms[self.room_group_name]["players"][await self.findSocketInGameSockets()]
+            await asyncio.sleep(0.2)
             player: PongueUser = await self.getUser(playerFromRoom.id)
+            print(player.id)
+            print(player.status)
             if player.status != PongueUser.Status.OFFLINE:
                 player.status = PongueUser.Status.ONLINE # TODO: Issue avoiding double loggin
             await self.saveUserChanges(player)

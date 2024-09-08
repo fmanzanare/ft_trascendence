@@ -14,11 +14,11 @@ down:
 	$(DOCKER_COMPOSE) down
 
 .PHONY: clean
-clean:
+clean: down
 	docker system prune
 
 .PHONY: clean_all
-clean_all:
+clean_all: down
 	docker system prune -a
 
 .PHONY: clean_volumes

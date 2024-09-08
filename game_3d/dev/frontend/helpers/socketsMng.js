@@ -3,6 +3,32 @@ import { navigateTo } from "./navigateto.js";
 import { changeState } from "./statusUser.js";
 import { sockets } from "../index.js"
 
+export function openStatusSocket() {
+	const userId = sessionStorage.getItem("userId");
+
+	const remoteSocket = new WebSocket(
+		'wss://'
+		+ 'localhost:4000'
+		+ '/api/ws/status/'
+		+ userId
+		+ '/'
+	)
+
+	remoteSocket.onopen = function(e) {
+		console.log("connection stablished")
+		remoteSocket.send(JSON.stringify({
+			"register": true,
+			"userId": userId,
+			"userJwt": sessionStorage.getItem('pongToken')
+		}))
+	}
+
+	remoteSocket.onclose = function(e) {
+		console.log("connection closed - DISCONNECTED")
+	}
+
+}
+
 export function openNewSocket(data) {
 	const id = data.roomId;
 	const userId = data.userId;

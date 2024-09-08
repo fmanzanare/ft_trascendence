@@ -22,6 +22,7 @@ from .jwt import generate_jwt, decode_jwt
 from datetime import datetime
 from django.core import serializers
 import json
+from django.db import models
 
 def get_user_from_jwt(request):
 	jwt = request.headers.get("Authorization")
@@ -85,8 +86,8 @@ def index(request):
 # Format: application/x-www-form-urlencoded
 @csrf_exempt
 def register(request):
-    if get_user_from_jwt(request):
-        return JsonResponse({
+	if get_user_from_jwt(request):
+		return JsonResponse({
             "success": True,
             "message": "User already logged in",
             "redirect": True,
@@ -94,20 +95,29 @@ def register(request):
             "context": {},
         })
 
-    if request.method == "POST":
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Account created successfully!")
-            return JsonResponse({
+	if request.method == "POST":
+		form: CreateUserForm = CreateUserForm(request.POST)
+		if form.is_valid():
+			username = form.cleaned_data.get("username")
+			if (len(username) > 8):
+				return JsonResponse({
+					"success": False,
+					"message": "Invalid username length",
+					"redirect": True,
+					"redirect_url": "register",
+					"context": {"errors": "{\"username\": [{\"message\": \"Invalid username length\"}]}"},
+				})
+			form.save()
+			messages.success(request, "Account created successfully!")
+			return JsonResponse({
                 "success": True,
                 "message": "Account created successfully!",
                 "redirect": True,
                 "redirect_url": "login",
                 "context": {},
             })
-        else:
-            return JsonResponse({
+		else:
+			return JsonResponse({
                 "success": False,
                 "message": "Invalid form",
                 "redirect": True,
@@ -115,15 +125,15 @@ def register(request):
                 "context": {"errors": form.errors.as_json()},
             })
 
-    form = CreateUserForm()
-    form_html = '<form method="POST" action="" class="row row-cols-1">' \
+	form = CreateUserForm()
+	form_html = '<form method="POST" action="" class="row row-cols-1">' \
                 '<div class="col">Display name <input type="text" name="display_name" maxlength="50" required id="id_display_name"></div>' \
                 '<div class="col">Username <input type="text" name="username" maxlength="50" autofocus required id="id_username"></div>' \
                 '<div class="col">Password <input type="password" name="password1" autocomplete="new-password" required id="id_password1"></div>' \
                 '<div class="col">Password confirmation <input type="password" name="password2" autocomplete="new-password" required id="id_password2"></div>' \
                 '<button type="submit" class="col btn btn-primary">Submit</button></form>'
 
-    return JsonResponse({
+	return JsonResponse({
         "success": True,
         "message": "",
         "redirect": False,

@@ -1,5 +1,6 @@
 import { getFriends } from "./changeView.js";
 import { navigateTo } from "./navigateto.js";
+import { openStatusSocket } from "./socketsMng.js";
 import { changeUserName } from "./utils.js";
 
 export async function loginPushButton() {
@@ -69,6 +70,7 @@ export async function loginPushButton() {
                 changeUserName();
                 getFriends();
                 navigateTo("/home");
+                openStatusSocket();
             }
         } else {
             $elements.forEach(element => {
@@ -115,6 +117,7 @@ export function twoFactorPushButton()
 			sessionStorage.setItem('userId', data.userId);
             getFriends();
 			navigateTo("/home");
+            openStatusSocket();
 		}
         else {
             $key.classList.add("border-danger");
@@ -151,6 +154,7 @@ export function login42(code){
 			    changeUserName();
                 getFriends();
                 navigateTo("/home")
+                openStatusSocket();
             }
         } else {
             const $modal = document.getElementById("myAlert");
