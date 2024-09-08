@@ -15,6 +15,20 @@ export async function loginPushButton() {
         element.classList.remove("border-danger");
     });
     $errorMessage.textContent = "";
+
+    let hasError = false;
+    $elements.forEach(element => {
+        if (element.value.trim() === "") {
+            element.classList.add("border-danger");
+            hasError = true;
+        }
+    });
+
+    if (hasError) {
+        $errorMessage.textContent = "Mandatory fields";
+        return;
+    }
+    
     const $loginButton = document.getElementById("loginButton");
     $loginButton.disabled = true;
     $loginButton.textContent = "Login in...";
