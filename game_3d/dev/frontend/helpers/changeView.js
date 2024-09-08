@@ -28,18 +28,23 @@ export function displayChat()
 // Function to handle the button click event
 function handleButtonClick(event) {
 	console.log("Button clicked");
-	const button = event.target;
+	let button = event.target;
+    if (button.tagName === 'svg' || button.tagName === 'path') {
+        button = button.closest('button');
+    }
 	const username = button.getAttribute("data-username");
+	console.log("username del button: ",username);
 	let action;
 	if (button.classList.contains("plusBtn")) {
 		action = "accept";
 	} else if (button.classList.contains("lessBtn")) {
 		action = "reject";
-	} else if (button.classList.contains("blockBtn")) {
+	} else {
 		action = "block";
 	}
 
 	console.log("Button action: ", action);
+	console.log("classes: ", button.classList);
 	const url = apiUrl + "friends/";
 	const token = sessionStorage.getItem("pongToken");
 
@@ -179,10 +184,10 @@ function blockFriendButton(friendList) {
 				const blockBtn = document.createElement('button');
 				blockBtn.setAttribute("class", "blockBtn btn btn-sm");
 				blockBtn.setAttribute("data-username", name);
-				blockBtn.onclick = handleButtonClick;
 				blockBtn.innerHTML = 	`<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-ban' viewBox='0 0 16 16'>
 										<path d='M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0'/>
 									</svg>`;
+				blockBtn.onclick = handleButtonClick;
 				friendDiv.appendChild(blockBtn);
 				console.log("Adding block button: ", blockBtn);
 			}

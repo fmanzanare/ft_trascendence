@@ -454,7 +454,7 @@ def friends(request):
 			body = json.loads(request.body)
 			username = body.get("username")
 			action = body.get("action")
-
+			print(username)
 			if not username or not action:
 				return JsonResponse({"success": False, "message": "Missing username or action"}, status=400)
 
@@ -465,8 +465,10 @@ def friends(request):
 				return JsonResponse({"success": False, "message": "User or friend not found"}, status=404)
 
 			if action == "block":
+				print("blocked")
 				friendship = (PlayerFriend.objects.filter(myUser=user, myFriend=friend) |
 							PlayerFriend.objects.filter(myUser=friend, myFriend=user)).first()
+				print(f"friendship found: {friendship}")
 				if not friendship:
 					return JsonResponse({
 						"success": False,
