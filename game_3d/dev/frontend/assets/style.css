@@ -16,12 +16,18 @@ body
 	overflow: hidden;
 }
 
+
+#left-bar-chat {
+	height: 156px;
+	width: 480px;
+}
+
 #chat-container {
 	display: flex;
 	flex-direction: column;
 	flex-grow: 1;
 	overflow: hidden; /* Evita que el contenido desborde el contenedor */
-	width: 25rem; /* Ancho fijo */
+	width: 350px; /* Ancho fijo */
 }
 
 #chat-log {
@@ -29,9 +35,10 @@ body
     overflow-y: auto; /* Permite el scroll vertical */
     border: 1px solid #ccc;
     padding: 10px;
+	width: 361px;
 }
 
-#chat-input {
+#chatInput {
     height: 50px; /* Altura fija para el input */
     display: flex;
     align-items: center;
@@ -41,6 +48,7 @@ body
 
 #upper-bar {
     height: 40px; /* Altura fija para la barra superior */
+	width: 361px;
     background-color: #8da3d9;
     position: relative;
     display: flex;
