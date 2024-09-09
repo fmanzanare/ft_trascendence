@@ -49,7 +49,9 @@ export class ChatSocketsManager {
                 getChatMessages(friend.friendshipId);
             }
 
-            chatSocket.onmessage = handleIncommingMessage
+            chatSocket.onmessage = (e) => {
+                handleIncommingMessage(e, friend)
+            }
 
             chatSocket.onclose = {}
         }
