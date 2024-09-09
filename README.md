@@ -4,6 +4,9 @@ This project features an online Pong game built with modern web technologies. We
 ## Project architecture diagram
 ![Alt text](./ft_transcendence-pongue.png "Project architecture diagram")
 
+## Project database diagram
+![Alt text](./databaseDiagram.jpeg "Project database diagram")
+
 ## System Requirements
 
 To run this project, you will need the following software installed on your machine:
