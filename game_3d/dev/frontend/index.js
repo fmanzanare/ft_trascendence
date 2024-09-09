@@ -9,7 +9,7 @@ if (DEBUG) {
     console.log = () => {}
 }
 
-export const openChatWebSockets = {};
+export var openChatWebSockets = {};
 
 window.apiUrl = 'https://localhost:4000/api/';
 

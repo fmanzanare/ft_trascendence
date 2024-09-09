@@ -1,3 +1,5 @@
+import { ChatSocketsManager } from "../classes/ChatSocketsManager.js";
+import { openChatWebSockets } from "../index.js";
 import { getFriends } from "./changeView.js";
 import { navigateTo } from "./navigateto.js";
 import { changeUserName } from "./utils.js";
@@ -53,7 +55,7 @@ export async function loginPushButton() {
             } else {
                 sessionStorage.setItem('pongToken', data.context.jwt);
                 changeUserName();
-                // getFriends();
+                new ChatSocketsManager();
                 navigateTo("/home");
             }
         } else {
@@ -98,7 +100,7 @@ export function twoFactorPushButton()
 		if (data.success) {
 			sessionStorage.setItem('pongToken', data.context.jwt);
 			sessionStorage.setItem('userId', data.userId);
-            // getFriends();
+            new ChatSocketsManager();
 			navigateTo("/home");
 		}
 	})
@@ -129,7 +131,7 @@ export function login42(code){
                 sessionStorage.setItem('pongToken', data.context.jwt);
                 sessionStorage.setItem('userId', data.userId);
 			    changeUserName();
-                // getFriends();
+                new ChatSocketsManager();
                 navigateTo("/home");
             }
         } else {

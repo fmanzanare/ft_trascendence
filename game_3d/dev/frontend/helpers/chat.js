@@ -142,7 +142,7 @@ function rejectGameInvitation() {
 	}
 }
 // Retrieves the list of friends from the server and prints them.
-function getChatMessages(friendshipId) {
+export function getChatMessages(friendshipId) {
 
 	const $token = sessionStorage.getItem('pongToken');
 	const $chatMessagesUrl = `${apiUrl}chatMessages/${friendshipId}/`;
@@ -167,10 +167,10 @@ function getChatMessages(friendshipId) {
 		}
 		console.log("data.messages:", data.messages);
 
-		removeAllMessagesInChatLog();	
-		openChatWebSockets[friendshipId].chatMessages.forEach(message => {
+		removeAllMessagesInChatLog();
+		/* openChatWebSockets[friendshipId].chatMessages.forEach(message => {
 			addMessageToChatLog(message.message);
-		});
+		}); */
 	})
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
@@ -190,13 +190,14 @@ export function handleChatInput(friendship, friendName) {
 	showCurrentChatFriendName(friendName, friendship.friendshipId);
 
 	console.log("muestro openChatWebSockets", openChatWebSockets);
+	console.log("friendshipId: ", friendship.friendshipId)
 	openChatWebSockets[friendship.friendshipId]?.chatMessages?.forEach(element => {
 		addMessageToChatLog(element.message);
 	});
 	// Create new WebSocket and set its name
 	if (!openChatWebSockets[friendship.friendshipId]?.chatSocket) {
 		console.log(sessionStorage.getItem('userName'), 'Creating new WebSocket: ', friendship.friendshipId);
-		const chatSocket = new WebSocket(
+		/* const chatSocket = new WebSocket(
 			'wss://' + 'localhost:4000' + '/api/ws/chat/' + friendship.friendshipId + '/'
 		);
 	
@@ -208,10 +209,148 @@ export function handleChatInput(friendship, friendName) {
 		openChatWebSockets[friendship.friendshipId].gameInvitationResponse = false;
 		openChatWebSockets[friendship.friendshipId].hostGameId = null;
 		openChatWebSockets[friendship.friendshipId].guestGameId = null;
-		openChatWebSockets[friendship.friendshipId].chatNotification = false;
+		openChatWebSockets[friendship.friendshipId].chatNotification = false; */
 		
 		// Receive messages from the server
-		openChatWebSockets[friendship.friendshipId].chatSocket.onmessage = function (e) {
+		/* openChatWebSockets[friendship.friendshipId].chatSocket.onmessage = function (e) {
+			const data = JSON.parse(e.data);
+			console.log('Received message:', data);
+			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')
+				&& data.message.trim() !== '') {
+				const $notification = document.getElementById("notificationMsg");
+				$notification.classList.remove('d-none');
+				openChatWebSockets[friendship.friendshipId].chatNotification = true;
+
+				addMessageToChatLog(data.message);
+			} else {
+				openChatWebSockets[friendship.friendshipId].chatNotification = false;
+			}
+			if (data.message.trim() !== '' && data.gameInvitation === false) {
+				openChatWebSockets[friendship.friendshipId].chatMessages.push({
+					senderId: sessionStorage.getItem('userId'),
+					isRead: false,
+					message: data.message,
+					chatId: friendship.friendshipId,
+				});
+			} // the user receives a game invitation
+			else if (data.gameInvitation === true 
+				&& data.senderUsername !== sessionStorage.getItem('userName')
+				&& data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
+				openChatWebSockets[friendship.friendshipId].gameInvitationReceived = true;
+				openChatWebSockets[friendship.friendshipId].hostGameId = data.senderId;
+				openChatWebSockets[friendship.friendshipId].guestGameId = sessionStorage.getItem('userId');
+
+				addMessageToChatLog('Game invitation received. Click on "Play" button, or "Reject" button\n');
+				let upperChatBar = document.getElementById('upper-bar');
+				// Create a button element for rejecting the game invitation
+				const rejectButton = document.createElement('button');
+				rejectButton.innerText = 'Reject';
+
+				// Set the button's style
+				rejectButton.setAttribute("class", "rejectButton start-0 position-absolute");
+				rejectButton.setAttribute("style", "margin-left: 55px;");
+				rejectButton.setAttribute("data-friendship-id", friendship.friendshipId);
+				rejectButton.onclick = rejectGameInvitation;
+
+				// Append the button to the upperChatBar
+				upperChatBar.appendChild(rejectButton);
+			} else if (data.gameInvitationResponse === true
+				&& data.senderUsername !== sessionStorage.getItem('userName')
+				&& data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
+				openChatWebSockets[friendship.friendshipId].gameInvitationReceived = false;
+				openChatWebSockets[friendship.friendshipId].gameInvitationResponse = false;
+				openChatWebSockets[friendship.friendshipId].hostGameId = null;
+				openChatWebSockets[friendship.friendshipId].guestGameId = null;
+				
+				console.log("hostGameId:", sessionStorage.getItem('userId'), "guestGameId:", data.senderId);
+				addMessageToChatLog('Game invitation accepted. Starting Game\n');
+				acceptGameInvitation(sessionStorage.getItem('userId'), sessionStorage.getItem('userId'));
+			} else if (data.gameInvitationResponse === false
+				&& data.senderUsername !== sessionStorage.getItem('userName')
+				&& data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')) {
+				openChatWebSockets[friendship.friendshipId].gameInvitationReceived = false;
+				openChatWebSockets[friendship.friendshipId].gameInvitationResponse = false;
+				openChatWebSockets[friendship.friendshipId].hostGameId = null;
+				openChatWebSockets[friendship.friendshipId].guestGameId = null;
+
+				addMessageToChatLog('Game invitation rejected\n');
+			}
+		}; */
+
+		// Handle unexpected closing of the WebSocket
+		/* openChatWebSockets[friendship.friendshipId].chatSocket.onclose = function (e) {
+			console.error('chat socket closed unexpectedly');
+		}; */
+
+		// Handle the opening of the WebSocket
+		/* openChatWebSockets[friendship.friendshipId].chatSocket.onopen = function (e) {
+			getChatMessages(friendship.friendshipId);
+		}; */
+
+		// Focus on the chatInput
+		document.querySelector('#chatInput').focus();
+		document.querySelector('#chatInput').onkeyup = function (e) {
+			if (document.querySelector('#chatInput').value.length > 0 && e.key === 'Enter') {
+				const userName = sessionStorage.getItem('userName');
+				const userId = sessionStorage.getItem('userId');
+				console.log(userName);
+				const messageInputDom = document.querySelector('#chatInput');
+				console.log("messageInput length:", messageInputDom.value.length);
+				const message = userName + ': ' + messageInputDom.value + '\n';
+	
+				console.log(friendship.friendUserId)
+				const chatSocket = openChatWebSockets[friendship.friendshipId].chatSocket;
+				if (message.trim() !== '' && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+					chatSocket.send(JSON.stringify({
+						message: message,
+						chatId: friendship.friendshipId,
+						senderId: userId,
+						gameInvitation: false,
+						gameInvitationResponse: false
+					}));
+					messageInputDom.value = ''; // Clean input before send
+				}
+				addMessageToChatLog(message);
+			}
+		};
+		console.log("mostrando contenido de openChatWebSockets:", openChatWebSockets);
+	}
+}
+
+export function removeAllMessagesInChatLog() {
+	console.log("ELIMINANDO MENSAJES")
+	const chatLog = document.querySelector('#chat-log');
+	const messageNode = chatLog.querySelectorAll('div');
+	messageNode.forEach(messageNode => {
+		chatLog.removeChild(messageNode);
+	});
+}
+
+function addMessageToChatLog(message) {
+	console.log("AÑADIENDO MENSAJES")
+	const chatLog = document.querySelector('#chat-log');
+	const messageNode = document.createElement('div');
+	messageNode.style.overflowWrap = "break-word";
+	// paragraph.setAttribute("style", "margin: 0;");
+	messageNode.innerText = message;
+	chatLog.appendChild(messageNode);
+	chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function nonHtml(){
+    return    this.replace(/[&<>"'`]/g, function (char){
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&apos;',
+            '`': '&#96;'
+        }
+    });
+}
+
+export function handleIncommingMessage(e) {
 			const data = JSON.parse(e.data);
 			console.log('Received message:', data);
 			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')
@@ -275,74 +414,3 @@ export function handleChatInput(friendship, friendName) {
 				addMessageToChatLog('Game invitation rejected\n');
 			}
 		};
-
-		// Handle unexpected closing of the WebSocket
-		openChatWebSockets[friendship.friendshipId].chatSocket.onclose = function (e) {
-			console.error('chat socket closed unexpectedly');
-		};
-
-		// Handle the opening of the WebSocket
-		openChatWebSockets[friendship.friendshipId].chatSocket.onopen = function (e) {
-			getChatMessages(friendship.friendshipId);
-		};
-
-		// Focus on the chatInput
-		document.querySelector('#chatInput').focus();
-		document.querySelector('#chatInput').onkeyup = function (e) {
-			if (document.querySelector('#chatInput').value.length > 0 && e.key === 'Enter') {
-				const userName = sessionStorage.getItem('userName');
-				const userId = sessionStorage.getItem('userId');
-				console.log(userName);
-				const messageInputDom = document.querySelector('#chatInput');
-				console.log("messageInput length:", messageInputDom.value.length);
-				const message = userName + ': ' + messageInputDom.value + '\n';
-	
-				console.log(friendship.friendUserId)
-				const chatSocket = openChatWebSockets[friendship.friendshipId].chatSocket;
-				if (message.trim() !== '' && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-					chatSocket.send(JSON.stringify({
-						message: message,
-						chatId: friendship.friendshipId,
-						senderId: userId,
-						gameInvitation: false,
-						gameInvitationResponse: false
-					}));
-					messageInputDom.value = ''; // Clean input before send
-				}
-				addMessageToChatLog(message);
-			}
-		};
-		console.log("mostrando contenido de openChatWebSockets:", openChatWebSockets);
-	}
-}
-
-function removeAllMessagesInChatLog() {
-	const chatLog = document.querySelector('#chat-log');
-	const paragraphs = chatLog.querySelectorAll('p');
-	paragraphs.forEach(paragraph => {
-		chatLog.removeChild(paragraph);
-	});
-}
-
-function addMessageToChatLog(message) {
-	const chatLog = document.querySelector('#chat-log');
-	const messageNode = document.createElement('div');
-	messageNode.style.overflowWrap = "break-word";
-	// paragraph.setAttribute("style", "margin: 0;");
-	messageNode.innerText = message;
-	chatLog.appendChild(messageNode);
-	chatLog.scrollTop = chatLog.scrollHeight;
-}
-
-function nonHtml(){
-    return    this.replace(/[&<>"'`]/g, function (char){
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&apos;',
-            '`': '&#96;'
-        }
-    });
-}

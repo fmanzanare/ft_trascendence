@@ -256,37 +256,39 @@ function printFriends(friendList) {
 			newFriendCont.appendChild(nameNode);
 
 			if (friendList[i].status === 'PENDING') {
-				console.log("Colocando botones");
-
-				let plusBtnNode = document.createElement('button');
-				plusBtnNode.classList.add("plusBtn", "btn", "btn-sm", "btn-success");
-				plusBtnNode.setAttribute("data-username", friendList[i].username);
-				plusBtnNode.onclick = handleButtonClick;
-				plusBtnNode.innerText = "+";
-				Object.assign(plusBtnNode, { 
-					type: "button", 
-					style: "margin-left: 5rem;--bs-btn-bg: rgb(86, 186, 111);--bs-btn-border-color: rgb(86, 186, 111)" 
-				});
-
-				let lessBtnNode = document.createElement('button');
-				lessBtnNode.classList.add("lessBtn", "btn", "btn-sm", "btn-danger");
-				lessBtnNode.setAttribute("data-username", friendList[i].username);
-				lessBtnNode.setAttribute("type", "button");
-				lessBtnNode.onclick = handleButtonClick;
-				lessBtnNode.innerText = "-";
-
-				newFriendCont.appendChild(plusBtnNode);
-				newFriendCont.appendChild(lessBtnNode);
-			} else {
-				console.log("Friend accepted");
-			}
-
+				printPendingFriends(friendList[i]);
+			} 
 			chatPeople.appendChild(newFriendCont);
 		}
 	}
 
 	blockFriendButton(friendList);
 	deleteBlockedFriend(friendList);
+}
+
+function printPendingFriends(friendship) {
+
+	console.log("Colocando botones");
+
+	let plusBtnNode = document.createElement('button');
+	plusBtnNode.classList.add("plusBtn", "btn", "btn-sm", "btn-success");
+	plusBtnNode.setAttribute("data-username", friendship.username);
+	plusBtnNode.onclick = handleButtonClick;
+	plusBtnNode.innerText = "+";
+	Object.assign(plusBtnNode, { 
+		type: "button", 
+		style: "margin-left: 5rem;--bs-btn-bg: rgb(86, 186, 111);--bs-btn-border-color: rgb(86, 186, 111)" 
+	});
+
+	let lessBtnNode = document.createElement('button');
+	lessBtnNode.classList.add("lessBtn", "btn", "btn-sm", "btn-danger");
+	lessBtnNode.setAttribute("data-username", friendship.username);
+	lessBtnNode.setAttribute("type", "button");
+	lessBtnNode.onclick = handleButtonClick;
+	lessBtnNode.innerText = "-";
+
+	newFriendCont.appendChild(plusBtnNode);
+	newFriendCont.appendChild(lessBtnNode);
 }
 
 export function changeViewProfile()
