@@ -199,7 +199,7 @@ export function handleChatInput(friendship, friendName) {
 		const chatSocket = new WebSocket(
 			'wss://' + 'localhost:4000' + '/api/ws/chat/' + friendship.friendshipId + '/'
 		);
-
+	
 		// Saving messages in global variable
 		openChatWebSockets[friendship.friendshipId] = {};
 		openChatWebSockets[friendship.friendshipId].chatSocket = chatSocket;
@@ -216,16 +216,12 @@ export function handleChatInput(friendship, friendName) {
 			console.log('Received message:', data);
 			if (data.senderUsername === document.querySelector('#friendNameUpperBar').getAttribute('data-username')
 				&& data.message.trim() !== '') {
-				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
-				console.log('chatNotification: true');
 				const $notification = document.getElementById("notificationMsg");
 				$notification.classList.remove('d-none');
 				openChatWebSockets[friendship.friendshipId].chatNotification = true;
 
 				addMessageToChatLog(data.message);
 			} else {
-				console.log(data.senderUsername, document.querySelector('#friendNameUpperBar').getAttribute('data-username'));
-				console.log('chatNotification: false');
 				openChatWebSockets[friendship.friendshipId].chatNotification = false;
 			}
 			if (data.message.trim() !== '' && data.gameInvitation === false) {

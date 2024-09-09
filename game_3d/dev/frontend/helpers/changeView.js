@@ -220,6 +220,7 @@ function deleteBlockedFriend(friendList) {
 		}
 	});
 }
+
 function printFriends(friendList) {
 	let chatPeople = document.getElementById('friend-list-container');
 	if (!chatPeople || !friendList) {
