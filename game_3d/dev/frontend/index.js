@@ -2,6 +2,7 @@ import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/navigateto.js";
 import { changeState, putOnline} from "./helpers/statusUser.js";
 import { getFriends } from "./helpers/changeView.js";
+import { ChatSocketsManager } from "./classes/ChatSocketsManager.js";
 
 // Global variables
 const DEBUG = false;
@@ -23,7 +24,7 @@ window.onload = function() {
     if ($token){
         putOnline(true);
         changeState("Online");
-        // getFriends();
+        new ChatSocketsManager();
     }
 	if ($winner)
 	{
