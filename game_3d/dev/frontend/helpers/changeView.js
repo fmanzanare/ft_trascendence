@@ -248,15 +248,14 @@ function printFriends(friendList) {
 			nameNode.classList.add('m-0');
 
 			if (friendList[i].status === 'ACCEPTED') {
-				// handleChatInput(friendList[i], friendList[i].username)
 				nameNode.onclick = () => handleChatInput(friendList[i], friendList[i].username);
 				nameNode.style.cursor = "pointer";
 			}
 
-			newFriendCont.appendChild(nameNode);
+			newFriendCont.appendChild(nameNode, newFriendCont);
 
 			if (friendList[i].status === 'PENDING') {
-				printPendingFriends(friendList[i]);
+				printPendingFriends(friendList[i], newFriendCont);
 			} 
 			chatPeople.appendChild(newFriendCont);
 		}
@@ -266,7 +265,7 @@ function printFriends(friendList) {
 	deleteBlockedFriend(friendList);
 }
 
-function printPendingFriends(friendship) {
+function printPendingFriends(friendship, newFriendCont) {
 
 	console.log("Colocando botones");
 
