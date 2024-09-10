@@ -11,6 +11,7 @@ if (DEBUG) {
 }
 
 export var openChatWebSockets = {};
+export var friendshipSocket = {};
 
 window.apiUrl = 'https://localhost:4000/api/';
 

@@ -1,5 +1,6 @@
 import { handleChatInput } from "./chat.js";
-import { openChatWebSockets } from "../index.js";
+import { friendshipSocket, openChatWebSockets } from "../index.js";
+import { ChatSocketsManager } from "../classes/ChatSocketsManager.js";
 
 
 export function displayChat()
@@ -43,6 +44,17 @@ function handleButtonClick(event) {
 		action = "block";
 	}
 
+	switch (action) {
+		case "accept":
+			friendshipSocket["socket"].send(JSON.stringify({
+				"action": "accept",
+				"sender": sessionStorage.getItem("userName"),
+				"receiver": username
+			}))
+			ChatSocketsManager.updateFriendList({"sender": username})
+			break;
+	}
+
 	console.log("Button action: ", action);
 	console.log("classes: ", button.classList);
 	const url = apiUrl + "friends/";
@@ -84,30 +96,17 @@ function requestFriendship(e){
 		return;
 	}
 	friendInputDom.value = '';
-	const $friendsUrl = apiUrl + 'friends/';
-	const $loginUrl = apiUrl + 'login/';
 
 	if (friend.trim() === '') {
 		alert('Please enter a friend username');
 		return;
 	}
-	fetch($friendsUrl, {
-		method: 'POST',
-		headers: {
-			"Content-Type": 'application/json',
-			"Authorization": $token
-		},
-		body: JSON.stringify({
-			"username": friend,
-			"action": "add"
-		})
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
+	friendshipSocket["socket"].send(JSON.stringify({
+		"userId": sessionStorage.getItem("userId"),
+		"sender": sessionStorage.getItem("userName"),
+		"receiver": friend,
+		"action": "add"
+	}))
 }
 
 // Retrieves the list of friends from the server and prints them.
@@ -221,7 +220,7 @@ function deleteBlockedFriend(friendList) {
 	});
 }
 
-function printFriends(friendList) {
+export function printFriends(friendList) {
 	let chatPeople = document.getElementById('friend-list-container');
 	if (!chatPeople || !friendList) {
 		return;
@@ -255,7 +254,7 @@ function printFriends(friendList) {
 			newFriendCont.appendChild(nameNode);
 
 			if (friendList[i].status === 'PENDING') {
-				printPendingFriends(friendList[i], newFriendCont);
+				printPendingFriends(friendList[i].username, newFriendCont);
 			} 
 			chatPeople.appendChild(newFriendCont);
 		}
@@ -265,14 +264,13 @@ function printFriends(friendList) {
 	deleteBlockedFriend(friendList);
 }
 
-function printPendingFriends(friendship, newFriendCont) {
-
+export function printPendingFriends(friendName, newFriendCont) {
 	console.log("Colocando botones");
 
 	let plusBtnNode = document.createElement('button');
 	plusBtnNode.classList.add("plusBtn", "btn", "btn-sm", "btn-success");
-	plusBtnNode.setAttribute("data-username", friendship.username);
-	plusBtnNode.onclick = handleButtonClick;
+	plusBtnNode.setAttribute("data-username", friendName);
+	plusBtnNode.onclick = handleButtonClick; // TODO: Rewrite ft
 	plusBtnNode.innerText = "+";
 	Object.assign(plusBtnNode, { 
 		type: "button", 
@@ -281,13 +279,19 @@ function printPendingFriends(friendship, newFriendCont) {
 
 	let lessBtnNode = document.createElement('button');
 	lessBtnNode.classList.add("lessBtn", "btn", "btn-sm", "btn-danger");
-	lessBtnNode.setAttribute("data-username", friendship.username);
+	lessBtnNode.setAttribute("data-username", friendName);
 	lessBtnNode.setAttribute("type", "button");
-	lessBtnNode.onclick = handleButtonClick;
+	lessBtnNode.onclick = handleButtonClick; // TODO: Rewrite ft
 	lessBtnNode.innerText = "-";
 
 	newFriendCont.appendChild(plusBtnNode);
 	newFriendCont.appendChild(lessBtnNode);
+
+	const $chat = document.getElementById("chat");
+	if ($chat.classList.contains('d-none')) {
+		const $notification = document.getElementById("notificationMsg");
+		$notification.classList.remove('d-none');
+	}
 }
 
 export function changeViewProfile()
@@ -296,9 +300,9 @@ export function changeViewProfile()
 	const $historyProfile = document.getElementById('historyProfile');
 	const $infoTab = document.getElementById('infoTab');
 	const $historyTab = document.getElementById('historyTab');
-	if ($infoProfile.classList.contains('show', 'active'))
-		{
-			$infoProfile.classList.remove('show', 'active');
+	if ($infoProfile.classList.contains('show', 'active')) 
+	{
+		$infoProfile.classList.remove('show', 'active');
 		$historyProfile.classList.add('show', 'active');
 		$historyProfile.classList.remove('d-none');
 		$infoTab.classList.remove('active');
