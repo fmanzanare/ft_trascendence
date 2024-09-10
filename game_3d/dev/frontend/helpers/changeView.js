@@ -252,7 +252,7 @@ function printFriends(friendList) {
 				nameNode.style.cursor = "pointer";
 			}
 
-			newFriendCont.appendChild(nameNode, newFriendCont);
+			newFriendCont.appendChild(nameNode);
 
 			if (friendList[i].status === 'PENDING') {
 				printPendingFriends(friendList[i], newFriendCont);

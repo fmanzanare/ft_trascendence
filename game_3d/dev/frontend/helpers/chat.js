@@ -300,7 +300,7 @@ export function handleChatInput(friendship, friendName) {
 			console.log("messageInput length:", messageInputDom.value.length);
 			const message = userName + ': ' + messageInputDom.value + '\n';
 
-			console.log(friendship.friendUserId)
+			console.log(openChatWebSockets[friendship.friendshipId]);
 			const chatSocket = openChatWebSockets[friendship.friendshipId].chatSocket;
 			if (message.trim() !== '' && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 				chatSocket.send(JSON.stringify({
