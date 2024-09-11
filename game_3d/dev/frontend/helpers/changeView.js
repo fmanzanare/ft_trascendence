@@ -30,11 +30,10 @@ export function displayChat()
 function handleButtonClick(event) {
 	console.log("Button clicked");
 	let button = event.target;
-    if (button.tagName === 'svg' || button.tagName === 'path') {
-        button = button.closest('button');
-    }
+	if (button.tagName === 'svg' || button.tagName === 'path') {
+		button = button.closest('button');
+	}
 	const username = button.getAttribute("data-username");
-	console.log("username del button: ",username);
 	let action;
 	if (button.classList.contains("plusBtn")) {
 		action = "accept";
@@ -43,7 +42,7 @@ function handleButtonClick(event) {
 	} else {
 		action = "block";
 	}
-
+	
 	switch (action) {
 		case "accept":
 			friendshipSocket["socket"].send(JSON.stringify({
@@ -54,44 +53,47 @@ function handleButtonClick(event) {
 			ChatSocketsManager.updateFriendList({"sender": username})
 			break;
 		case "reject":
+			console.log("entra en reject");
 			friendshipSocket["socket"].send(JSON.stringify({
 				"action": "reject",
 				"sender": sessionStorage.getItem("userName"),
 				"receiver": username
 			}))
+			deleteFriendFromList(username);
+			ChatSocketsManager.updateFriendList({"sender": username})
 			break;
 	}
 
-	console.log("Button action: ", action);
-	console.log("classes: ", button.classList);
-	const url = apiUrl + "friends/";
-	const token = sessionStorage.getItem("pongToken");
+	// console.log("Button action: ", action);
+	// console.log("classes: ", button.classList);
+	// const url = apiUrl + "friends/";
+	// const token = sessionStorage.getItem("pongToken");
 
-	fetch(url, {
-		method: 'POST',
-		headers: {
-			"Content-Type": "application/json",
-			"Authorization": token
-		},
-		body: JSON.stringify({
-			"username": username,
-			"action": action
-		}),
-	})
-	.then((response) => {
-		if (!response.ok) {
-			throw new Error(`Error in request: ${response.status}`);
-		}
-		return response.json();
-	})
-	.then((data) => {
-		console.log("amistad aceptada, rechazada o bloqueada: ", data);
-		getFriends();
-		// handle the response data
-	})
-	.catch((error) => {
-		console.error("error in request:", error);
-	});
+	// fetch(url, {
+	// 	method: 'POST',
+	// 	headers: {
+	// 		"Content-Type": "application/json",
+	// 		"Authorization": token
+	// 	},
+	// 	body: JSON.stringify({
+	// 		"username": username,
+	// 		"action": action
+	// 	}),
+	// })
+	// .then((response) => {
+	// 	if (!response.ok) {
+	// 		throw new Error(`Error in request: ${response.status}`);
+	// 	}
+	// 	return response.json();
+	// })
+	// .then((data) => {
+	// 	console.log("amistad aceptada, rechazada o bloqueada: ", data);
+	// 	getFriends();
+	// 	// handle the response data
+	// })
+	// .catch((error) => {
+	// 	console.error("error in request:", error);
+	// });
 }
 
 function requestFriendship(e){
@@ -146,6 +148,30 @@ export function getFriends() {
 	});
 }
 
+function deleteFriendFromList(friendName) {
+	const chatPeople = document.getElementById('left-bar-chat');
+	if (!chatPeople) {
+		return;
+	}
+	const friendNameNode = chatPeople.querySelector(`p[data-username="${friendName}"]`);
+	if (friendNameNode) {
+		friendNameNode.remove();
+	}
+	// delete plus, less or block button
+	const plusBtn = chatPeople.querySelector(`button.plusBtn[data-username="${friendName}"]`);
+	if (plusBtn) {
+		plusBtn.remove();
+	}
+	const lessBtn = chatPeople.querySelector(`button.lessBtn[data-username="${friendName}"]`);
+	if (lessBtn) {
+		lessBtn.remove();
+	}
+	const blockBtn = chatPeople.querySelector(`button.blockBtn[data-username="${friendName}"]`);
+	if (blockBtn) {
+		blockBtn.remove();
+	}
+}
+
 function deleteFriendshipRequestButtons(friendList) {
 	const chatPeople = document.getElementById('left-bar-chat');
 	if (!chatPeople) {
@@ -186,7 +212,7 @@ function blockFriendButton(friendList) {
 		if (friendDiv && friendList.some(friend => friend.username === name
 			&& friend.status === "ACCEPTED" )) {
 			const existingBlockBtn = friendDiv.querySelector('.blockBtn');
-            if (!existingBlockBtn) {
+			if (!existingBlockBtn) {
 				const blockBtn = document.createElement('button');
 				blockBtn.setAttribute("class", "blockBtn btn btn-sm");
 				blockBtn.setAttribute("data-username", name);
