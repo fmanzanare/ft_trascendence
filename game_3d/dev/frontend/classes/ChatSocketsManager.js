@@ -1,5 +1,5 @@
-import { deleteFriendFromList, printFriends, printPendingFriends } from '../helpers/changeView.js';
-import { getChatMessages, handleIncommingMessage, removeAllMessagesInChatLog } from '../helpers/chat.js';
+import { deleteFriendFromList, printFriends, printPendingFriends, sleep } from '../helpers/changeView.js';
+import { getChatMessages, handleIncommingMessage, removeAllMessagesInChatLog, showCurrentChatFriendName } from '../helpers/chat.js';
 import { friendshipSocket, openChatWebSockets } from '../index.js';
 // import { deleteBlockedFriend, blockFriendButton } from '../helpers/changeView.js';
 import { ChatSocket } from './ChatSocket.js';
@@ -36,7 +36,9 @@ export class ChatSocketsManager {
 	#buildSockets(friendList) {
 		const userId = this.#userId
 		for (const friend of friendList) {
-			ChatSocketsManager.buildSocket(friend)
+			if (friend.status === "ACCEPTED") {
+				ChatSocketsManager.buildSocket(friend)
+			}
 		}
 	}
 
@@ -102,6 +104,7 @@ export class ChatSocketsManager {
 			if (data.action === "block") {
 				console.log("Friend request rejected")
 				deleteFriendFromList(data.sender);
+				ChatSocketsManager.updateFriendList(data);
 			}
 		}
 
@@ -109,34 +112,46 @@ export class ChatSocketsManager {
 	}
 
 	static updateFriendList(socketData) {
-		const friendsUrl = apiUrl + 'friends/';
-		const token = sessionStorage.getItem('pongToken');
+		sleep(1000).then(v => {
+			const friendsUrl = apiUrl + 'friends/';
+			const token = sessionStorage.getItem('pongToken');
 
-		fetch(friendsUrl, {
-			method: 'GET',
-			headers: {
-				"Authorization": token
-			}
-		})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error(`Error en la solicitud: ${response.status}`);
-			}
-			return response.json()
-		})
-		.then(data => {
-			const friendList = data.context.friends;
-			for (let friend of friendList) {
-				if (friend.username === socketData.sender) {
-					ChatSocketsManager.buildSocket(friend);
-					break;
+			fetch(friendsUrl, {
+				method: 'GET',
+				headers: {
+					"Authorization": token
 				}
-			}
-			printFriends(friendList)
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`Error en la solicitud: ${response.status}`);
+				}
+				return response.json()
+			})
+			.then(data => {
+				const friendList = data.context.friends;
+				for (let friend of friendList) {
+					if (friend.username === socketData.sender && friend.status === "ACCEPTED") {
+						console.log(friend)
+						ChatSocketsManager.buildSocket(friend);
+						console.log(friendList)
+						break;
+					} else if (friend.status === "BLOCKED" && friend.username === socketData.sender) {
+						console.log(friend)
+						if (openChatWebSockets[friend.friendshipId] != null) {
+							openChatWebSockets[friend.friendshipId].chatSocket.close();
+							delete openChatWebSockets[friend.friendshipId]
+							showCurrentChatFriendName('', friend.friendshipId);
+						}
+						break;
+					}
+				}
+				printFriends(friendList)
+			})
+			.catch(error => {
+				console.error('Error en la solicitud:', error);
+			});
 		})
-		.catch(error => {
-			console.error('Error en la solicitud:', error);
-		});
 	}
 	
 	printIncommingNewFriend(friendName) {

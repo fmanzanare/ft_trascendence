@@ -3,6 +3,7 @@ import { navigateTo } from "./helpers/navigateto.js";
 import { changeState, putOnline} from "./helpers/statusUser.js";
 import { getFriends } from "./helpers/changeView.js";
 import { ChatSocketsManager } from "./classes/ChatSocketsManager.js";
+import { openStatusSocket } from "./helpers/socketsMng.js";
 
 // Global variables
 const DEBUG = false;
@@ -26,6 +27,7 @@ window.onload = function() {
         putOnline(true);
         changeState("Online");
         new ChatSocketsManager();
+        openStatusSocket();
     }
 	if ($winner)
 	{

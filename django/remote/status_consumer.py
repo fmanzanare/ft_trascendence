@@ -22,10 +22,13 @@ class StatusConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
 
         if ("register" in data.keys()):
-            self.userId = data["userId"]
-            user: PongueUser = await self.getUser(data["userId"])
-            user.status = PongueUser.Status.ONLINE
-            await self.saveUserChanges(user)
+            try:
+                self.userId = int(data["userId"])
+                user: PongueUser = await self.getUser(self.userId)
+                user.status = PongueUser.Status.ONLINE
+                await self.saveUserChanges(user)
+            except:
+                print("issue with userId")
     
     async def disconnect(self, close_code):
         user: PongueUser = await self.getUser(self.userId)

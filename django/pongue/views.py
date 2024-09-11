@@ -162,7 +162,11 @@ def login(request):
 		username = request.POST.get("username")
 		password = request.POST.get("password")
 		user = authenticate(request, username=username, password=password)
-		pongueUser: PongueUser = PongueUser.objects.get(username=username)
+		pongueUser = None
+		try:
+			pongueUser: PongueUser = PongueUser.objects.get(username=username)
+		except:
+			pongueUser = None
 
 		if pongueUser is not None and pongueUser.status == PongueUser.Status.ONLINE:
 			message = "User already logged in"

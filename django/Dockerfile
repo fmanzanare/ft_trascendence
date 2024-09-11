@@ -12,7 +12,7 @@ WORKDIR /home/nonroot/django
 RUN chown -R nonroot:nonroot /home/nonroot
 RUN chown -R nonroot:nonroot /home/nonroot/django
 
-USER nonroot
+# USER nonroot
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

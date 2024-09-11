@@ -5,7 +5,7 @@ import { acceptGameInvitation } from "./gameMode.js";
  * Shows the current chat friend's name in the upper chat bar and clears the chat log.
  * @function showCurrentChatFriendName
  */
-function showCurrentChatFriendName(friendName, friendshipId) {
+export function showCurrentChatFriendName(friendName, friendshipId) {
 	removeAllMessagesInChatLog();
 	let upperChatBar = document.getElementById('upper-bar');
 	if (upperChatBar.querySelector('p[data-username]')) {
@@ -73,6 +73,11 @@ function goToUserProfileChat(friendName){
 function gameInvitation() {
 	const friendshipId = this.getAttribute("data-friendship-id");
 	console.log("friendshipId game invitation:", friendshipId);
+
+	if (openChatWebSockets[friendshipId] == null) {
+		return;
+	}
+
 	const chatSocket = openChatWebSockets[friendshipId].chatSocket;
 
 	
@@ -301,7 +306,10 @@ export function handleChatInput(friendship, friendName) {
 			const message = userName + ': ' + messageInputDom.value + '\n';
 
 			console.log(openChatWebSockets[friendship.friendshipId]);
-			const chatSocket = openChatWebSockets[friendship.friendshipId].chatSocket;
+			if (openChatWebSockets[friendship.friendshipId] == null) {
+				return;
+			}
+			const chatSocket = openChatWebSockets[friendship.friendshipId]?.chatSocket;
 			if (message.trim() !== '' && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
 				chatSocket.send(JSON.stringify({
 					message: message,

@@ -1,4 +1,4 @@
-import { handleChatInput } from "./chat.js";
+import { handleChatInput, removeAllMessagesInChatLog } from "./chat.js";
 import { friendshipSocket, openChatWebSockets } from "../index.js";
 import { ChatSocketsManager } from "../classes/ChatSocketsManager.js";
 import { navigateTo } from "./navigateto.js";
@@ -34,6 +34,10 @@ export function quitAlert(){
 	navigateTo("/login");
 }
 
+export function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // Function to handle the button click event
 function handleButtonClick(event) {
 	console.log("Button clicked");
@@ -58,8 +62,9 @@ function handleButtonClick(event) {
 				"sender": sessionStorage.getItem("userName"),
 				"receiver": username
 			}))
-			getFriends();
-			ChatSocketsManager.updateFriendList({"sender": username});
+			sleep(1000).then(v => {
+				ChatSocketsManager.updateFriendList({"sender": username});
+			})
 			break;
 		case "reject":
 			friendshipSocket["socket"].send(JSON.stringify({
@@ -75,39 +80,43 @@ function handleButtonClick(event) {
 				"sender": sessionStorage.getItem("userName"),
 				"receiver": username
 			}))
+			ChatSocketsManager.updateFriendList({"sender": username});
 			deleteFriendFromList(username);
+			document.getElementById("friendNameUpperBar").setAttribute('data-username', '');
+			document.getElementById("friendNameUpperBar").innerText = '';
+			removeAllMessagesInChatLog();
 	}
 
-	// console.log("Button action: ", action);
-	// console.log("classes: ", button.classList);
-	// const url = apiUrl + "friends/";
-	// const token = sessionStorage.getItem("pongToken");
+	console.log("Button action: ", action);
+	console.log("classes: ", button.classList);
+	const url = apiUrl + "friends/";
+	const token = sessionStorage.getItem("pongToken");
 
-	// fetch(url, {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		"Content-Type": "application/json",
-	// 		"Authorization": token
-	// 	},
-	// 	body: JSON.stringify({
-	// 		"username": username,
-	// 		"action": action
-	// 	}),
-	// })
-	// .then((response) => {
-	// 	if (!response.ok) {
-	// 		throw new Error(`Error in request: ${response.status}`);
-	// 	}
-	// 	return response.json();
-	// })
-	// .then((data) => {
-	// 	console.log("amistad aceptada, rechazada o bloqueada: ", data);
-	// 	getFriends();
-	// 	// handle the response data
-	// })
-	// .catch((error) => {
-	// 	console.error("error in request:", error);
-	// });
+	fetch(url, {
+		method: 'POST',
+		headers: {
+			"Content-Type": "application/json",
+			"Authorization": token
+		},
+		body: JSON.stringify({
+			"username": username,
+			"action": action
+		}),
+	})
+	.then((response) => {
+		if (!response.ok) {
+			throw new Error(`Error in request: ${response.status}`);
+		}
+		return response.json();
+	})
+	.then((data) => {
+		console.log("amistad aceptada, rechazada o bloqueada: ", data);
+		getFriends();
+		// handle the response data
+	})
+	.catch((error) => {
+		console.error("error in request:", error);
+	});
 }
 
 function requestFriendship(e){
