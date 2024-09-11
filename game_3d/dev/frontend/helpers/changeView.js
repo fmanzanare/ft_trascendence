@@ -53,6 +53,13 @@ function handleButtonClick(event) {
 			}))
 			ChatSocketsManager.updateFriendList({"sender": username})
 			break;
+		case "reject":
+			friendshipSocket["socket"].send(JSON.stringify({
+				"action": "reject",
+				"sender": sessionStorage.getItem("userName"),
+				"receiver": username
+			}))
+			break;
 	}
 
 	console.log("Button action: ", action);
