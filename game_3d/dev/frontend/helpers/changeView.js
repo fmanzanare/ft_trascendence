@@ -59,7 +59,7 @@ function handleButtonClick(event) {
 		case "accept":
 			friendshipSocket["socket"].send(JSON.stringify({
 				"action": "accept",
-				"sender": sessionStorage.getItem("userName"),
+				"sender": sessionStorage.getItem("user"),
 				"receiver": username
 			}))
 			sleep(1000).then(v => {
@@ -69,7 +69,7 @@ function handleButtonClick(event) {
 		case "reject":
 			friendshipSocket["socket"].send(JSON.stringify({
 				"action": "reject",
-				"sender": sessionStorage.getItem("userName"),
+				"sender": sessionStorage.getItem("user"),
 				"receiver": username
 			}))
 			deleteFriendFromList(username);
@@ -77,7 +77,7 @@ function handleButtonClick(event) {
 		case "block":
 			friendshipSocket["socket"].send(JSON.stringify({
 				"action": "block",
-				"sender": sessionStorage.getItem("userName"),
+				"sender": sessionStorage.getItem("user"),
 				"receiver": username
 			}))
 			ChatSocketsManager.updateFriendList({"sender": username});
@@ -135,7 +135,7 @@ function requestFriendship(e){
 	}
 	friendshipSocket["socket"].send(JSON.stringify({
 		"userId": sessionStorage.getItem("userId"),
-		"sender": sessionStorage.getItem("userName"),
+		"sender": sessionStorage.getItem("user"),
 		"receiver": friend,
 		"action": "add"
 	}))

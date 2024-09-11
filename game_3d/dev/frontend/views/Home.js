@@ -5,9 +5,29 @@ export default class extends AbstractView {
         super(params);
         this.setTitle("Pongue");
     }
+    
     async getHtml() {
+        const $token = sessionStorage.getItem('pongToken');
+        const fetchProfile = async () => {
+            const $profileUrl = apiUrl + 'profile/';
+            const response = await fetch($profileUrl, {
+                method: "GET",
+                headers: { "Authorization": $token }
+            });
+
+            if (!response.ok) {
+                throw new Error('Unexpected error.');
+            }
+            const data = await response.json();
+            return data;
+        };
+
         const $width = window.innerWidth / 2;
         const $Height = window.innerHeight / 2;
+        const data = await fetchProfile();
+        if (!sessionStorage.getItem('user')){
+            sessionStorage.setItem('user', data.context.user.username);
+        }
         let page =
             `
                 <div class="container-fluid py-10 h-100">

@@ -484,6 +484,7 @@ def friends(request):
 			if not username or not action:
 				return JsonResponse({"success": False, "message": "Missing username or action"}, status=400)
 
+			print(username)
 			user = PongueUser.objects.filter(username=get_user_from_jwt(request)).first()
 			friend = PongueUser.objects.filter(username=username).first()
 
