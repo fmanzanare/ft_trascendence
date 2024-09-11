@@ -74,6 +74,22 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 					"receiver": receiver
 				}
 			)
+		elif action == 'block':
+			sender = data.get('sender')
+			receiver = data.get('receiver')
+
+			friendship: PlayerFriend = await sync_to_async(PlayerFriend.searchOrCreate)(sender, receiver)
+			friendship.status = PlayerFriend.Status.BLOCKED
+			await sync_to_async(friendship.save)()
+
+			await self.channel_layer.group_send(
+				self.room_group_name, {
+					"type": "block.friendship",
+					"action": "block",
+					"sender": sender,
+					"receiver": receiver
+				}
+			)
 
 	async def friendship_request_notification(self, event):
 		# Enviar notificación de solicitud de amistad al receptor
@@ -84,6 +100,12 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 	
 	async def accept_friendship_request(self, event):
 		# TODO: Finish this method!
+		if ("receiver" in event.keys()):
+			receiver: PongueUser = await sync_to_async(PongueUser.objects.get)(username=event["receiver"])
+			if (receiver.id == self.userId):
+				await self.send(text_data=json.dumps(event))
+
+	async def block_friendship(self, event):
 		if ("receiver" in event.keys()):
 			receiver: PongueUser = await sync_to_async(PongueUser.objects.get)(username=event["receiver"])
 			if (receiver.id == self.userId):

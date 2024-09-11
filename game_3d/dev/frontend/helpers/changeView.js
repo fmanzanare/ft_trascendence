@@ -50,18 +50,24 @@ function handleButtonClick(event) {
 				"sender": sessionStorage.getItem("userName"),
 				"receiver": username
 			}))
-			ChatSocketsManager.updateFriendList({"sender": username})
+			getFriends();
+			ChatSocketsManager.updateFriendList({"sender": username});
 			break;
 		case "reject":
-			console.log("entra en reject");
 			friendshipSocket["socket"].send(JSON.stringify({
 				"action": "reject",
 				"sender": sessionStorage.getItem("userName"),
 				"receiver": username
 			}))
 			deleteFriendFromList(username);
-			ChatSocketsManager.updateFriendList({"sender": username})
 			break;
+		case "block":
+			friendshipSocket["socket"].send(JSON.stringify({
+				"action": "block",
+				"sender": sessionStorage.getItem("userName"),
+				"receiver": username
+			}))
+			deleteFriendFromList(username);
 	}
 
 	// console.log("Button action: ", action);
@@ -148,7 +154,7 @@ export function getFriends() {
 	});
 }
 
-function deleteFriendFromList(friendName) {
+export function deleteFriendFromList(friendName) {
 	const chatPeople = document.getElementById('left-bar-chat');
 	if (!chatPeople) {
 		return;
@@ -168,6 +174,7 @@ function deleteFriendFromList(friendName) {
 	}
 	const blockBtn = chatPeople.querySelector(`button.blockBtn[data-username="${friendName}"]`);
 	if (blockBtn) {
+		console.log("eliminando boton block");
 		blockBtn.remove();
 	}
 }

@@ -1,4 +1,4 @@
-import { printFriends, printPendingFriends } from '../helpers/changeView.js';
+import { deleteFriendFromList, printFriends, printPendingFriends } from '../helpers/changeView.js';
 import { getChatMessages, handleIncommingMessage, removeAllMessagesInChatLog } from '../helpers/chat.js';
 import { friendshipSocket, openChatWebSockets } from '../index.js';
 // import { deleteBlockedFriend, blockFriendButton } from '../helpers/changeView.js';
@@ -83,7 +83,7 @@ export class ChatSocketsManager {
 
 		socket.onmessage = (e) => {
 			const data = JSON.parse(e.data)
-			console.log(data)
+			console.log("data recibido en chatSocketManager",data)
 
 			if (data.action === "add") {
 				// BUILD ACCEPT/REJECT btns.
@@ -99,8 +99,9 @@ export class ChatSocketsManager {
 				ChatSocketsManager.updateFriendList(data)
 			}
 
-			if (data.action === "reject") {
+			if (data.action === "block") {
 				console.log("Friend request rejected")
+				deleteFriendFromList(data.sender);
 			}
 		}
 
