@@ -1,5 +1,6 @@
 import { handleChatInput } from "./chat.js";
-import { openChatWebSockets } from "../index.js";
+import { friendshipSocket, openChatWebSockets } from "../index.js";
+import { ChatSocketsManager } from "../classes/ChatSocketsManager.js";
 import { navigateTo } from "./navigateto.js";
 
 
@@ -36,46 +37,77 @@ export function quitAlert(){
 // Function to handle the button click event
 function handleButtonClick(event) {
 	console.log("Button clicked");
-	const button = event.target;
+	let button = event.target;
+	if (button.tagName === 'svg' || button.tagName === 'path') {
+		button = button.closest('button');
+	}
 	const username = button.getAttribute("data-username");
 	let action;
 	if (button.classList.contains("plusBtn")) {
 		action = "accept";
 	} else if (button.classList.contains("lessBtn")) {
 		action = "reject";
-	} else if (button.classList.contains("blockBtn")) {
+	} else {
 		action = "block";
 	}
+	
+	switch (action) {
+		case "accept":
+			friendshipSocket["socket"].send(JSON.stringify({
+				"action": "accept",
+				"sender": sessionStorage.getItem("userName"),
+				"receiver": username
+			}))
+			getFriends();
+			ChatSocketsManager.updateFriendList({"sender": username});
+			break;
+		case "reject":
+			friendshipSocket["socket"].send(JSON.stringify({
+				"action": "reject",
+				"sender": sessionStorage.getItem("userName"),
+				"receiver": username
+			}))
+			deleteFriendFromList(username);
+			break;
+		case "block":
+			friendshipSocket["socket"].send(JSON.stringify({
+				"action": "block",
+				"sender": sessionStorage.getItem("userName"),
+				"receiver": username
+			}))
+			deleteFriendFromList(username);
+	}
 
-	console.log("Button action: ", action);
-	const url = apiUrl + "friends/";
-	const token = sessionStorage.getItem("pongToken");
+	// console.log("Button action: ", action);
+	// console.log("classes: ", button.classList);
+	// const url = apiUrl + "friends/";
+	// const token = sessionStorage.getItem("pongToken");
 
-	fetch(url, {
-		method: 'POST',
-		headers: {
-			"Content-Type": "application/json",
-			"Authorization": token
-		},
-		body: JSON.stringify({
-			"username": username,
-			"action": action
-		}),
-	})
-	.then((response) => {
-		if (!response.ok) {
-			throw new Error(`Error in request: ${response.status}`);
-		}
-		return response.json();
-	})
-	.then((data) => {
-		console.log("amistad aceptada, rechazada o bloqueada: ", data);
-		getFriends();
-		// handle the response data
-	})
-	.catch((error) => {
-		console.error("error in request:", error);
-	});
+	// fetch(url, {
+	// 	method: 'POST',
+	// 	headers: {
+	// 		"Content-Type": "application/json",
+	// 		"Authorization": token
+	// 	},
+	// 	body: JSON.stringify({
+	// 		"username": username,
+	// 		"action": action
+	// 	}),
+	// })
+	// .then((response) => {
+	// 	if (!response.ok) {
+	// 		throw new Error(`Error in request: ${response.status}`);
+	// 	}
+	// 	return response.json();
+	// })
+	// .then((data) => {
+	// 	console.log("amistad aceptada, rechazada o bloqueada: ", data);
+	// 	getFriends();
+	// 	// handle the response data
+	// })
+	// .catch((error) => {
+	// 	console.error("error in request:", error);
+	// });
 }
 
 function requestFriendship(e){
@@ -87,30 +119,17 @@ function requestFriendship(e){
 		return;
 	}
 	friendInputDom.value = '';
-	const $friendsUrl = apiUrl + 'friends/';
-	const $loginUrl = apiUrl + 'login/';
 
 	if (friend.trim() === '') {
 		alert('Please enter a friend username');
 		return;
 	}
-	fetch($friendsUrl, {
-		method: 'POST',
-		headers: {
-			"Content-Type": 'application/json',
-			"Authorization": $token
-		},
-		body: JSON.stringify({
-			"username": friend,
-			"action": "add"
-		})
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error en la solicitud: ${response.status}`);
-		}
-		return response.json()
-	})
+	friendshipSocket["socket"].send(JSON.stringify({
+		"userId": sessionStorage.getItem("userId"),
+		"sender": sessionStorage.getItem("userName"),
+		"receiver": friend,
+		"action": "add"
+	}))
 }
 
 // Retrieves the list of friends from the server and prints them.
@@ -141,6 +160,31 @@ export function getFriends() {
 	.catch(error => {
 		console.error('Error en la solicitud:', error);
 	});
+}
+
+export function deleteFriendFromList(friendName) {
+	const chatPeople = document.getElementById('left-bar-chat');
+	if (!chatPeople) {
+		return;
+	}
+	const friendNameNode = chatPeople.querySelector(`p[data-username="${friendName}"]`);
+	if (friendNameNode) {
+		friendNameNode.remove();
+	}
+	// delete plus, less or block button
+	const plusBtn = chatPeople.querySelector(`button.plusBtn[data-username="${friendName}"]`);
+	if (plusBtn) {
+		plusBtn.remove();
+	}
+	const lessBtn = chatPeople.querySelector(`button.lessBtn[data-username="${friendName}"]`);
+	if (lessBtn) {
+		lessBtn.remove();
+	}
+	const blockBtn = chatPeople.querySelector(`button.blockBtn[data-username="${friendName}"]`);
+	if (blockBtn) {
+		console.log("eliminando boton block");
+		blockBtn.remove();
+	}
 }
 
 function deleteFriendshipRequestButtons(friendList) {
@@ -183,14 +227,14 @@ function blockFriendButton(friendList) {
 		if (friendDiv && friendList.some(friend => friend.username === name
 			&& friend.status === "ACCEPTED" )) {
 			const existingBlockBtn = friendDiv.querySelector('.blockBtn');
-            if (!existingBlockBtn) {
+			if (!existingBlockBtn) {
 				const blockBtn = document.createElement('button');
 				blockBtn.setAttribute("class", "blockBtn btn btn-sm");
 				blockBtn.setAttribute("data-username", name);
-				blockBtn.onclick = handleButtonClick;
 				blockBtn.innerHTML = 	`<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-ban' viewBox='0 0 16 16'>
 										<path d='M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0'/>
 									</svg>`;
+				blockBtn.onclick = handleButtonClick;
 				friendDiv.appendChild(blockBtn);
 				console.log("Adding block button: ", blockBtn);
 			}
@@ -223,7 +267,8 @@ function deleteBlockedFriend(friendList) {
 		}
 	});
 }
-function printFriends(friendList) {
+
+export function printFriends(friendList) {
 	let chatPeople = document.getElementById('friend-list-container');
 	if (!chatPeople || !friendList) {
 		return;
@@ -250,7 +295,6 @@ function printFriends(friendList) {
 			nameNode.classList.add('m-0');
 
 			if (friendList[i].status === 'ACCEPTED') {
-				handleChatInput(friendList[i], friendList[i].username)
 				nameNode.onclick = () => handleChatInput(friendList[i], friendList[i].username);
 				nameNode.style.cursor = "pointer";
 			}
@@ -258,37 +302,44 @@ function printFriends(friendList) {
 			newFriendCont.appendChild(nameNode);
 
 			if (friendList[i].status === 'PENDING') {
-				console.log("Colocando botones");
-
-				let plusBtnNode = document.createElement('button');
-				plusBtnNode.classList.add("plusBtn", "btn", "btn-sm", "btn-success");
-				plusBtnNode.setAttribute("data-username", friendList[i].username);
-				plusBtnNode.onclick = handleButtonClick;
-				plusBtnNode.innerText = "+";
-				Object.assign(plusBtnNode, { 
-					type: "button", 
-					style: "margin-left: 5rem;--bs-btn-bg: rgb(86, 186, 111);--bs-btn-border-color: rgb(86, 186, 111)" 
-				});
-
-				let lessBtnNode = document.createElement('button');
-				lessBtnNode.classList.add("lessBtn", "btn", "btn-sm", "btn-danger");
-				lessBtnNode.setAttribute("data-username", friendList[i].username);
-				lessBtnNode.setAttribute("type", "button");
-				lessBtnNode.onclick = handleButtonClick;
-				lessBtnNode.innerText = "-";
-
-				newFriendCont.appendChild(plusBtnNode);
-				newFriendCont.appendChild(lessBtnNode);
-			} else {
-				console.log("Friend accepted");
-			}
-
+				printPendingFriends(friendList[i].username, newFriendCont);
+			} 
 			chatPeople.appendChild(newFriendCont);
 		}
 	}
 
 	blockFriendButton(friendList);
 	deleteBlockedFriend(friendList);
+}
+
+export function printPendingFriends(friendName, newFriendCont) {
+	console.log("Colocando botones");
+
+	let plusBtnNode = document.createElement('button');
+	plusBtnNode.classList.add("plusBtn", "btn", "btn-sm", "btn-success");
+	plusBtnNode.setAttribute("data-username", friendName);
+	plusBtnNode.onclick = handleButtonClick; // TODO: Rewrite ft
+	plusBtnNode.innerText = "+";
+	Object.assign(plusBtnNode, { 
+		type: "button", 
+		style: "margin-left: 5rem;--bs-btn-bg: rgb(86, 186, 111);--bs-btn-border-color: rgb(86, 186, 111)" 
+	});
+
+	let lessBtnNode = document.createElement('button');
+	lessBtnNode.classList.add("lessBtn", "btn", "btn-sm", "btn-danger");
+	lessBtnNode.setAttribute("data-username", friendName);
+	lessBtnNode.setAttribute("type", "button");
+	lessBtnNode.onclick = handleButtonClick; // TODO: Rewrite ft
+	lessBtnNode.innerText = "-";
+
+	newFriendCont.appendChild(plusBtnNode);
+	newFriendCont.appendChild(lessBtnNode);
+
+	const $chat = document.getElementById("chat");
+	if ($chat.classList.contains('d-none')) {
+		const $notification = document.getElementById("notificationMsg");
+		$notification.classList.remove('d-none');
+	}
 }
 
 export function changeViewProfile(element)
