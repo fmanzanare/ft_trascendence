@@ -87,7 +87,7 @@ export class AnimationLoop {
 		if (this.ball.getBall().position.x >= this.limits.x) {
 			this.score.addPOnePoint();
 			this.restartPositions();
-			const audio = new Audio('../../../dev/frontend/assets/doh_r4RZcVw.mp3');
+			const audio = new Audio('/dev/frontend/assets/doh_r4RZcVw.mp3');
             audio.play().then(() => {
 				console.log('Audio file playing');
 			}).catch(error => {
@@ -96,7 +96,7 @@ export class AnimationLoop {
 		} else if (this.ball.getBall().position.x <= -this.limits.x) {
 			this.score.addPTwoPoint();
 			this.restartPositions();
-			const audio = new Audio('../../../dev/frontend/assets/doh_r4RZcVw.mp3');
+			const audio = new Audio('/dev/frontend/assets/doh_r4RZcVw.mp3');
             audio.play().then(() => {
 				console.log('Audio file playing');
 			}).catch(error => {
